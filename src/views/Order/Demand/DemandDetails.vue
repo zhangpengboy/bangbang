@@ -346,9 +346,6 @@
 										</div>
 										<!-- 固定基本工种end  -->
 
-
-
-
 										<!-- 管理  -->
 										<div class="demand-service-plan-box-list-item-type flex"
 											v-if="teamTypes.tag == '班组长'  && teamTypes.workType == '管理'">
@@ -380,7 +377,7 @@
 
 										<!-- 普通工种  -->
 										<div class="demand-service-plan-box-list-item-type flex"
-											v-if="teamTypes.tag == '普通' ||teamTypes.tag == '小工' && teamTypes.workType == '计件'">
+											v-if="teamTypes.tag != '班组长'  && teamTypes.workType == '计件'">
 											<!-- <div class="plan-box-btn"></div> -->
 											<el-form-item label="个人工程量">
 												<div class="flex">
