@@ -297,10 +297,10 @@ export default {
       reamNameOptions: [
         {
           label: '未实名',
-          value: '1'
+          value: '0'
         }, {
           label: '已实名',
-          value: '2'
+          value: '1'
         }
       ], // 实名状态
       reamNamevalue: '', // 选中
