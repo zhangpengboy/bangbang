@@ -363,9 +363,12 @@
 <script>
 import {
     queryById,
+    gongrenQueryById,
     updateInfo,
+    gongrenupdateInfo,
     uploadIdCard,
     realNameAuth,
+    gongRenRealNameAuth,
     bizCard
 } from '../../../api/user.js'
 import { regionData, CodeToText } from "element-china-area-data";
@@ -399,7 +402,13 @@ export default {
   mounted() {
     var userInfo = this.$route.query;
     this.userIdOrType = userInfo
-    this.loadDate(userInfo)
+    // 这里用户列表进来是1,工人列表进来是2
+    if(userInfo.joinType==1){
+
+    }else{
+
+    }
+    this.loadDate()
   },
   methods: {
     // 添加期望地
@@ -410,8 +419,16 @@ export default {
       }
       console.log(loc);
     },
-    loadDate(userInfo){
-      console.log(userInfo);
+    loadDate(){
+      if(this.userIdOrType.joinType==1){ //用户列表
+        this.getUserDetail();
+      }else{  //工人列表
+        this.getGongrenDetail();
+      }
+
+    },
+    getUserDetail(){
+      var userInfo = this.userIdOrType;
       var params = {
         id:userInfo.id,
         userType: userInfo.userType
@@ -470,34 +487,102 @@ export default {
 
 
       })
-
     },
+    getGongrenDetail(){
+      var userInfo = this.userIdOrType;
+      var params = {
+        id:userInfo.id
+      }
+      gongrenQueryById(params).then(res => {
+        var data = res.data
+        console.log('res', data)
+        this.userInfo = data
+        this.basicInfo = {
+          id:data.id,
+          headPortrait:data.headPortrait,
+          realName:data.realName,
+          phone:data.phone,
+          adr:data.address ,
+          userType:userInfo.userType==0?'企业端':userInfo.userType==1?'工人端':userInfo.userType==2?'管理端':'',
+          gender:data.gender==0?'男':'女',
+          grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
+          updateTime :data.updateTime
+        }
+        this.realNameInfo = {
+          realNameAuth : data.realNameAuth?'已实名':'未实名'
+        }
+        if(data.realNameAuthDTO){
+        this.realNameInfo = {
+          gender:data.realNameAuthDTO.gender==0?'男':'女',
+          age:data.realNameAuthDTO.age,
+          nativePlace:data.realNameAuthDTO.nativePlace,
+          realName:data.realNameAuthDTO.realName,
+          nation:data.realNameAuthDTO.nation,
+          idNo:data.realNameAuthDTO.idNo,
+          householdRegister:data.realNameAuthDTO.householdRegister,
+          idCardUri:data.realNameAuthDTO.idCardUri,
+          idCardReverseUri:data.realNameAuthDTO.idCardReverseUri
+        }
+
+        }
+        this.bizCardInfo = {
+          grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
+          workYears:data.bizCard.workYears,
+          behavioralScore:data.behavioralScore,
+          workType:data.bizCard.workType,
+          selfIntroduction:data.bizCard.selfIntroduction,
+          workStatus:data.bizCard.workStatus,
+          workDays:data.workDays,
+          expectedPlace:data.bizCard.expectedPlace,
+          workResultUrl:data.bizCard.workResultUrl,
+          certificateIntro:data.bizCard.certificateIntro,
+          certificateUrl:data.bizCard.certificateUrl
+        }
+        if(data.bizCard.workResultUrl){
+          this.workPhotoList = data.bizCard.workResultUrl.split(',')
+        }
+        if(data.bizCard.certificateUrl){
+          this.zhenshuPhotoList = data.bizCard.certificateUrl.split(',')
+        }
+
+
+      })
+    },
+
+
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var gender = 0;
-        if(this.basicInfo.gender=='男'){
-          gender = 0
-        }else{
-          gender = 1
-        }
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
-          gender:gender,
+          gender:this.basicInfo.gender=='男'?'0':'1',
           phone :this.basicInfo.phone,
           realName :this.basicInfo.realName
         }
-        updateInfo(params).then(res => {
-          var data = res.data
-          console.log(res)
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
+        if(this.userIdOrType.joinType==1){ //用户进来的
+          updateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
           })
-          this.isEdit = true
-          this.loadDate(this.userIdOrType)
-        })
+        }else{  //工人进来的
+          gongrenupdateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
+          })
+        }
 
       }else{
         this.isEdit = false
@@ -530,16 +615,30 @@ export default {
          userId:this.userIdOrType.id,
          userType:this.userIdOrType.userType
        }
-       realNameAuth(params).then(res => {
-         var data = res.data
-         console.log(res)
-         this.isEditShM = true
-         this.$message({
-           type: 'success',
-           message: '操作成功!'
+       if(this.userIdOrType.joinType==1){ //用户进来的
+        realNameAuth(params).then(res => {
+          var data = res.data
+          console.log(res)
+          this.isEditShM = true
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.loadDate(this.userIdOrType)
+        })
+       }else{  //工人进来的
+         gongRenRealNameAuth(params).then(res => {
+           var data = res.data
+           console.log(res)
+           this.isEditShM = true
+           this.$message({
+             type: 'success',
+             message: '操作成功!'
+           })
+           this.loadDate(this.userIdOrType)
          })
-         this.loadDate(this.userIdOrType)
-       })
+       }
+       
 
       }else{
         this.isEditShM = false

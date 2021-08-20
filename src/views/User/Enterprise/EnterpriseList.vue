@@ -59,7 +59,7 @@
 
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column prop="id" label="序号" width="60" />
+        <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="60" />
         <el-table-column prop="enterpriseName" label="企业名称" width="150"/>
         <el-table-column prop="realName" label="名称"/>
@@ -76,6 +76,7 @@
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
             <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.userStatus==1?'激活':'冻结' }}</el-button>
+            <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
             <el-button v-if="scope.row.enterpriseAuthStatus==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
           </template>
         </el-table-column>
@@ -98,6 +99,84 @@
         />
       </div>
       <!-- 分页end -->
+      <!-- 实名弹窗 -->
+      <el-dialog
+        title="添加实名"
+        :visible.sync="realNamePop"
+        width="30%"
+        center
+      >
+        <div class="reanNamePoplist">
+          <div class="item">
+            <p class="tit">身份证正反面：</p>
+            <div class="popIdCard flex alCen">
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="idCard" :src="idCard" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="idCardBack" :src="idCardBack" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+
+            </div>
+
+          </div>
+          <div class="item">
+            <p class="tit">姓名：</p>
+            <input type="text" name="" v-model="rnName" placeholder="请填姓名" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">性别：</p>
+            <input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">民族：</p>
+            <input type="text" name="" v-model="rnNation" placeholder="请输入民族" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">年龄：</p>
+            <input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">身份证号：</p>
+            <input type="text" name="" v-model="rnIdnum" placeholder="请输入身份证号" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">籍贯：</p>
+            <input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">户籍地：</p>
+            <input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
+          </div>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="realNamePop = false">取 消</el-button>
+          <el-button type="primary" @click="realNameTrue">确 定</el-button>
+        </span>
+      </el-dialog>
 
       <!-- 企业认证 -->
       <el-dialog
@@ -167,7 +246,7 @@
 import {
   	qiYeQueryPage,
     enterQiYeApply,
-    updateUserStatus
+    qiyeupdateUserStatus
 } from '../../../api/user.js'
 
 export default {
@@ -199,8 +278,20 @@ export default {
       ],
       statusvalue: '',
 
-
+      realNamePop: false,
+      idCard: '',
+      idCardBack: '',
       qiyeRZPop: false,
+      // 实名认证
+      rnName:'',
+      rnGender:'',
+      rnNation:'',
+      rnAge:'',
+      rnIdnum:"",
+      rnNativePlace:'',
+      rnHouse:'',
+      rnUserId :'',
+      rnUserType:'',
       // 企业认证
       enterpriseName:'',
       businessLicenseRegistrationNo:'',
@@ -315,7 +406,7 @@ export default {
             userType: 0
           }
           console.log(params)
-          updateUserStatus(params).then(res => {
+          qiyeupdateUserStatus(params).then(res => {
             console.log(res)
             if(res.code==200){
               that.$message({
@@ -338,7 +429,7 @@ export default {
             userStatus: 1,
             userType: 0
           }
-          updateUserStatus(params).then(res => {
+          qiyeupdateUserStatus(params).then(res => {
             console.log(res)
             if(res.code==200){
               that.$message({
@@ -352,6 +443,77 @@ export default {
         }).catch(() => {})
       }
     },
+    /** 实名 */
+    reanName(row) {
+      console.log(row)
+      this.rnUserId = row.id
+      this.rnUserType = row.userType
+      this.realNamePop = true
+    },
+    upIdCard(res, file) {
+      console.log(res)
+    },
+    upIdCardBack(res, file) {
+      console.log(res)
+      console.log(file)
+    },
+    beforeUpload (file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       uploadIdCard(data).then(res => {
+         console.log(res)
+    
+       })
+       return false
+    },
+    beforeUpload2(file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       uploadIdCard(data).then(res => {
+         console.log(res)
+    
+       })
+       return false
+    },
+    // 添加实名
+    realNameTrue(){
+      console.log(this.rnName);
+      console.log(this.rnGender);
+      console.log(this.rnNation);
+      console.log(this.rnAge);
+      console.log(this.rnIdnum);
+      console.log(this.rnNativePlace);
+      console.log(this.rnHouse);
+       var params = {
+         age:this.rnAge,
+         gender:this.rnGender,
+         householdRegister:this.rnHouse,
+         idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idNo:this.rnIdnum,
+         nation:this.rnNation,
+         nativePlace:this.rnNativePlace,
+         realName:this.rnName,
+         userId:this.rnUserId,
+         userType:this.rnUserType
+       }
+       realNameAuth(params).then(res => {
+         console.log(res)
+         if(res.code==200){
+           this.$message({
+             type: 'success',
+             message: '提交成功!'
+           })
+            this.realNamePop = false
+    
+         }
+       })
+    
+    },
+
+
     // 企业认证
     authen(row) {
       console.log(row)

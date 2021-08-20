@@ -49,24 +49,47 @@
 
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column prop="id" label="序号" width="60" />
+        <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="60" />
-        <el-table-column prop="enterpriseName" label="企业名称" width="150"/>
-        <el-table-column prop="realName" label="名称"/>
+        <el-table-column prop="realName" label="名称" width="150"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
-        <el-table-column prop="gender" label="性别" :formatter="genderFormat"/>
-        <el-table-column prop="realNameAuth" label="实名状态" :formatter="realNameAuthFormat"/>
-        <el-table-column prop="enterpriseAuthStatus" label="企业认证" :formatter="enterpriseAuthStatusFormat"/>
-        <el-table-column prop="userStatus" label="需求单数量"/>
-        <el-table-column prop="userStatus" label="服务单数量"/>
-        <el-table-column prop="userStatus" label="状态" :formatter="userStatusFormat"/>
+        <el-table-column label="实名状态">
+          <template slot-scope="scope">
+          	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="gender" label="性别">
+          <template slot-scope="scope">
+          	{{scope.row.gender == 0 ?'男':scope.row.gender == 1 ?'女':'未知'}}
+          </template>
+        </el-table-column>
+        <el-table-column prop="grade" label="工人等级" :formatter="gradeFormat"/>
+        <el-table-column prop="workYears" label="工龄"/>
+        <el-table-column prop="workDays" label="工作时长"/>
+        <el-table-column prop="behavioralScore" label="行为分"/>
+        <el-table-column label="工人评分" width="150">
+          <template slot-scope="scope">
+            <el-rate
+              v-model="scope.row.workerScore"
+              disabled
+              show-score
+              text-color="#ff9900"
+              score-template="{value}"
+            />
+         </template>
+        </el-table-column>
+        <el-table-column prop="userStatus" label="状态">
+          <template slot-scope="scope">
+          	{{scope.row.userStatus == 1 ?'冻结':'正常'}}
+          </template>
+         </el-table-column>
         <el-table-column prop="updater" label="操作人" />
         <el-table-column prop="updateTime" label="操作时间" />
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
             <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.userStatus==1?'激活':'冻结' }}</el-button>
-            <el-button v-if="scope.row.enterpriseAuthStatus==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
+            <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -88,66 +111,85 @@
         />
       </div>
       <!-- 分页end -->
-
-      <!-- 企业认证 -->
+      <!-- 实名弹窗 -->
       <el-dialog
-        title="添加企业认证"
-        :visible.sync="qiyeRZPop"
+        title="添加实名"
+        :visible.sync="realNamePop"
         width="30%"
         center
       >
-        <div class="reanNamePoplist reanNamePoplist2">
+        <div class="reanNamePoplist">
           <div class="item">
-            <p class="tit">资料上传：</p>
+            <p class="tit">身份证正反面：</p>
             <div class="popIdCard flex alCen">
-
-                <el-upload
-                  class="avatar-uploader"
-                  list-type="picture-card"
-                  action="https://jsonplaceholder.typicode.com/posts/"
-                  :on-success="qiyeUp"
-                  :on-remove="qiyeRemove"
-                  limit:3
-                >
-                  <i class="el-icon-plus avatar-uploader-icon" />
-                </el-upload>
-                <el-dialog :visible.sync="dialogVisible">
-                  <img width="100%" :src="fileUris" alt="" />
-                </el-dialog>
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="idCard" :src="idCard" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="idCardBack" :src="idCardBack" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
 
             </div>
 
           </div>
           <div class="item">
-            <p class="tit">企业名称：</p>
-            <input type="text" name="" v-model="enterpriseName" placeholder="请填企业名称" class="ipt" value="">
+            <p class="tit">姓名：</p>
+            <input type="text" name="" v-model="rnName" placeholder="请填姓名" class="ipt" value="">
           </div>
           <div class="item">
-            <p class="tit">营业执照注册号：</p>
-            <input type="text" name="" v-model="businessLicenseRegistrationNo" placeholder="请输入营业执照注册号" class="ipt" value="">
+            <p class="tit">性别：</p>
+            <input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
           </div>
           <div class="item">
-            <p class="tit">法人姓名：</p>
-            <input type="text" name="" v-model="legalRepresentativeName" placeholder="请输入法人姓名" class="ipt" value="">
+            <p class="tit">民族：</p>
+            <input type="text" name="" v-model="rnNation" placeholder="请输入民族" class="ipt" value="">
           </div>
           <div class="item">
-            <p class="tit">运营者姓名：</p>
-            <input type="text" name="" v-model="operatorName" placeholder="请输入运营者姓名" class="ipt" value="">
-          </div>
-          <div class="item">
-            <p class="tit">运营者联系电话：</p>
-            <input type="text" name="" v-model="operatorMobileNo" placeholder="请输入运营者联系电话" class="ipt" value="">
+            <p class="tit">年龄：</p>
+            <input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
           </div>
           <div class="item">
             <p class="tit">身份证号：</p>
-            <input type="text" name="" v-model="operatorIdNo" placeholder="请输入身份证号" class="ipt" value="">
+            <input type="text" name="" v-model="rnIdnum" placeholder="请输入身份证号" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">籍贯：</p>
+            <input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
+          </div>
+          <div class="item">
+            <p class="tit">户籍地：</p>
+            <input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
           </div>
         </div>
         <span slot="footer" class="dialog-footer">
-          <el-button @click="qiyeRZPop = false">取 消</el-button>
-          <el-button type="primary" @click="renZhTrue">确 定</el-button>
+          <el-button @click="realNamePop = false">取 消</el-button>
+          <el-button type="primary" @click="realNameTrue">确 定</el-button>
         </span>
       </el-dialog>
+
 
     </div>
   </div>
@@ -156,8 +198,9 @@
 <script>
 import {
   	gongRenQueryPage,
-    enterQiYeApply,
-    updateUserStatus
+    gongRenRealNameAuth,
+    uploadIdCard,
+    gongrenupdateUserStatus
 } from '../../../api/user.js'
 
 export default {
@@ -201,18 +244,20 @@ export default {
       ],
       statusvalue: '',
 
+      realNamePop: false,
+      idCard: '',
+      idCardBack: '',
+      // 实名认证
+      rnName:'',
+      rnGender:'',
+      rnNation:'',
+      rnAge:'',
+      rnIdnum:"",
+      rnNativePlace:'',
+      rnHouse:'',
+      rnUserId :'',
+      rnUserType:'',
 
-      qiyeRZPop: false,
-      // 企业认证
-      enterpriseName:'',
-      businessLicenseRegistrationNo:'',
-      legalRepresentativeName:'',
-      operatorName:'',
-      operatorMobileNo:'',
-      operatorIdNo:'',
-      qyuserId:'',
-      fileUris:[], //证件
-      dialogVisible:false,
 
 
     }
@@ -221,38 +266,15 @@ export default {
     this.getList()
   },
   methods: {
-     genderFormat(row){
-       if (row.gender == 0) {
-         return "男";
-       }else if (row.gender == 1){
-         return "女";
-       }else {
-         return "未知";
-       }
-     },
-     realNameAuthFormat(row){
-       if (row.realNameAuth == 0) {
-         return "未实名";
-       }else {
-         return "已实名";
-       }
-     },
-     enterpriseAuthStatusFormat(row){
-       if (row.enterpriseAuthStatus == 0) {
-         return "未提交";
+     gradeFormat(row){
+       if (row.grade == 0) {
+         return "普通工人";
        }else if (row.grade == 1) {
-         return "审核中";
+         return "铜牌工人";
        }else if (row.grade == 2) {
-         return "已通过";
+         return "银牌工人";
        }else if (row.grade == 3) {
-         return "已驳回";
-       }
-     },
-     userStatusFormat(row){
-       if (row.userStatus == 0) {
-         return "正常";
-       }else if (row.userType == 1) {
-         return "冻结";
+         return "金牌工人";
        }
      },
     getList() {
@@ -285,9 +307,10 @@ export default {
         this.PageIndex = 1;
         this.getList()
     },
-    /** 查看企业 */
+    /** 查看工人 */
     handleLook(row) {
-     this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id,joinType:2 }})
+     // this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id,joinType:2 }})
+     this.$router.push({ path: '/User/userdetail', query: { id: row.id ,joinType:2 }})
 
     },
     /** 选择分页 */
@@ -318,7 +341,7 @@ export default {
             userType: 0
           }
           console.log(params)
-          updateUserStatus(params).then(res => {
+          gongrenupdateUserStatus(params).then(res => {
             console.log(res)
             if(res.code==200){
               that.$message({
@@ -341,7 +364,7 @@ export default {
             userStatus: 1,
             userType: 0
           }
-          updateUserStatus(params).then(res => {
+          gongrenupdateUserStatus(params).then(res => {
             console.log(res)
             if(res.code==200){
               that.$message({
@@ -355,43 +378,77 @@ export default {
         }).catch(() => {})
       }
     },
-    // 企业认证
-    authen(row) {
+    /** 实名 */
+    reanName(row) {
       console.log(row)
-      this.qyuserId = row.id
-      this.qiyeRZPop = true
+      this.rnUserId = row.id
+      this.rnUserType = row.userType
+      this.realNamePop = true
     },
-    // 企业图片
-    qiyeRemove(file) {
-      console.log(file.response);
+    beforeUpload (file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       uploadIdCard(data).then(res => {
+         console.log(res)
+
+       })
+       return false
+    },
+    beforeUpload2(file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       uploadIdCard(data).then(res => {
+         console.log(res)
+
+       })
+       return false
+    },
+    upIdCard(res, file) {
+      console.log(res)
+    },
+    upIdCardBack(res, file) {
+      console.log(res)
+      console.log(file)
+    },
+    // 添加实名
+    realNameTrue(){
+      console.log(this.rnName);
+      console.log(this.rnGender);
+      console.log(this.rnNation);
+      console.log(this.rnAge);
+      console.log(this.rnIdnum);
+      console.log(this.rnNativePlace);
+      console.log(this.rnHouse);
+       var params = {
+         age:this.rnAge,
+         gender:this.rnGender,
+         householdRegister:this.rnHouse,
+         idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idNo:this.rnIdnum,
+         nation:this.rnNation,
+         nativePlace:this.rnNativePlace,
+         realName:this.rnName,
+         userId:this.rnUserId,
+         userType:this.rnUserType
+       }
+       gongRenRealNameAuth(params).then(res => {
+         console.log(res)
+         if(res.code==200){
+           this.$message({
+             type: 'success',
+             message: '提交成功!'
+           })
+            this.realNamePop = false
+
+         }
+       })
 
     },
-    //图片上传数组
-    qiyeUp(file) {
-      console.log(file);
-      this.dialogVisible = false;
-    },
-
-     // 企业认证
-     renZhTrue(){
-        var params = {
-          businessLicenseRegistrationNo:this.businessLicenseRegistrationNo,
-          enterpriseName:this.enterpriseName,
-          fileUris:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-          legalRepresentativeName:this.legalRepresentativeName,
-          operatorIdNo:this.operatorIdNo,
-          operatorMobileNo:this.operatorMobileNo,
-          operatorName:this.operatorName,
-          userId:this.qyuserId
-        }
-        enterQiYeApply(params).then(res => {
-          console.log(res)
-          if(res.code==200){
 
 
-          }
-        })
-     }
   }
 }
 </script>
@@ -456,6 +513,11 @@ export default {
 
 .numIpt{
   width: 100px;
+}
+
+.el-rate__icon{
+  font-size: 16px;
+  margin-right: 4px;
 }
 
 </style>

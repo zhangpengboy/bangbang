@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" v-loading="loading">
 
     <!-- 头部  -->
     <div class="top">
@@ -87,7 +87,7 @@
 
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column prop="id" label="序号" width="60" />
+        <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="realName" label="名称" width="120"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
@@ -283,6 +283,7 @@ import {
 export default {
   data() {
     return {
+      loading: false,
       tableData: [{
         type: 0,
         name: '工人1'
@@ -444,6 +445,7 @@ export default {
        }
      },
     getUser() {
+      this.loading = true;
        var query = {
         id:this.serach,
         enterpriseAuthStatus: this.authvalue,
@@ -457,6 +459,7 @@ export default {
       getuserqueryPage(query).then(res => {
         var data = res.data
         console.log('res', data)
+        this.loading = false;
         this.PageCount = data.total
         this.tableData = data.list
       })
@@ -482,7 +485,7 @@ export default {
       if(row.userType==0){ //企业端
         this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id ,userType:row.userType ,joinType:1 }})
       }else if(row.userType==1){ //工人端
-         this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType }})
+         this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType,joinType:1 }})
       }
 
 
