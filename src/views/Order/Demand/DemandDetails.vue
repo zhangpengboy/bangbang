@@ -153,7 +153,7 @@
 						<!-- 方案标题  -->
 						<div class="demand-service-plan-box-title flex fbetween">
 							<span class="box-demand-title">方案{{getNumberTurnChinese(index+1)}}：</span>
-							<div class="demand-service-plan-box-del " v-if="index != 0"
+							<div class="demand-service-plan-box-del " v-if="schemes.length >1"
 								@click="handleDeleteProject(index)">
 								<i class="el-icon-delete"></i>
 								<span>删除方案</span>
@@ -748,9 +748,16 @@
 			},
 			// 删除方案
 			handleDeleteProject(index) {
+				console.log(index)
 				this.schemes.splice(index, 1);
 				this.schemeList.splice(index, 1);
-				this.scheme -= 1;
+				if(index > 1){
+					this.scheme -= 1
+				}else{
+					
+					this.scheme = 0;
+				}
+				
 			},
 			// 删除单个工种
 			handleDeleteWork(index, inx, type_index, val) {
