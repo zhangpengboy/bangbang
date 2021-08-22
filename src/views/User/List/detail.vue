@@ -73,7 +73,7 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">实名认证</p>
-                <input  class="desc flex1 col666" type="" name="" disabled :value="realNameInfo.realNameAuth" />
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth?'已实名':'未实名'" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
@@ -280,29 +280,35 @@
           <div class="mt10 flex alCen">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action=""
+              list-type="picture-card"
               :file-list="workPhotoList"
-              :on-success="handleAvatarSuccess3"
+              :on-success="workPhotoSuccess"
               :on-remove="handleRemove3"
             >
-              <img v-if="imageUr3" :src="imageUr3" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
+              <i class="el-icon-plus" />
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible3">
+              <img width="100%" :src="imageUr3" alt="">
+            </el-dialog>
           </div>
 
-          <div class="box-demand-title mt30">我的证书</div>
+         <div class="box-demand-title mt30">我的证书</div>
           <div class="box-demand-title mt20">我的证书介绍</div>
           <div class="mt10 flex alCen">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action=""
               :file-list="zhenshuPhotoList"
+              list-type="picture-card"
               :on-success="handleAvatarSuccess4"
               :on-remove="handleRemove4"
             >
-              <img v-if="imageUr4" :src="imageUr4" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
+              <i class="el-icon-plus" />
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible4">
+              <img width="100%" :src="imageUr4" alt="">
+            </el-dialog>
           </div>
 
         </el-row>
@@ -382,8 +388,10 @@ export default {
       isEditUserInfo: false, // 个人名片
       workPhotoList: [], // 工作成果照片
       imageUr3: '',
+      dialogVisible3:false,
       zhenshuPhotoList: [], // 证书
       imageUr4: '',
+      dialogVisible4:false,
       projectName: '', // 项目名称
       joinProStatus: 0,
       workScore:3.4,
@@ -395,7 +403,8 @@ export default {
       bizCardInfo:{}, //名片信息
 
       options: regionData,
-      selectedOptions: []
+      selectedOptions: [],
+
 
     }
   },
@@ -479,10 +488,24 @@ export default {
           certificateUrl:data.bizCard.certificateUrl
         }
         if(data.bizCard.workResultUrl){
-          this.workPhotoList = data.bizCard.workResultUrl.split(',')
+          var imgdata = data.bizCard.workResultUrl.split(',')
+          for(var i=0;i<imgdata.length;i++){
+             var obj = {};
+            obj.url = imgdata[i]
+            obj.name = 'img'+ i
+            imgdata[i] = obj
+          }
+          this.workPhotoList = imgdata
         }
         if(data.bizCard.certificateUrl){
-          this.zhenshuPhotoList = data.bizCard.certificateUrl.split(',')
+          var imgdata2 = data.bizCard.certificateUrl.split(',')
+          for(var i=0;i<imgdata2.length;i++){
+             var obj = {};
+            obj.url = imgdata2[i]
+            obj.name = 'img'+ i
+            imgdata2[i] = obj
+          }
+          this.workPhotoList = imgdata2
         }
 
 
@@ -539,12 +562,26 @@ export default {
           certificateUrl:data.bizCard.certificateUrl
         }
         if(data.bizCard.workResultUrl){
-          this.workPhotoList = data.bizCard.workResultUrl.split(',')
+          var imgdata = data.bizCard.workResultUrl.split(',')
+          console.log(imgdata)
+          for(var i=0;i<imgdata.length;i++){
+             var obj = {};
+            obj.url = imgdata[i]
+            obj.name = 'img'+ i
+            imgdata[i] = obj
+          }
+          this.workPhotoList = imgdata
         }
         if(data.bizCard.certificateUrl){
-          this.zhenshuPhotoList = data.bizCard.certificateUrl.split(',')
+          var imgdata2 = data.bizCard.certificateUrl.split(',')
+          for(var i=0;i<imgdata2.length;i++){
+             var obj = {};
+            obj.url = imgdata2[i]
+            obj.name = 'img'+ i
+            imgdata2[i] = obj
+          }
+          this.workPhotoList = imgdata2
         }
-
 
       })
     },
@@ -638,7 +675,7 @@ export default {
            this.loadDate(this.userIdOrType)
          })
        }
-       
+
 
       }else{
         this.isEditShM = false
@@ -678,17 +715,19 @@ export default {
       console.log(file)
     },
 
-    handleAvatarSuccess3(res, file) {
-      this.imageUr3 = URL.createObjectURL(file.raw)
+    workPhotoSuccess(file) {
+      this.imageUr3 = file.url;
+      this.dialogVisible3 = true;
     },
-    handleRemove3(file, fileList) {
-      console.log(file, fileList)
+    handleRemove3(file) {
+      console.log(file)
     },
     handleAvatarSuccess4(res, file) {
       this.imageUr4 = URL.createObjectURL(file.raw)
+      this.dialogVisible4 = true;
     },
     handleRemove4(file, fileList) {
-      console.log(file, fileList)
+      console.log(file)
     },
     // 添加项目经验
     addWork() {

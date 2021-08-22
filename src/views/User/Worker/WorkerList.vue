@@ -338,7 +338,7 @@ export default {
           var params = {
             userId:row.id,
             userStatus: 0,
-            userType: 0
+            userType: 1
           }
           console.log(params)
           gongrenupdateUserStatus(params).then(res => {
@@ -362,7 +362,7 @@ export default {
           var params = {
             userId:row.id,
             userStatus: 1,
-            userType: 0
+            userType: 1
           }
           gongrenupdateUserStatus(params).then(res => {
             console.log(res)

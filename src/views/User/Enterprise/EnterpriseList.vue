@@ -366,10 +366,10 @@ export default {
     raLoad(){
         this.serach='';
         this.reamNamevalue = '';
-        this.authvalue = '';
-        this.gradevalue = [];
-        this.loginvalue = '';
-        this.statusvalue = '';
+        this.xqMinNum = '';
+        this.xqMaxNum = '';
+        this.fwMinNum = '';
+        this.fwMaxNum = '';
         this.PageIndex = 1;
         this.getList()
     },

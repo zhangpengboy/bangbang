@@ -63,7 +63,7 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">公司</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit"  />
+                <input  class="desc flex1 col666" type="" name="" v-model="renZhengInfo&&renZhengInfo.enterpriseName" disabled  />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">注册时间</p>
@@ -135,7 +135,7 @@
               :auto-upload="true"
               :on-success="upIdCard"
             >
-              <img v-if="userInfo.UserRealNameAuthDTO&&userInfo.UserRealNameAuthDTO.idCardUri " :src="userInfo.UserRealNameAuthDTO&&userInfo.UserRealNameAuthDTO.idCardUri" class="avatar">
+              <img v-if="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardUri " :src="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardUri" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
             <div class="mt10 text-center">身份证正面</div>
@@ -153,7 +153,7 @@
               :with-credentials='true'
               :on-success="upIdCardBack"
             >
-              <img v-if="userInfo.UserRealNameAuthDTO&&userInfo.UserRealNameAuthDTO.idCardReverseUri" :src="userInfo.UserRealNameAuthDTO&&userInfo.UserRealNameAuthDTO.idCardReverseUri" class="avatar">
+              <img v-if="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardReverseUri" :src="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardReverseUri" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
             <div class="mt10 text-center">身份证背面</div>
@@ -170,19 +170,19 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">企业认证</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+                <input  class="desc flex1 col666" type="" name="" disabled v-model="userInfo.enterpriseAuthStatusName" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">统一社会信用代码</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.businessLicenseRegistrationNo" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">运营者姓名</p>
-               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorName" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">运营者联系方式</p>
-               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorMobileNo" />
               </div>
             </div>
           </el-col>
@@ -190,15 +190,15 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">企业名称</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.enterpriseName" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">法人</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.legalRepresentativeName" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">身份证号</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.name" />
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorIdNo" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit" />
@@ -276,7 +276,8 @@
       realNameAuth,
       qiYeRealNameAuth,
       qiYeApply,
-      enterQiYeApply
+      enterQiYeApply,
+      uploadIdCard
   } from '../../../api/user.js'
   import { parseTime } from '@/utils/index.js'
 
@@ -293,7 +294,17 @@ export default {
       userIdOrType:'', //用户id和type
       userInfo:{}, //用户信息
       realNameInfo:{}, //实名信息
-      renZhengInfo:{}, //认证信息
+      // 企业认证信息
+      renZhengInfo:{
+        businessLicenseRegistrationNo:'',
+        enterpriseName:'',
+        fileUris:'',
+        legalRepresentativeName:'',
+        operatorIdNo:'',
+        operatorMobileNo:'',
+        operatorName:'',
+        userId:''
+      },
 
     }
   },
@@ -323,16 +334,21 @@ export default {
           console.log('res', data)
           data.genderTxt = data.gender==0?'男':'女'
           data.gradeTxt = data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':''
-          if(data.UserRealNameAuthDTO){
+          data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
+          if(data.realNameAuthDTO){
             this.realNameInfo = {
-               genderTxt: data.UserRealNameAuthDTO.gender==0?'男':'女',
-               age:data.UserRealNameAuthDTO.age,
-               nativePlace:data.UserRealNameAuthDTO.nativePlace,
-               realName:data.UserRealNameAuthDTO.realName,
-               nation:data.UserRealNameAuthDTO.nation,
-               idNo:data.UserRealNameAuthDTO.idNo,
-               householdRegister:data.UserRealNameAuthDTO.householdRegister,
+               genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
+               age:data.realNameAuthDTO.age,
+               nativePlace:data.realNameAuthDTO.nativePlace,
+               realName:data.realNameAuthDTO.realName,
+               nation:data.realNameAuthDTO.nation,
+               idNo:data.realNameAuthDTO.idNo,
+               householdRegister:data.realNameAuthDTO.householdRegister,
             }
+          }
+          if(data.enterpriseCertApplyDTO){
+            this.renZhengInfo = data.enterpriseCertApplyDTO
+            this.renZhengInfo.userId = data.id
           }
           this.userInfo = data
         })
@@ -345,16 +361,21 @@ export default {
           console.log('res', data)
           data.genderTxt = data.gender==0?'男':'女'
           data.gradeTxt = data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':''
-          if(data.UserRealNameAuthDTO){
+          data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
+          if(data.realNameInfo){
             this.realNameInfo = {
-               genderTxt: data.UserRealNameAuthDTO.gender==0?'男':'女',
-               age:data.UserRealNameAuthDTO.age,
-               nativePlace:data.UserRealNameAuthDTO.nativePlace,
-               realName:data.UserRealNameAuthDTO.realName,
-               nation:data.UserRealNameAuthDTO.nation,
-               idNo:data.UserRealNameAuthDTO.idNo,
-               householdRegister:data.UserRealNameAuthDTO.householdRegister,
+               genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
+               age:data.realNameAuthDTO.age,
+               nativePlace:data.realNameAuthDTO.nativePlace,
+               realName:data.realNameAuthDTO.realName,
+               nation:data.realNameAuthDTO.nation,
+               idNo:data.realNameAuthDTO.idNo,
+               householdRegister:data.realNameAuthDTO.householdRegister,
             }
+          }
+          if(data.enterpriseCertApplyDTO){
+            this.renZhengInfo = data.enterpriseCertApplyDTO
+            this.renZhengInfo.userId = data.id
           }
           this.userInfo = data
         })
@@ -469,23 +490,23 @@ export default {
     },
     // 企业认证
     editQiY() {
-      this.$message({
-        type: 'warning',
-        message: '暂无企业信息!'
-      })
-      return;
-      if(this.isEditShM==false){
+      // this.$message({
+      //   type: 'warning',
+      //   message: '暂无企业信息!'
+      // })
+      // return;
+      if(this.isEditQiY==false){
         var params = {
-          businessLicenseRegistrationNo:this.businessLicenseRegistrationNo,
-          enterpriseName:this.enterpriseName,
+          businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
+          enterpriseName:this.renZhengInfo.enterpriseName,
           fileUris:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-          legalRepresentativeName:this.legalRepresentativeName,
-          operatorIdNo:this.operatorIdNo,
-          operatorMobileNo:this.operatorMobileNo,
-          operatorName:this.operatorName,
-          userId:this.qyuserId
+          legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
+          operatorIdNo:this.renZhengInfo.operatorIdNo,
+          operatorMobileNo:this.renZhengInfo.operatorMobileNo,
+          operatorName:this.renZhengInfo.operatorName,
+          userId:this.userInfo.id
         }
-        if(this.userIdOrType.joinType==1){
+        if(this.userIdOrType.joinType==1){  //用户
           qiYeApply(params).then(res => {
             console.log(res)
             if(res.code==200){
@@ -497,7 +518,8 @@ export default {
                this.loadDate(this.userIdOrType)
             }
           })
-        }else{
+        }else{   //企业
+        console.log('企业')
           enterQiYeApply(params).then(res => {
             console.log(res)
             if(res.code==200){
@@ -510,7 +532,7 @@ export default {
             }
           })
         }
-        
+
       }else{
         this.isEditQiY = false
       }
