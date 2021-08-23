@@ -1,4 +1,5 @@
 import request from '@/utils/request'
+
 /**
  * 登录接口
  * @param {String} username 用户名
@@ -218,5 +219,32 @@ export function enterQiYeApply(data) {
     url: `/api/user/admin/enterprise/v1.0/enterprise/cert/apply`,
     method: 'post',
     data
+  })
+}
+// 导出当前查询条件下的所有数据,最多1w条--用户
+export function exportCsvUser(params) {
+  return request({
+    url: `/api/user/admin/common/v1.0/exportCsv`,
+    method: 'get',
+    params,
+    responseType: 'blob'
+  })
+}
+// 导出当前查询条件下的所有数据,最多1w条--企业
+export function exportCsvQiye(params) {
+  return request({
+    url: `/api/user/admin/enterprise/v1.0/exportCsv`,
+    method: 'get',
+    params,
+    responseType: 'blob'
+  })
+}
+// 导出当前查询条件下的所有数据,最多1w条--工人
+export function exportCsvGongren(params) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/exportCsv`,
+    method: 'get',
+    params,
+    responseType: 'blob'
   })
 }

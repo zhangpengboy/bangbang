@@ -48,6 +48,7 @@ service.interceptors.response.use(
 	 * 您还可以通过HTTP状态代码判断状态
 	 */
 	response => {
+    // console.log(response)
 		const res = response.data;
 		console.log(res.code)
 		if (res.code == 200) {
@@ -57,6 +58,9 @@ service.interceptors.response.use(
 			// store.dispatch('user/resetToken').then(() => {
 			// 	location.reload()
 			// })
+		} else if (response.status == 200) {
+      // console.log(response)
+			return response.request;
 		} else {
 			  Message({
 			    message: res.msg || 'Error',

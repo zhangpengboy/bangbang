@@ -44,7 +44,7 @@
     <div class="box">
       <div class="box-top flex fbetween fvertical">
         <div class="bold">数据列表</div>
-        <el-button>导出</el-button>
+        <el-button @click="exportTable">导出</el-button>
       </div>
 
       <!-- 表格  -->
@@ -200,7 +200,8 @@ import {
   	gongRenQueryPage,
     gongRenRealNameAuth,
     uploadIdCard,
-    gongrenupdateUserStatus
+    gongrenupdateUserStatus,
+    exportCsvGongren
 } from '../../../api/user.js'
 
 export default {
@@ -306,6 +307,30 @@ export default {
         this.statusvalue = '';
         this.PageIndex = 1;
         this.getList()
+    },
+    // 导出
+    exportTable(){
+      console.log('导出');
+      var query = {
+        id:this.serach,
+        grades:this.gradevalue,
+        pageNum: this.PageIndex,
+        pageSize: this.PageSize,
+        userStatus: this.statusvalue
+      }
+      console.log(query);
+      exportCsvGongren(query).then(res => {
+        console.log(res)
+        var responseURL = res.responseURL;
+        window.open(responseURL,'_blank')
+      }).catch(res=>{
+        console.log(res)
+        this.$message({
+            message:'下载失败！',
+            type:'error',
+            showClose:true
+        })
+      })
     },
     /** 查看工人 */
     handleLook(row) {

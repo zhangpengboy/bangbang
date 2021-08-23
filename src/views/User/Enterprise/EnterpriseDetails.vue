@@ -210,14 +210,18 @@
         <!-- 企业照片 -->
         <div class="mt15 flex">
           <el-upload
-            class="avatar-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
-            :on-success="handleAvatarSuccess2"
-            :on-remove="handleRemove2"
-          >
-            <img v-if="imageUrl2" :src="imageUrl2" class="avatar">
-            <i v-else class="el-icon-plus avatar-uploader-icon" />
+            name="multipartFile"
+            :action="adminUrl"
+            list-type="picture-card"
+            :file-list="renZhengInfo.fileUris"
+            :on-success="qiyeUpsuccess"
+            :on-remove="qiyeRemove"
+            limit:3>
+            <i class="el-icon-plus"></i>
           </el-upload>
+          <el-dialog :visible.sync="qiyeDiaLog">
+            <img width="100%" :src="renZhengInfo.fileUris" alt="">
+          </el-dialog>
         </div>
 
       </div>
@@ -285,7 +289,6 @@ export default {
   data() {
     return {
       tabPosition: 'detail',
-      imageUrl2: '',
       isEdit: true, // 详情编辑or保存
       isEditShM:true, //实名
       isEditQiY:true,  //企业
@@ -298,13 +301,15 @@ export default {
       renZhengInfo:{
         businessLicenseRegistrationNo:'',
         enterpriseName:'',
-        fileUris:'',
+        fileUris:[],
         legalRepresentativeName:'',
         operatorIdNo:'',
         operatorMobileNo:'',
         operatorName:'',
         userId:''
       },
+      qiyeDiaLog:false,
+      adminUrl: '/api/commons/file/admin/v1/upload/public',
 
     }
   },
@@ -322,14 +327,14 @@ export default {
 
   },
   methods: {
-    loadDate(userInfo){
+    async loadDate(userInfo){
       console.log(userInfo);
-      if(this.userIdOrType.joinType==1){ //用户企业列表
+      if(this.userIdOrType.joinType==1){ //用户列表进来
         var params = {
           id:userInfo.id,
           userType: userInfo.userType
         }
-        queryById(params).then(res => {
+        await queryById(params).then(res => {
           var data = res.data
           console.log('res', data)
           data.genderTxt = data.gender==0?'男':'女'
@@ -348,11 +353,21 @@ export default {
           }
           if(data.enterpriseCertApplyDTO){
             this.renZhengInfo = data.enterpriseCertApplyDTO
+            var imgdata = data.enterpriseCertApplyDTO.fileUris.split(',')
+            for(var i=0;i<imgdata.length;i++){
+               var obj = {};
+              obj.url = imgdata[i]
+              obj.name = 'img'+ i
+              imgdata[i] = obj
+            }
+
+            this.renZhengInfo.fileUris = imgdata
             this.renZhengInfo.userId = data.id
           }
+          console.log(this.renZhengInfo.fileUris)
           this.userInfo = data
         })
-      }else{  //企业企业列表
+      }else{  //企业列表进来
         var params = {
           id:userInfo.id
         }
@@ -362,7 +377,7 @@ export default {
           data.genderTxt = data.gender==0?'男':'女'
           data.gradeTxt = data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':''
           data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
-          if(data.realNameInfo){
+          if(data.realNameAuthDTO){
             this.realNameInfo = {
                genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
                age:data.realNameAuthDTO.age,
@@ -375,6 +390,15 @@ export default {
           }
           if(data.enterpriseCertApplyDTO){
             this.renZhengInfo = data.enterpriseCertApplyDTO
+            var imgdata = data.enterpriseCertApplyDTO.fileUris.split(',')
+            for(var i=0;i<imgdata.length;i++){
+               var obj = {};
+              obj.url = imgdata[i]
+              obj.name = 'img'+ i
+              imgdata[i] = obj
+            }
+
+            this.renZhengInfo.fileUris = imgdata
             this.renZhengInfo.userId = data.id
           }
           this.userInfo = data
@@ -499,7 +523,7 @@ export default {
         var params = {
           businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
           enterpriseName:this.renZhengInfo.enterpriseName,
-          fileUris:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+          fileUris:this.renZhengInfo.fileUris.join(','),
           legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
           operatorIdNo:this.renZhengInfo.operatorIdNo,
           operatorMobileNo:this.renZhengInfo.operatorMobileNo,
@@ -568,11 +592,17 @@ export default {
     },
 
 
-    handleAvatarSuccess2(res, file) {
-      this.imageUrl2 = URL.createObjectURL(file.raw)
+    qiyeUpsuccess(file) {
+      console.log(file);
+      var obj = {};
+      obj.url = file
+      obj.name = 'img'
+      this.renZhengInfo.fileUris.push(file);
+      this.qiyeDiaLog = false;
     },
-    handleRemove2(file, fileList) {
-      console.log(file, fileList)
+    qiyeRemove(file) {
+      console.log(file)
+      this.renZhengInfo.fileUris.pop(file.response);
     },
 
     // 添加项目

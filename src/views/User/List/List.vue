@@ -82,7 +82,7 @@
     <div class="box">
       <div class="box-top flex fbetween fvertical">
         <div class="bold">数据列表</div>
-        <el-button>导出</el-button>
+        <el-button @click="exportTable">导出</el-button>
       </div>
 
       <!-- 表格  -->
@@ -277,7 +277,8 @@ import {
     updateUserStatus,
     uploadIdCard,
     realNameAuth,
-    qiYeApply
+    qiYeApply,
+    exportCsvUser
 } from '../../../api/user.js'
 
 export default {
@@ -479,6 +480,37 @@ export default {
         this.PageIndex = 1;
         this.getUser()
     },
+    // 导出
+    exportTable(){
+      console.log('导出');
+      var query = {
+        id:this.serach,
+        enterpriseAuthStatus: this.authvalue,
+        grades: this.gradevalue.join(',') ,
+        pageNum: this.PageIndex,
+        pageSize: this.PageSize,
+        realNameAuth: this.reamNamevalue,
+        userStatus: this.statusvalue,
+        userType: this.loginvalue
+      }
+      console.log(query);
+      exportCsvUser(query).then(res => {
+        console.log(res)
+        var responseURL = res.responseURL;
+        window.open(responseURL,'_blank')
+      }).catch(res=>{
+        console.log(res)
+        this.$message({
+            message:'下载失败！',
+            type:'error',
+            showClose:true
+        })
+      })
+
+
+
+    },
+
     /** 查看，区分工人和企业跳转不同页面 */
     handleLook(row) {
       console.log(row.userType)
