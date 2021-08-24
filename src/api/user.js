@@ -248,3 +248,166 @@ export function exportCsvGongren(params) {
     responseType: 'blob'
   })
 }
+
+// 工种、考勤、自我介绍、收款信息开始-----------------
+
+// 工种查询分类
+export function gettypeWorkClass(params) {
+  return request({
+    url: `/api/commons/admin/commonsLabel/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 工种新增
+export function insertOneTw(data) {
+  return request({
+    url: `/api/commons/admin/commonsLabel/v1.0/insertOne`,
+    method: 'post',
+    data
+  })
+}
+
+// 工种or分类-修改
+export function updateOneTw(data) {
+  return request({
+    url: `/api/commons/admin/commonsLabel/v1.0/updateOne`,
+    method: 'post',
+    data
+  })
+}
+// 工种删除
+export function removeOneTw(params) {
+  return request({
+    url: `/api/commons/admin/commonsLabel/v1.0/remove`,
+    method: 'post',
+    params
+  })
+}
+
+// 考勤查询分类
+export function getAttendanceClass(params) {
+  return request({
+    url: `/api/commons/admin/commonsAttendanceRange/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 考勤新增
+export function insertOneAttendance(data) {
+  return request({
+    url: `/api/commons/admin/commonsAttendanceRange/v1.0/insertOne`,
+    method: 'post',
+    data
+  })
+}
+// 考勤修改
+export function updateOneAttendance(data) {
+  return request({
+    url: `/api/commons/admin/commonsAttendanceRange/v1.0/updateOne`,
+    method: 'post',
+    data
+  })
+}
+// 考勤删除
+export function removeAttendance(params) {
+  return request({
+    url: `/api/commons/admin/commonsAttendanceRange/v1.0/remove`,
+    method: 'post',
+    params
+  })
+}
+// 考勤修改状态
+export function updateStatusAttendance(data) {
+  return request({
+    url: `/api/commons/admin/commonsAttendanceRange/v1.0/updateStatus`,
+    method: 'post',
+    data
+  })
+}
+
+// 自我介绍模板查询分类
+export function getSelfIntroduceClass(params) {
+  return request({
+    url: `/api/commons/admin/selfIntroTemplate/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 自我介绍模板修改状态
+export function updateStatusSelfIntroduce(data) {
+  return request({
+    url: `/api/commons/admin/selfIntroTemplate/v1.0/updateStatus`,
+    method: 'post',
+    data
+  })
+}
+// 自我介绍模板新增
+export function insertOneSelfIntroduce(data) {
+  return request({
+    url: `/api/commons/admin/selfIntroTemplate/v1.0/insertOne`,
+    method: 'post',
+    data
+  })
+}
+// 自我介绍模板编辑
+export function updateOneSelfIntroduce(data) {
+  return request({
+    url: `/api/commons/admin/selfIntroTemplate/v1.0/updateOne`,
+    method: 'post',
+    data
+  })
+}
+// 自我介绍模板删除
+export function removeSelfIntroduce(params) {
+  return request({
+    url: `/api/commons/admin/selfIntroTemplate/v1.0/remove`,
+    method: 'post',
+    params
+  })
+}
+
+// 收款信息查询分类
+export function getCollectionClass(params) {
+  return request({
+    url: `/api/commons/admin/commonsCollectionInformation/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 收款信息修改状态
+export function updateStatusCollection(data) {
+  return request({
+    url: `/api/commons/admin/commonsCollectionInformation/v1.0/updateStatus`,
+    method: 'post',
+    data
+  })
+}
+// 收款信息新增
+export function insertOneCollection(data) {
+  return request({
+    url: `/api/commons/admin/commonsCollectionInformation/v1.0/insertOne`,
+    method: 'post',
+    data
+  })
+}
+// 收款信息编辑
+export function updateOneCollection(data) {
+  return request({
+    url: `/api/commons/admin/commonsCollectionInformation/v1.0/updateOne`,
+    method: 'post',
+    data
+  })
+}
+// 收款信息删除
+export function removeCollection(params) {
+  return request({
+    url: `/api/commons/admin/commonsCollectionInformation/v1.0/remove`,
+    method: 'post',
+    params
+  })
+}
+
+
+
+// 工种、考勤、自我介绍、收款信息结束--------------------

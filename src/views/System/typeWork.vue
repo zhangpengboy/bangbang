@@ -8,10 +8,12 @@
             <div class="txt">删除</div>
           </div>
           <div class="list">
-            <div class="item flex alCen js-sb" v-for="(item,index) in 3">
-              <input type="text" name="" placeholder="请输入" class="ipt" value="" />
-              <img src="../../assets/images/icon-edit.png" @click="edit(index)" class="iconedit">
-              <img src="../../assets/images/icon-delete.png" @click="dele(index)" class="iconedit">
+            <div class="item flex alCen js-sb" v-for="(item,index) in allClass">
+              <div class="ipt" :class="activeIndex==index?'iptHov':''" @click="choseClass(item,index)">
+                {{item.labelName}}
+              </div>
+              <img src="../../assets/images/icon-edit.png" @click="edit(item,index)" class="iconedit">
+              <img src="../../assets/images/icon-delete.png" @click="dele(item,index)" class="iconedit">
             </div>
           </div>
           <div class="addCon flex alCen js-center" @click="addClass">
@@ -22,9 +24,9 @@
         <div class="container">
           <p class="tit">工种</p>
           <div class="list flex alCen">
-            <div class="item flex alCen js-center" v-for="(item,index) in 12">
-              <p class="txt">装修木工</p>
-              <img src="../../assets/images/icon-close.png" class="iconClose" @click="detItem(index)">
+            <div class="item flex alCen js-center" v-for="(item,index) in gongzhong">
+              <p class="txt">{{item.labelName}}</p>
+              <img src="../../assets/images/icon-close.png" class="iconClose" @click="detItem(item,index)">
             </div>
             <div class="add flex alCen js-center" @click="addItem">
               <img src="../../assets/images/icon-add.png" class="iconAdd">
@@ -36,109 +38,204 @@
 </template>
 
 <script>
+  import {
+    	gettypeWorkClass,
+      insertOneTw,
+      updateOneTw,
+      removeOneTw
+  } from '../../api/user.js'
   export default {
     data() {
       return {
         loading:false,
-
+        allClass:[],
+        gongzhong:[],
+        activeIndex:0,
+        activeClassID:0,  //当前选中的分类id
       }
     },
     created() {
-
+      this.getList()
     },
     methods: {
-         // 编辑分类
-         edit(index){
-           console.log(index)
-           this.$prompt('请输入类别名称', '提示', {
-             confirmButtonText: '确定',
-             cancelButtonText: '取消',
-           }).then(({ value }) => {
-             if(value==null){
-               this.$message({
-                 type: 'success',
-                 message: '不能为空 '
-               });
-             }else{
-               this.$message({
-                 type: 'success',
-                 message: '类别名称: ' + value
-               });
-             }
-           });
-         },
-         // 分类删除
-         dele(index){
-           console.log(index)
-           this.$confirm('确定要删除该类别?', '提示', {
-             confirmButtonText: '确定',
-             cancelButtonText: '取消',
-             type: 'warning'
-           }).then(() => {
+      choseClass(item,index){
+        this.activeIndex = index;
+        this.activeClassID = item.id
+        this.getGongzhong(this.activeClassID);
+      },
+      getList() {
+        this.loading = true;
+        var params = {
+          pageSize:20,
+          pageNum:1,
+          type:0,
+          parentId:0
+        }
+        gettypeWorkClass(params).then(res => {
+          this.loading = false;
+          var data = res.data
+          console.log('res', data)
+          this.allClass = data.list
+          if(data.list!=0){
+            this.activeClassID = data.list[0].id
+            this.getGongzhong(this.activeClassID);
+          }
+        })
+      },
+      getGongzhong(id){
+        console.log('获取工种')
+        var params = {
+          pageSize:20,
+          pageNum:1,
+          type:0,
+          parentId:id
+        }
+        gettypeWorkClass(params).then(res => {
+          console.log(res)
+          this.gongzhong = res.data.list
+        })
+
+      },
+       // 编辑分类
+       edit(item,index){
+         console.log(item)
+         this.$prompt('请输入类别名称', '提示', {
+           confirmButtonText: '确定',
+           cancelButtonText: '取消',
+           inputValue:item.labelName
+         }).then(({ value }) => {
+           if(value==null){
              this.$message({
                type: 'success',
-               message: '删除成功!'
+               message: '不能为空 '
              });
-           })
-         },
-        // 添加分类
-        addClass(){
-          this.$prompt('请输入类别名称', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-          }).then(({ value }) => {
-            if(value==null){
-              this.$message({
-                type: 'success',
-                message: '不能为空 '
-              });
-            }else{
-              this.$message({
-                type: 'success',
-                message: '类别名称: ' + value
-              });
-            }
+           }else{
+             var params = {
+               id:item.id,
+               labelName:value,
+               parentId:item.parentId,
+               type:0
+             }
+             updateOneTw(params).then(res => {
+               var data = res.data
+               console.log('res', data)
+               this.getList()
 
+             })
+           }
+         });
+       },
+       // 分类删除
+       dele(item,index){
+         console.log(item)
+         this.$confirm('确定要删除该类别?', '提示', {
+           confirmButtonText: '确定',
+           cancelButtonText: '取消',
+           type: 'warning'
+         }).then(() => {
+           this.deleteFun(item.id,1)
 
-          });
-        },
-        // 删除工种
-        detItem(index){
-          console.log(index)
-          this.$confirm('确定要删除该工种?', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning'
-          }).then(() => {
+         })
+       },
+      // 添加分类
+      addClass(){
+        this.$prompt('请输入类别名称', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({ value }) => {
+          if(value==null){
             this.$message({
               type: 'success',
-              message: '删除成功!'
+              message: '不能为空 '
             });
-          }).catch(() => {
+          }else{
+            var params = {
+              labelName:value,
+              parentId:0,
+              type:0,
+            }
+            insertOneTw(params).then(res => {
+              console.log(res)
+              if(res.code==200){
+                this.$message({
+                  type: 'success',
+                  message: '添加成功'
+                });
+                this.getList()
+              }
 
-        })
-        },
-        // 添加工种
-        addItem(){
-          this.$prompt('请输入工种名称', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-          }).then(({ value }) => {
-            if(value==null){
-              this.$message({
-                type: 'success',
-                message: '不能为空 '
-              });
+            })
+          }
+        });
+      },
+      // 删除工种
+      detItem(item,index){
+        console.log(index)
+        this.$confirm('确定要删除该工种?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.deleteFun(item.id,2)
+        }).catch(() => {
+
+      })
+      },
+      // 执行删除
+      deleteFun(id,type){
+        var params = {
+          id:id
+        }
+        removeOneTw(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            });
+            if(type==2){
+              this.getGongzhong(this.activeClassID);
             }else{
-              this.$message({
-                type: 'success',
-                message: '类别名称: ' + value
-              });
+              this.getList()
             }
 
+          }
 
-          });
-        }
+        })
+      },
+
+      // 添加工种
+      addItem(){
+        this.$prompt('请输入工种名称', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+        }).then(({ value }) => {
+          if(value==null){
+            this.$message({
+              type: 'success',
+              message: '不能为空 '
+            });
+          }else{
+            var params = {
+              labelName:value,
+              parentId:this.activeClassID,
+              type:0,
+            }
+            insertOneTw(params).then(res => {
+              console.log(res)
+              if(res.code==200){
+                this.$message({
+                  type: 'success',
+                  message: '添加成功'
+                });
+                this.getGongzhong(this.activeClassID);
+              }
+
+            })
+          }
+
+        });
+      }
 
     }
   }
@@ -173,9 +270,12 @@
           .ipt{
             border: 1px solid #d9d9d9;
             width: 180px;
-            height: 40px;
+            line-height: 40px;
             padding-left: 5px;
             box-sizing: border-box;
+          }
+          .iptHov{
+            border: 1px solid #000095;
           }
           .iconedit{
             cursor: pointer;
