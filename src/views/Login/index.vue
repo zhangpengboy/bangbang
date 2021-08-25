@@ -1,6 +1,6 @@
 <template>
   <div class="login-container">
-
+	
     <el-form
       ref="loginForm"
       :model="loginForm"
@@ -12,6 +12,7 @@
       <div class="title-container">
         <h3 class="title">{{ title }}</h3>
       </div>
+	  <div class="login-container-title">邦宁优聘服务系统</div>
       <el-form-item prop="username">
         <span class="svg-container">
           <svg-icon icon-class="user" />
@@ -259,6 +260,12 @@ export default {
 
 	/* reset element-ui css */
 	.login-container {
+		.login-container-title{
+			font-size: 22px;
+			font-weight: bold;
+			color: #1890ff;
+			padding-bottom: 30px;
+		}
 		.el-input {
 			display: inline-block;
 			height: 47px;

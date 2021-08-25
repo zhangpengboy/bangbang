@@ -226,7 +226,7 @@
 										<el-form-item label="计件单价">
 											<div class="flex">
 												<el-input class="f1" v-model="teams.unitPrice"
-													oninput="value=value.replace(/[^0-9.]/g,'')"></el-input>
+													@input="handleTeamsUniprice(index,inx,teams)"></el-input>
 												<span>元/{{geUnit(teams.unit)}}</span>
 											</div>
 										</el-form-item>
@@ -365,7 +365,8 @@
 											</el-form-item>
 											<el-form-item label="人数">
 												<div class="flex">
-													<el-input style="width: 200px;" v-model="teamTypes.number" @input="handleQuantity(index,inx,types_index,teamTypes)">
+													<el-input style="width: 200px;" v-model="teamTypes.number"
+														@input="handleQuantity(index,inx,types_index,teamTypes)">
 													</el-input>
 													<span style="padding-left: 20px;">人</span>
 												</div>
@@ -469,7 +470,8 @@
 											</el-form-item>
 											<el-form-item label="人数">
 												<div class="flex">
-													<el-input style="width: 200px;" v-model="teamTypes.number">
+													<el-input style="width: 200px;" v-model="teamTypes.number"
+														@input="handleQuantity(index,inx,types_index,teamTypes)">
 													</el-input>
 													<span style="padding-left: 20px;">人</span>
 												</div>
@@ -528,17 +530,23 @@
 							<div class="demand-service-plan-box-foot-item flex fvertical">
 								<span> 信息服务费</span>
 								<div class="flex">
-									<el-input class="f1" v-model="item.serviceFeeRate" placeholder="请输入信息服务费比例"></el-input>
+									<el-input class="f1 demand-service-plan-box-foot-item-server" @input="handleInputToals(index)"  v-model="item.serviceFeeRate" placeholder="请输入信息服务费比例">
+									</el-input>
 									<el-input value="%" :disabled="true"
 										class="f1 demand-service-plan-box-foot-item-company"></el-input>
-									<el-input :value="item.serviceFeeRateNum" :disabled="true"
-										class="f1 demand-service-plan-box-foot-item-company"></el-input>
+									<!-- <span class="f1">{{item.serviceFeeRateNum}}元</span> -->
+									<div class="flex fvertical">
+										<el-input :value="item.serviceFeeRateNum" :disabled="true"
+											class="f1 demand-service-plan-box-foot-item-company">
+										</el-input>
+										<span style="padding-left: 10px;">元</span>
+									</div>
 								</div>
 							</div>
 							<div class="demand-service-plan-box-foot-item flex fvertical">
 								<span> 税费</span>
 								<div class="flex">
-									<el-input class="f1" v-model="item.taxRate" placeholder="请输入信息服务费比例"></el-input>
+									<el-input class="f1" v-model="item.taxRate" @input="handleInputToals(index)" placeholder="请输入信息服务费比例"></el-input>
 									<el-input value="%" :disabled="true"
 										class="f1 demand-service-plan-box-foot-item-company"></el-input>
 									<el-input :value="item.taxRateNum" :disabled="true"
@@ -547,7 +555,8 @@
 							</div>
 							<div class="demand-service-plan-box-foot-item flex fvertical">
 								<span> 总费用</span>
-								<el-input class="f1" v-model="totalFee" :disabled="true" placeholder="元"></el-input>
+								<el-input class="f1" v-model="item.totalFee" :disabled="true" placeholder="元">
+								</el-input>
 							</div>
 						</div>
 						<!-- 总费用end -->
@@ -589,7 +598,7 @@
 	export default {
 		data() {
 			return {
-				
+
 				dialogImageUrl: "",
 				isImges: false, // 是否显示大图
 				isAddress: false, //显示添加地址
@@ -652,17 +661,17 @@
 					scope: "100", // 打卡范围
 					images: [] // 图片地址
 				},
-				totalFee: "元", //总费用
 				schemes: [{ // 方案
 					tag: "", // 标签
 					description: "", // 简介
 					replaceTimes: "", // 换人次数
 					totalUnit: "", // 总工程量
 					serviceFeeRate: "", // 信息服务率
-					serviceFeeRateNum: "元", //  信息服务费
+					serviceFeeRateNum: "", //  信息服务费
 					taxRate: "", // 税率
-					taxRateNum: "元", // 税费
-					serverTotal:"", // 施工服务费
+					taxRateNum: "", // 税费
+					serverTotal: "", // 施工服务费
+					totalFee: "", // 总费用
 					teams: [{ // 班组信息
 						name: "", // 班组名称
 						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
@@ -680,7 +689,9 @@
 						enterStartTime: "", //进场时间
 						enterEndTime: "", // 退场时间
 						enterDay: "", // 班组工期
-						totalQuantity: "", // 班组工程量 
+						totalQuantity: "", // 班组工程量
+						totalNum:0,  // 总人数
+						totalFee:0, // 班组总费用
 						teamTypes: [ // 工种列表
 							{
 								name: "电工", // 工种名称
@@ -781,34 +792,95 @@
 				let income = (this.schemes[index].teams[inx].workTimelen - this.schemes[index].teams[inx].restTimelen) *
 					val.unitPrice
 				val.income = income;
-				this.getTotal({index, inx, type_index, val});
+				this.getGroupTotal({
+					index,
+					inx,
+					type_index,
+					val
+				});
 			},
-			// 计算总的施工服务费
-			getTotal(data){
+			//  方案输入单价
+			handleTeamsUniprice(index, inx, val) {
+				console.log(index);
+				console.log(inx);
+				console.log(val);
+				val.unitPrice = val.unitPrice.replace(/[^0-9.]/g, '');
+				this.getGroupTotal({
+					index,
+					inx,
+					val
+				})
+			},
+			// 计算数组的总数
+			getGroupTotal(data) {
 				let teamTypes = this.schemes[data.index].teams[data.inx].teamTypes;
 				let total = 0;
-				for(let i = 0 ; i < teamTypes.length ;i++){
-					// console.log(teamTypes[i].workType == '计时')
-					if(teamTypes[i].workType == '计时'){
-						total  += teamTypes[i].income * teamTypes[i].enterDay * teamTypes[i].number;
-						if(teamTypes[i].tag == '班组长'){
+				let totalNumber = 0;
+				for (let i = 0; i < teamTypes.length; i++) {
+					if (teamTypes[i].workType == '计时' && teamTypes[i].income && teamTypes[i].enterDay && teamTypes[i]
+						.number) {
+						total += teamTypes[i].income * teamTypes[i].enterDay * teamTypes[i].number;
+						if (teamTypes[i].tag == '班组长') {
 							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 						}
 					}
-					if(teamTypes[i].workType == '计件'){
-						console.log('计件::',teamTypes[i])
-						total = teamTypes[i].number * teamTypes[i].personalQuantity * this.schemes[data.index].teams[data.inx].unitPrice
-						if(teamTypes[i].tag == '班组长'){
+					if (teamTypes[i].workType == '计件') {
+						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.schemes[data.index].teams[data
+							.inx].unitPrice
+						if (teamTypes[i].tag == '班组长') {
 							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 						}
 					}
-			
-					if(teamTypes[i].workType == '管理'){
+
+					if (teamTypes[i].workType == '管理') {
 						total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 					}
+					totalNumber += Number(teamTypes[i].number);
 				}
-				this.schemes[data.index].serverTotal = total;
-				console.log(total)
+				this.schemes[data.index].teams[data.inx].totalNum =  totalNumber
+				this.schemes[data.index].teams[data.inx].totalFee = total;
+				this.getTotal(data.index)
+			},
+			// 计算总费用
+			handleInputToals(index){
+				this.getTotal(index)
+			},
+			// 计算总的社工服务费
+			getTotal(index){
+				let teams = this.schemes[index].teams;
+				let total = 0;
+				teams.forEach((item,inx)=>{
+					// console.log(item.teamTypes)
+					item.teamTypes.forEach((data,inxx)=>{
+						console.log(data);
+						if (data.workType == '计时' && data.income && data.enterDay && data
+							.number) {
+							total += data.income * data.enterDay * data.number;
+							if (data.tag == '班组长') {
+								total += data.enterDay * data.leaderFee * data.number;
+							}
+						}
+						if (data.workType == '计件') {
+							total += data.number * data.personalQuantity * item.unitPrice
+							if (data.tag == '班组长') {
+								total += data.enterDay *data.leaderFee * data.number;
+							}
+						}
+						if (data.workType == '管理') {
+							total += data.enterDay * data.leaderFee * data.number;
+						}
+					})
+				})
+				this.schemes[index].serverTotal = total;
+				this.schemes[index].serviceFeeRateNum = (Number(this.schemes[index].serverTotal) * Number(this
+					.schemes[index].serviceFeeRate) / 100);
+				let taxRate = Number(this.schemes[index].taxRate);
+				let totals = Number(this.schemes[index].serverTotal) + Number(this.schemes[index]
+					.serviceFeeRateNum);
+				this.schemes[index].taxRateNum = (totals * taxRate) / 100;
+				this.schemes[index].totalFee = total + Number(this.schemes[index].taxRateNum) + Number(this
+					.schemes[index].serviceFeeRateNum)
+			
 			},
 			// 删除组
 			hanldeRemoveGroup(index, inx) {
@@ -957,16 +1029,16 @@
 					return arr[0].enterEndTime;
 				}
 				let newArr = [];
-				for(let i = 0 ; i < arr.length ; i++){
-					if(arr[i].enterEndTime){
+				for (let i = 0; i < arr.length; i++) {
+					if (arr[i].enterEndTime) {
 						newArr.push(arr[i].enterEndTime)
 					}
 				}
-				if(newArr.length <= 1){
+				if (newArr.length <= 1) {
 					return newArr[0];
 				}
-				return this.getComebSort(newArr,true)
-		
+				return this.getComebSort(newArr, true)
+
 			},
 
 			// 计算最早进场时间
@@ -975,12 +1047,12 @@
 					return arr[0].enterStartTime;
 				}
 				let newArr = [];
-				for(let i = 0 ; i < arr.length ; i++){
-					if(arr[i].enterStartTime){
+				for (let i = 0; i < arr.length; i++) {
+					if (arr[i].enterStartTime) {
 						newArr.push(arr[i].enterStartTime)
 					}
 				}
-				if(newArr.length <= 1){
+				if (newArr.length <= 1) {
 					return newArr[0];
 				}
 				return this.getComebSort(newArr);
@@ -991,31 +1063,31 @@
 			 * @param {Array}  arr 循环数组
 			 * @param {Boolen}  issort 是否倒序 
 			 * */
-			getComebSort(arr,issort = false) {
-			  var len = arr.length;
-			  for (var i = 0; i < len-1; i++) {
-			    for (var j = 0; j < len - 1 - i; j++) {
-			         if(issort){
-						 // 相邻元素两两对比，元素交换，大的元素交换到后面
-						 if (new Date(arr[j]).getTime() < new Date(arr[j + 1]).getTime()) {
-						     var temp = arr[j];
-						     arr[j] = arr[j+1];
-						     arr[j+1] = temp;
-						 }
-					 }else{
-						 if (new Date(arr[j]).getTime() > new Date(arr[j + 1]).getTime()) {
-						     var temp = arr[j];
-						     arr[j] = arr[j+1];
-						     arr[j+1] = temp;
-						 }
-					 }
-					
-			    }
-			  }
-			  return arr[0];
+			getComebSort(arr, issort = false) {
+				var len = arr.length;
+				for (var i = 0; i < len - 1; i++) {
+					for (var j = 0; j < len - 1 - i; j++) {
+						if (issort) {
+							// 相邻元素两两对比，元素交换，大的元素交换到后面
+							if (new Date(arr[j]).getTime() < new Date(arr[j + 1]).getTime()) {
+								var temp = arr[j];
+								arr[j] = arr[j + 1];
+								arr[j + 1] = temp;
+							}
+						} else {
+							if (new Date(arr[j]).getTime() > new Date(arr[j + 1]).getTime()) {
+								var temp = arr[j];
+								arr[j] = arr[j + 1];
+								arr[j + 1] = temp;
+							}
+						}
+
+					}
+				}
+				return arr[0];
 			},
-			
-			
+
+
 			// 计算班组工期 
 			getDateDiff(start, end) {
 				if (start && end) {
@@ -1064,7 +1136,12 @@
 					allToal += this.schemes[index].teams[i].totalQuantity;
 				}
 				this.schemes[index].totalUnit = allToal;
-				this.getTotal({index, inx, types_index, val})
+				this.getGroupTotal({
+					index,
+					inx,
+					types_index,
+					val
+				})
 			},
 			/** 当用户工种工期输入时 */
 			handleDuration(index, inx, types_index, val) {
@@ -1084,7 +1161,12 @@
 					this.schemes[index].teams[inx].enterDay = 0;
 					val.enterEndTime = "";
 				}
-				this.getTotal({index, inx, types_index, val});
+				this.getGroupTotal({
+					index,
+					inx,
+					types_index,
+					val
+				});
 			},
 			/** 计算工期 */
 			dateChange(num = 1, date = false) {
@@ -1242,7 +1324,7 @@
 				var that = this;
 				var geco = new BMap.Geocoder();
 				geco.getLocation(point, function(res) {
-					console.log('内容解析',res) //内容见下图
+					console.log('内容解析', res) //内容见下图
 					that.mk.setPosition(point) //重新设置标注的地理坐标
 					that.map.panTo(point) //将地图的中心点更改为给定的点
 					that.form.address = res.address; //记录该点的详细地址信息
@@ -1577,7 +1659,11 @@
 		.demand-service-plan-box-foot-item {
 			width: 50%;
 			margin-bottom: 20px;
-
+			.demand-service-plan-box-foot-item-server{
+				input{
+					width: 200px;
+				}
+			}
 			input {
 				width: 300px;
 			}
