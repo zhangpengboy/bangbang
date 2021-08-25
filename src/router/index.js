@@ -355,6 +355,34 @@ export const constantRoutes = [
 			meta: {
 				title: '角色管理'
 			}
+		}, {
+			path: 'typeWork',
+			component: () => import('@/views/System/typeWork'),
+			name: 'typeWork',
+			meta: {
+				title: '工种设置'
+			}
+		}, {
+			path: 'attendance',
+			component: () => import('@/views/System/attendance'),
+			name: 'attendance',
+			meta: {
+				title: '考勤范围设置'
+			}
+		}, {
+			path: 'selfIntroduce',
+			component: () => import('@/views/System/selfIntroduce'),
+			name: 'selfIntroduce',
+			meta: {
+				title: '自我介绍模板设置'
+			}
+		}, {
+			path: 'collection',
+			component: () => import('@/views/System/collection'),
+			name: 'collection',
+			meta: {
+				title: '收款信息设置'
+			}
 		}]
 	}
 ]
@@ -611,6 +639,34 @@ export const asyncRoutes = [{
 			name: 'Role',
 			meta: {
 				title: '角色管理'
+			}
+		}, {
+			path: 'typeWork',
+			component: () => import('@/views/System/typeWork'),
+			name: 'typeWork',
+			meta: {
+				title: '工种设置'
+			}
+		}, {
+			path: 'attendance',
+			component: () => import('@/views/System/attendance'),
+			name: 'attendance',
+			meta: {
+				title: '考勤范围设置'
+			}
+		}, {
+			path: 'selfIntroduce',
+			component: () => import('@/views/System/selfIntroduce'),
+			name: 'selfIntroduce',
+			meta: {
+				title: '自我介绍模板设置'
+			}
+		}, {
+			path: 'collection',
+			component: () => import('@/views/System/collection'),
+			name: 'collection',
+			meta: {
+				title: '收款信息设置'
 			}
 		}]
 	}

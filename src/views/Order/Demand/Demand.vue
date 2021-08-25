@@ -21,7 +21,7 @@
 					</div>
 				</div>
 				<div class="top-content-btn">
-					<el-button type="primary">查询</el-button>
+					<el-button type="primary"查询</el-button>
 					<el-button>重置</el-button>
 				</div>
 			</div>

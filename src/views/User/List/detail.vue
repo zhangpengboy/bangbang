@@ -73,7 +73,7 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">实名认证</p>
-                <input  class="desc flex1 col666" type="" name="" disabled :value="realNameInfo.realNameAuth" />
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth?'已实名':'未实名'" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
@@ -280,29 +280,35 @@
           <div class="mt10 flex alCen">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action=""
+              list-type="picture-card"
               :file-list="workPhotoList"
-              :on-success="handleAvatarSuccess3"
+              :on-success="workPhotoSuccess"
               :on-remove="handleRemove3"
             >
-              <img v-if="imageUr3" :src="imageUr3" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
+              <i class="el-icon-plus" />
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible3">
+              <img width="100%" :src="imageUr3" alt="">
+            </el-dialog>
           </div>
 
-          <div class="box-demand-title mt30">我的证书</div>
+         <div class="box-demand-title mt30">我的证书</div>
           <div class="box-demand-title mt20">我的证书介绍</div>
           <div class="mt10 flex alCen">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action=""
               :file-list="zhenshuPhotoList"
+              list-type="picture-card"
               :on-success="handleAvatarSuccess4"
               :on-remove="handleRemove4"
             >
-              <img v-if="imageUr4" :src="imageUr4" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
+              <i class="el-icon-plus" />
             </el-upload>
+            <el-dialog :visible.sync="dialogVisible4">
+              <img width="100%" :src="imageUr4" alt="">
+            </el-dialog>
           </div>
 
         </el-row>
@@ -363,9 +369,12 @@
 <script>
 import {
     queryById,
+    gongrenQueryById,
     updateInfo,
+    gongrenupdateInfo,
     uploadIdCard,
     realNameAuth,
+    gongRenRealNameAuth,
     bizCard
 } from '../../../api/user.js'
 import { regionData, CodeToText } from "element-china-area-data";
@@ -379,8 +388,10 @@ export default {
       isEditUserInfo: false, // 个人名片
       workPhotoList: [], // 工作成果照片
       imageUr3: '',
+      dialogVisible3:false,
       zhenshuPhotoList: [], // 证书
       imageUr4: '',
+      dialogVisible4:false,
       projectName: '', // 项目名称
       joinProStatus: 0,
       workScore:3.4,
@@ -392,14 +403,21 @@ export default {
       bizCardInfo:{}, //名片信息
 
       options: regionData,
-      selectedOptions: []
+      selectedOptions: [],
+
 
     }
   },
   mounted() {
     var userInfo = this.$route.query;
     this.userIdOrType = userInfo
-    this.loadDate(userInfo)
+    // 这里用户列表进来是1,工人列表进来是2
+    if(userInfo.joinType==1){
+
+    }else{
+
+    }
+    this.loadDate()
   },
   methods: {
     // 添加期望地
@@ -410,8 +428,16 @@ export default {
       }
       console.log(loc);
     },
-    loadDate(userInfo){
-      console.log(userInfo);
+    loadDate(){
+      if(this.userIdOrType.joinType==1){ //用户列表
+        this.getUserDetail();
+      }else{  //工人列表
+        this.getGongrenDetail();
+      }
+
+    },
+    getUserDetail(){
+      var userInfo = this.userIdOrType;
       var params = {
         id:userInfo.id,
         userType: userInfo.userType
@@ -462,42 +488,138 @@ export default {
           certificateUrl:data.bizCard.certificateUrl
         }
         if(data.bizCard.workResultUrl){
-          this.workPhotoList = data.bizCard.workResultUrl.split(',')
+          var imgdata = data.bizCard.workResultUrl.split(',')
+          for(var i=0;i<imgdata.length;i++){
+             var obj = {};
+            obj.url = imgdata[i]
+            obj.name = 'img'+ i
+            imgdata[i] = obj
+          }
+          this.workPhotoList = imgdata
         }
         if(data.bizCard.certificateUrl){
-          this.zhenshuPhotoList = data.bizCard.certificateUrl.split(',')
+          var imgdata2 = data.bizCard.certificateUrl.split(',')
+          for(var i=0;i<imgdata2.length;i++){
+             var obj = {};
+            obj.url = imgdata2[i]
+            obj.name = 'img'+ i
+            imgdata2[i] = obj
+          }
+          this.workPhotoList = imgdata2
         }
 
 
       })
-
     },
+    getGongrenDetail(){
+      var userInfo = this.userIdOrType;
+      var params = {
+        id:userInfo.id
+      }
+      gongrenQueryById(params).then(res => {
+        var data = res.data
+        console.log('res', data)
+        this.userInfo = data
+        this.basicInfo = {
+          id:data.id,
+          headPortrait:data.headPortrait,
+          realName:data.realName,
+          phone:data.phone,
+          adr:data.address ,
+          userType:userInfo.userType==0?'企业端':userInfo.userType==1?'工人端':userInfo.userType==2?'管理端':'',
+          gender:data.gender==0?'男':'女',
+          grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
+          updateTime :data.updateTime
+        }
+        this.realNameInfo = {
+          realNameAuth : data.realNameAuth?'已实名':'未实名'
+        }
+        if(data.realNameAuthDTO){
+        this.realNameInfo = {
+          gender:data.realNameAuthDTO.gender==0?'男':'女',
+          age:data.realNameAuthDTO.age,
+          nativePlace:data.realNameAuthDTO.nativePlace,
+          realName:data.realNameAuthDTO.realName,
+          nation:data.realNameAuthDTO.nation,
+          idNo:data.realNameAuthDTO.idNo,
+          householdRegister:data.realNameAuthDTO.householdRegister,
+          idCardUri:data.realNameAuthDTO.idCardUri,
+          idCardReverseUri:data.realNameAuthDTO.idCardReverseUri
+        }
+
+        }
+        this.bizCardInfo = {
+          grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
+          workYears:data.bizCard.workYears,
+          behavioralScore:data.behavioralScore,
+          workType:data.bizCard.workType,
+          selfIntroduction:data.bizCard.selfIntroduction,
+          workStatus:data.bizCard.workStatus,
+          workDays:data.workDays,
+          expectedPlace:data.bizCard.expectedPlace,
+          workResultUrl:data.bizCard.workResultUrl,
+          certificateIntro:data.bizCard.certificateIntro,
+          certificateUrl:data.bizCard.certificateUrl
+        }
+        if(data.bizCard.workResultUrl){
+          var imgdata = data.bizCard.workResultUrl.split(',')
+          console.log(imgdata)
+          for(var i=0;i<imgdata.length;i++){
+             var obj = {};
+            obj.url = imgdata[i]
+            obj.name = 'img'+ i
+            imgdata[i] = obj
+          }
+          this.workPhotoList = imgdata
+        }
+        if(data.bizCard.certificateUrl){
+          var imgdata2 = data.bizCard.certificateUrl.split(',')
+          for(var i=0;i<imgdata2.length;i++){
+             var obj = {};
+            obj.url = imgdata2[i]
+            obj.name = 'img'+ i
+            imgdata2[i] = obj
+          }
+          this.workPhotoList = imgdata2
+        }
+
+      })
+    },
+
+
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var gender = 0;
-        if(this.basicInfo.gender=='男'){
-          gender = 0
-        }else{
-          gender = 1
-        }
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
-          gender:gender,
+          gender:this.basicInfo.gender=='男'?'0':'1',
           phone :this.basicInfo.phone,
           realName :this.basicInfo.realName
         }
-        updateInfo(params).then(res => {
-          var data = res.data
-          console.log(res)
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
+        if(this.userIdOrType.joinType==1){ //用户进来的
+          updateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
           })
-          this.isEdit = true
-          this.loadDate(this.userIdOrType)
-        })
+        }else{  //工人进来的
+          gongrenupdateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
+          })
+        }
 
       }else{
         this.isEdit = false
@@ -530,16 +652,30 @@ export default {
          userId:this.userIdOrType.id,
          userType:this.userIdOrType.userType
        }
-       realNameAuth(params).then(res => {
-         var data = res.data
-         console.log(res)
-         this.isEditShM = true
-         this.$message({
-           type: 'success',
-           message: '操作成功!'
+       if(this.userIdOrType.joinType==1){ //用户进来的
+        realNameAuth(params).then(res => {
+          var data = res.data
+          console.log(res)
+          this.isEditShM = true
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.loadDate(this.userIdOrType)
+        })
+       }else{  //工人进来的
+         gongRenRealNameAuth(params).then(res => {
+           var data = res.data
+           console.log(res)
+           this.isEditShM = true
+           this.$message({
+             type: 'success',
+             message: '操作成功!'
+           })
+           this.loadDate(this.userIdOrType)
          })
-         this.loadDate(this.userIdOrType)
-       })
+       }
+
 
       }else{
         this.isEditShM = false
@@ -579,17 +715,19 @@ export default {
       console.log(file)
     },
 
-    handleAvatarSuccess3(res, file) {
-      this.imageUr3 = URL.createObjectURL(file.raw)
+    workPhotoSuccess(file) {
+      this.imageUr3 = file.url;
+      this.dialogVisible3 = true;
     },
-    handleRemove3(file, fileList) {
-      console.log(file, fileList)
+    handleRemove3(file) {
+      console.log(file)
     },
     handleAvatarSuccess4(res, file) {
       this.imageUr4 = URL.createObjectURL(file.raw)
+      this.dialogVisible4 = true;
     },
     handleRemove4(file, fileList) {
-      console.log(file, fileList)
+      console.log(file)
     },
     // 添加项目经验
     addWork() {

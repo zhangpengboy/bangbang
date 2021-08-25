@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" v-loading="loading">
 
     <!-- 头部  -->
     <div class="top">
@@ -82,12 +82,12 @@
     <div class="box">
       <div class="box-top flex fbetween fvertical">
         <div class="bold">数据列表</div>
-        <el-button>导出</el-button>
+        <el-button @click="exportTable">导出</el-button>
       </div>
 
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
-        <el-table-column prop="id" label="序号" width="60" />
+        <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="80" />
         <el-table-column prop="realName" label="名称" width="120"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
@@ -277,12 +277,14 @@ import {
     updateUserStatus,
     uploadIdCard,
     realNameAuth,
-    qiYeApply
+    qiYeApply,
+    exportCsvUser
 } from '../../../api/user.js'
 
 export default {
   data() {
     return {
+      loading: false,
       tableData: [{
         type: 0,
         name: '工人1'
@@ -297,10 +299,10 @@ export default {
       reamNameOptions: [
         {
           label: '未实名',
-          value: '1'
+          value: '0'
         }, {
           label: '已实名',
-          value: '2'
+          value: '1'
         }
       ], // 实名状态
       reamNamevalue: '', // 选中
@@ -444,6 +446,7 @@ export default {
        }
      },
     getUser() {
+      this.loading = true;
        var query = {
         id:this.serach,
         enterpriseAuthStatus: this.authvalue,
@@ -457,6 +460,7 @@ export default {
       getuserqueryPage(query).then(res => {
         var data = res.data
         console.log('res', data)
+        this.loading = false;
         this.PageCount = data.total
         this.tableData = data.list
       })
@@ -476,13 +480,44 @@ export default {
         this.PageIndex = 1;
         this.getUser()
     },
+    // 导出
+    exportTable(){
+      console.log('导出');
+      var query = {
+        id:this.serach,
+        enterpriseAuthStatus: this.authvalue,
+        grades: this.gradevalue.join(',') ,
+        pageNum: this.PageIndex,
+        pageSize: this.PageSize,
+        realNameAuth: this.reamNamevalue,
+        userStatus: this.statusvalue,
+        userType: this.loginvalue
+      }
+      console.log(query);
+      exportCsvUser(query).then(res => {
+        console.log(res)
+        var responseURL = res.responseURL;
+        window.open(responseURL,'_blank')
+      }).catch(res=>{
+        console.log(res)
+        this.$message({
+            message:'下载失败！',
+            type:'error',
+            showClose:true
+        })
+      })
+
+
+
+    },
+
     /** 查看，区分工人和企业跳转不同页面 */
     handleLook(row) {
       console.log(row.userType)
       if(row.userType==0){ //企业端
         this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id ,userType:row.userType ,joinType:1 }})
       }else if(row.userType==1){ //工人端
-         this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType }})
+         this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType,joinType:1 }})
       }
 
 

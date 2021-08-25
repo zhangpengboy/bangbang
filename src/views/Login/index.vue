@@ -101,7 +101,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: 'bnhl2021.',
+        password: 'bnhl0822.',
         userType: 2,
         appType: 2
       },
