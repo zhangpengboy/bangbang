@@ -433,6 +433,22 @@ export function removeCollection(params) {
   })
 }
 
+// 企业服务单列表
+export function getOrderlist(params) {
+  return request({
+    url: `/api/bill/v1.0/admin/order/list`,
+    method: 'get',
+    params
+  })
+}
+// 企业服务单列表详情
+export function getOrderdetail(params) {
+  return request({
+    url: `/api/bill/v1.0/admin/order/detail`,
+    method: 'get',
+    params
+  })
+}
 
 
 // 工种、考勤、自我介绍、收款信息结束--------------------
