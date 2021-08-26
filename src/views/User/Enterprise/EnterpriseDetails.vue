@@ -482,6 +482,8 @@ export default {
          userId:this.userIdOrType.id,
          userType:this.userIdOrType.userType
        }
+       // console.log(params)
+       // return;
        if(this.userIdOrType.joinType==1){
          realNameAuth(params).then(res => {
            var data = res.data
@@ -514,22 +516,24 @@ export default {
     },
     // 企业认证
     editQiY() {
-      // this.$message({
-      //   type: 'warning',
-      //   message: '暂无企业信息!'
-      // })
-      // return;
       if(this.isEditQiY==false){
+        var fileUris = [];
+        this.renZhengInfo.fileUris.forEach((item)=>{
+          fileUris.push(item.url)
+        })
+        // console.log(fileUris)
         var params = {
           businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
           enterpriseName:this.renZhengInfo.enterpriseName,
-          fileUris:this.renZhengInfo.fileUris.join(','),
+          fileUris:fileUris.join(','),
           legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
           operatorIdNo:this.renZhengInfo.operatorIdNo,
           operatorMobileNo:this.renZhengInfo.operatorMobileNo,
           operatorName:this.renZhengInfo.operatorName,
           userId:this.userInfo.id
         }
+        // console.log(params)
+        // return
         if(this.userIdOrType.joinType==1){  //用户
           qiYeApply(params).then(res => {
             console.log(res)
@@ -592,17 +596,22 @@ export default {
     },
 
 
-    qiyeUpsuccess(file) {
-      console.log(file);
+    qiyeUpsuccess(res,file) {
       var obj = {};
-      obj.url = file
-      obj.name = 'img'
-      this.renZhengInfo.fileUris.push(file);
-      this.qiyeDiaLog = false;
+      obj.url = res.data
+      obj.name = file.raw.uid
+      this.renZhengInfo.fileUris.push(obj);
+      console.log(this.renZhengInfo.fileUris)
     },
-    qiyeRemove(file) {
-      console.log(file)
-      this.renZhengInfo.fileUris.pop(file.response);
+    qiyeRemove(file,fileList) {
+      console.log(file.name)
+      for(var i=0;i<this.renZhengInfo.fileUris.length;i++){
+        if(this.renZhengInfo.fileUris[i].name==file.name){
+              this.renZhengInfo.fileUris.splice(i,1)
+            }
+      }
+      console.log(this.renZhengInfo.fileUris);
+
     },
 
     // 添加项目

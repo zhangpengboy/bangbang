@@ -177,14 +177,35 @@
                 </div>
                 <div class="item flex">
                   <p class="backgroud tit">工种</p>
-                  <p class="desc flex1 col666 flex alCen js-sb">
-                    <span v-for="item in bizCardInfo.workType">建筑木工</span>
-                    <el-button type="text" size="small" v-if="isEditUserInfo">添加工种</el-button>
-                  </p>
+                  <div class="desc flex1 col666 flex alCen">
+                    <div v-for="item in bizCardInfo.workType" style="margin-right: 20px;position: relative;">
+                      <p class="gongzhong">{{item.labelName}}</p>
+                      <img v-if="isEditUserInfo" @click="detGongZhong(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
+                    </div>
+                   <!-- <el-button type="text" size="small" v-if="isEditUserInfo" >添加工种</el-button> -->
+                      <el-select size="small" v-if="isEditUserInfo" v-model="gongZhvalue" placeholder="添加工种" @change="choseGongZhong">
+                        <el-option
+                          v-for="item in gongZhoptions"
+                          :key="item.id"
+                          :label="item.labelName"
+                          :value="item.id">
+                        </el-option>
+                      </el-select>
+
+                  </div>
                 </div>
                 <div class="item flex">
                   <p class="backgroud tit">自我介绍</p>
-                  <p class="desc flex1 col666">{{basicInfo.selfIntroduction}}</p>
+                  <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p>
+                  <el-select  v-if="isEditUserInfo" v-model="bizCardInfo.selfIntroduction" placeholder="请选择"  @change="chosebiref">
+                     <el-option
+                        v-for="item in productQuestions"
+                        :key="item.id"
+                        :label="item.content"
+                        :value="item.id">
+                      </el-option>
+                  </el-select>
+
                 </div>
               </div>
             </el-col>
@@ -194,7 +215,7 @@
                   <p class="backgroud tit">状态</p>
                   <p class="desc flex1 col666 flex alCen js-sb">
                     <span>{{bizCardInfo.workStatus==1?'工作中':'找工中'}}</span>
-                    <el-button type="text" size="small" v-if="isEditUserInfo">切换状态</el-button>
+                    <el-button type="text" size="small" v-if="isEditUserInfo" @click="changeStatus">切换状态</el-button>
                   </p>
                 </div>
                 <div class="item flex">
@@ -215,27 +236,28 @@
                 </div>
                 <div class="item flex">
                   <p class="backgroud tit">期望工作地</p>
-                  <p class="desc flex1 col666 flex alCen js-sb">
-                    <span v-for="item in bizCardInfo.expectedPlace">广州天河</span>
+                  <div class="desc flex1 col666 flex alCen">
+                    <div v-for="item in bizCardInfo.expectedPlace" style="margin-right: 20px;position: relative;">
+                      <p class="gongzhong">{{item.labelName}}</p>
+                      <img v-if="isEditUserInfo" @click="detAdr(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
+                    </div>
                     <el-cascader
                       v-if="isEditUserInfo"
-                      size="large"
+                      size="small"
                       placeholder="添加工作地"
-                      :options="options"
+                      :options="adrOptions"
                       v-model="selectedOptions"
                       @change="handleChange"
                     >
                     </el-cascader>
 
-
-                    <!-- <el-button type="text" size="small" >添加工作地</el-button> -->
-                  </p>
+                  </div>
                 </div>
               </div>
             </el-col>
           </div>
 
-          <!-- <div class="alCen js-sb flex">
+          <div class="alCen js-sb flex">
             <div class="box-demand-title">项目经验</div>
             <el-button type="primary" @click="addWork">添加</el-button>
           </div>
@@ -274,13 +296,14 @@
                 <p class="col333 mt10">服务评价sdvsdg fsg森岛帆高收到符带饭的符的辅导费的罚单</p>
               </div>
             </div>
-          </div> -->
+          </div>
 
           <div class="box-demand-title mt30">工作成果照片展示</div>
           <div class="mt10 flex alCen">
             <el-upload
+              name="multipartFile"
               class="avatar-uploader"
-              action=""
+              :action="adminUrl"
               list-type="picture-card"
               :file-list="workPhotoList"
               :on-success="workPhotoSuccess"
@@ -294,11 +317,13 @@
           </div>
 
          <div class="box-demand-title mt30">我的证书</div>
-          <div class="box-demand-title mt20">我的证书介绍</div>
+          <textarea v-if="isEditUserInfo" class="mt20" v-model="bizCardInfo.certificateIntro" rows="10"  cols="80"></textarea>
+          <div v-else class="box-demand-title mt20">{{bizCardInfo.certificateIntro}}</div>
           <div class="mt10 flex alCen">
             <el-upload
+              name="multipartFile"
               class="avatar-uploader"
-              action=""
+              :action="adminUrl"
               :file-list="zhenshuPhotoList"
               list-type="picture-card"
               :on-success="handleAvatarSuccess4"
@@ -375,7 +400,14 @@ import {
     uploadIdCard,
     realNameAuth,
     gongRenRealNameAuth,
-    bizCard
+    bizCard,
+    workerBizCard,
+    getgongzhong,
+    workCardAdd,
+    getbiref,
+    workCardAddGongRen,
+    workCardRemove,
+    workCardRemoveGongRen
 } from '../../../api/user.js'
 import { regionData, CodeToText } from "element-china-area-data";
 
@@ -396,14 +428,19 @@ export default {
       joinProStatus: 0,
       workScore:3.4,
 
-      userIdOrType:'', //用户id和type
+      userIdOrType:'', //用户id和joinType,用户列表进来是1,工人列表进来是2
       userInfo:{}, //用户信息
       basicInfo:{}, //基本信息
       realNameInfo:{}, //实名信息
       bizCardInfo:{}, //名片信息
 
-      options: regionData,
+      adrOptions: regionData,
       selectedOptions: [],
+
+      gongZhoptions: [],
+      gongZhvalue: '',
+      productQuestions:[],
+      adminUrl: '/api/commons/file/admin/v1/upload/public',
 
 
     }
@@ -418,15 +455,67 @@ export default {
 
     }
     this.loadDate()
+    this.loadGongZh();
+    this.loadBiref();
   },
   methods: {
+    // 获取工种
+    loadGongZh(){
+      var params = {}
+      getgongzhong(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          this.gongZhoptions = res.data
+        }
+      })
+    },
+    // 获取自我介绍
+    loadBiref(){
+      var params = {
+        pageSize:20,
+        pageNum:1,
+        status:1
+      }
+      getbiref(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          this.productQuestions = res.data.list
+        }
+      })
+    },
     // 添加期望地
     handleChange() {
       var loc = "";
+      var code = 0;
       for (let i = 0; i < this.selectedOptions.length; i++) {
+        code = this.selectedOptions[i]
         loc += CodeToText[this.selectedOptions[i]];
       }
       console.log(loc);
+      console.log(code);
+      var params = {
+        labelId:code,
+        labelName:loc,
+        labelType:1,
+        userBusinessCardId:this.bizCardInfo.id
+      }
+      if(this.userIdOrType.joinType==1){ //用户列表
+        workCardAdd(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.loadDate()
+          }
+        })
+      }else{  //工人列表
+        workCardAddGongRen(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.loadDate()
+          }
+        })
+      }
+
+
     },
     loadDate(){
       if(this.userIdOrType.joinType==1){ //用户列表
@@ -475,6 +564,7 @@ export default {
 
         }
         this.bizCardInfo = {
+          id:data.bizCard.id,
           grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
           workYears:data.bizCard.workYears,
           behavioralScore:data.behavioralScore,
@@ -490,7 +580,7 @@ export default {
         if(data.bizCard.workResultUrl){
           var imgdata = data.bizCard.workResultUrl.split(',')
           for(var i=0;i<imgdata.length;i++){
-             var obj = {};
+            var obj = {};
             obj.url = imgdata[i]
             obj.name = 'img'+ i
             imgdata[i] = obj
@@ -505,7 +595,7 @@ export default {
             obj.name = 'img'+ i
             imgdata2[i] = obj
           }
-          this.workPhotoList = imgdata2
+          this.certificateUrl = imgdata2
         }
 
 
@@ -549,6 +639,7 @@ export default {
 
         }
         this.bizCardInfo = {
+          id:data.bizCard.id,
           grade:data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':'',
           workYears:data.bizCard.workYears,
           behavioralScore:data.behavioralScore,
@@ -580,7 +671,7 @@ export default {
             obj.name = 'img'+ i
             imgdata2[i] = obj
           }
-          this.workPhotoList = imgdata2
+          this.certificateUrl = imgdata2
         }
 
       })
@@ -641,10 +732,10 @@ export default {
          age:this.realNameInfo.age,
          gender:gender,
          householdRegister:this.realNameInfo.householdRegister,
-         // idCardReverseUri:this.realNameInfo.idCardReverseUri,
-         // idCardUri:this.realNameInfo.idCardUri,
-         idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-         idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardReverseUri:this.realNameInfo.idCardReverseUri?this.realNameInfo.idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardUri:this.realNameInfo.idCardUri?this.realNameInfo.idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         // idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         // idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
          idNo:this.realNameInfo.idNo,
          nation:this.realNameInfo.nation,
          nativePlace:this.realNameInfo.nativePlace,
@@ -683,9 +774,7 @@ export default {
 
     },
 
-    editUserInfo() {
-      this.isEditUserInfo = !this.isEditUserInfo
-    },
+
     // 身份证正反面
     beforeUpload (file) {
        console.log(file)
@@ -715,19 +804,40 @@ export default {
       console.log(file)
     },
 
-    workPhotoSuccess(file) {
-      this.imageUr3 = file.url;
-      this.dialogVisible3 = true;
+    workPhotoSuccess(res,file) {
+      var obj = {};
+      obj.url = res.data
+      obj.name = file.raw.uid
+      this.workPhotoList.push(obj)
+      // this.dialogVisible3 = true;
+      console.log(this.workPhotoList);
     },
-    handleRemove3(file) {
-      console.log(file)
+    handleRemove3(file,fileList) {
+      console.log(file.name)
+      for(var i=0;i<this.workPhotoList.length;i++){
+        if(this.workPhotoList[i].name==file.name){
+              this.workPhotoList.splice(i,1)
+            }
+      }
+      console.log(this.workPhotoList);
+
     },
     handleAvatarSuccess4(res, file) {
-      this.imageUr4 = URL.createObjectURL(file.raw)
-      this.dialogVisible4 = true;
+      var obj = {};
+      obj.url = res.data
+      obj.name = file.raw.uid
+      this.zhenshuPhotoList.push(obj)
+      // this.dialogVisible3 = true;
+      console.log(this.zhenshuPhotoList);
     },
     handleRemove4(file, fileList) {
-      console.log(file)
+      console.log(file.name)
+      for(var i=0;i<this.zhenshuPhotoList.length;i++){
+        if(this.zhenshuPhotoList[i].name==file.name){
+              this.zhenshuPhotoList.splice(i,1)
+            }
+      }
+      console.log(this.zhenshuPhotoList);
     },
     // 添加项目经验
     addWork() {
@@ -746,7 +856,155 @@ export default {
     // 选择项目状态
     choseProSta(e) {
       this.joinProStatus = e
+    },
+    // 名片
+    // 编辑
+    editUserInfo() {
+
+
+      if(this.isEditUserInfo){
+        var zhenshuPhotoList = [];
+        this.zhenshuPhotoList.forEach((item)=>{
+          zhenshuPhotoList.push(item.url)
+        })
+        console.log(zhenshuPhotoList)
+        var workPhotoList = [];
+        this.workPhotoList.forEach((item)=>{
+          workPhotoList.push(item.url)
+        })
+        console.log(workPhotoList)
+
+        var params = {
+          certificateIntro:this.bizCardInfo.certificateIntro,
+          certificateUrl:zhenshuPhotoList.join(','),
+          selfIntroduction:this.bizCardInfo.selfIntroduction,
+          userId:this.userInfo.id,
+          workResultUrl:workPhotoList.join(','),
+          workStatus:this.bizCardInfo.workStatus
+        }
+        if(this.userIdOrType.joinType==1){ //用户列表
+          bizCard(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+              this.isEditUserInfo = false
+            }
+          })
+        }else{  //工人列表
+          workerBizCard(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+              this.isEditUserInfo = false
+            }
+          })
+        }
+
+
+      }else{
+          this.isEditUserInfo = true
+      }
+
+    },
+    // 修改工作状态
+    changeStatus(){
+      if(this.bizCardInfo.workStatus){
+        this.bizCardInfo.workStatus = 0
+      }else{
+        this.bizCardInfo.workStatus = 1
+      }
+    },
+    // 添加工种
+    choseGongZhong(id){
+      var item = {}
+      for(var val of this.gongZhoptions){
+        if(val.id==id){
+          item = val
+        }
+      }
+      console.log(item)
+      var params = {
+        labelId:item.id,
+        labelName:item.labelName,
+        labelType:0,
+        userBusinessCardId:this.bizCardInfo.id
+      }
+      if(this.userIdOrType.joinType==1){ //用户列表
+        workCardAdd(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.loadDate()
+          }
+        })
+      }else{  //工人列表
+        workCardAddGongRen(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.loadDate()
+          }
+        })
+      }
+
+    },
+    // 删除工种
+    detGongZhong(item){
+      console.log(item)
+      var params = {
+        id:item.id
+      }
+      if(this.userIdOrType.joinType==1){ //用户进来的
+        workCardRemove(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+            }
+          })
+      }else{//工人进来的
+        workCardRemoveGongRen(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+            }
+          })
+      }
+      
+
+    },
+    // 删除工作地
+    detAdr(item){
+      console.log(item)
+      var params = {
+        id:item.id
+      }
+      if(this.userIdOrType.joinType==1){ //用户进来的
+        workCardRemove(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+            }
+          })
+      }else{//工人进来的
+        workCardRemoveGongRen(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.loadDate()
+            }
+          })
+      }
+      
+    },
+    // 选择自我介绍
+    chosebiref(id){
+      var item = {}
+      for(var val of this.productQuestions){
+        if(val.id==id){
+          item = val
+        }
+      }
+      console.log(item)
+      this.basicInfo.selfIntroduction = item.content
     }
+
 
   }
 }
@@ -811,6 +1069,17 @@ export default {
         padding: 0 10px;
         box-sizing: border-box;
         border: none;
+        .gongzhong{
+
+        }
+        .iconDet{
+          position: absolute;
+          top:7px;
+          right: -5px;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+        }
       }
     }
 

@@ -72,7 +72,7 @@ export function UpdateBriel(data) {
 }
 /**
  * 添加订单
- * @param {type} data 
+ * @param {type} data
  */
 export function AddOrder(data) {
 	return request({
@@ -112,7 +112,7 @@ export function getOrderDetail(id){
 /**
  * 充值审核列表
  * @param {String} keywords 搜索内容
- * @param {Number} status 充值状态 
+ * @param {Number} status 充值状态
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
  */
@@ -127,7 +127,7 @@ export function getBriefPay(params){
 /**
  * 修改充值状态
  * @param {Number} id 要修改的字段
- * @param {String} reason 拒绝理由 
+ * @param {String} reason 拒绝理由
  * @param {Number} status 状态 0->等待到账,1->到账成功，2->拒绝
  */
 export function getUpdateStatus(data){
@@ -141,7 +141,7 @@ export function getUpdateStatus(data){
 /**
  * 修改充值金额
  * @param {Number} id 要修改的字段
- * @param {String} fee 修改金额 
+ * @param {String} fee 修改金额
  */
 export function getUpdateFee(data){
 	return request({
@@ -275,6 +275,14 @@ export function gongRenRealNameAuth(data) {
 export function bizCard(data) {
   return request({
     url: `/api/user/admin/common/v1.0/worker/update/bizCard`,
+    method: 'post',
+    data
+  })
+}
+// 修改工人名片 --工人
+export function workerBizCard(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/worker/update/bizCard`,
     method: 'post',
     data
   })
@@ -500,10 +508,28 @@ export function removeCollection(params) {
   })
 }
 
+// 查询工种所有
+export function getgongzhong(params) {
+  return request({
+    url: `/api/commons/worker/commonsLabel/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+
 // 企业服务单列表
 export function getOrderlist(params) {
   return request({
     url: `/api/bill/v1.0/admin/order/list`,
+    method: 'get',
+    params
+  })
+}
+
+// 查询自我介绍
+export function getbiref(params) {
+  return request({
+    url: `/api/commons/worker/selfIntroTemplate/v1.0/page`,
     method: 'get',
     params
   })
@@ -517,5 +543,38 @@ export function getOrderdetail(params) {
   })
 }
 
-
 // 工种、考勤、自我介绍、收款信息结束--------------------
+
+
+// 添加工作名片---用户
+export function workCardAdd(data) {
+  return request({
+    url: `/api/user/admin/common/v1.0/workCard/label/add`,
+    method: 'post',
+    data
+  })
+}
+// 添加工作名片---工人
+export function workCardAddGongRen(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/workCard/label/add`,
+    method: 'post',
+    data
+  })
+}
+// 删除工作名片---用户
+export function workCardRemove(data) {
+  return request({
+    url: `/api/user/admin/common/v1.0/workCard/label/remove`,
+    method: 'post',
+    data
+  })
+}
+// 删除工作名片---工人
+export function workCardRemoveGongRen(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/workCard/label/remove`,
+    method: 'post',
+    data
+  })
+}
