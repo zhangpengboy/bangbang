@@ -50,10 +50,10 @@ export function gongRenQueryPage(params) {
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
  */
-export function getBriel(data) {
+export function getBriel(params) {
 	return request({
-		url: `/api/v1.0/admin/brief`,
-		data
+		url: `/api/bill/v1.0/admin/brief`,
+		params
 	})
 }
 
@@ -65,12 +65,94 @@ export function getBriel(data) {
  */
 export function UpdateBriel(data) {
 	return request({
-		url: `/api/v1.0/admin/brief/update`,
+		url: `/api/bill/v1.0/admin/brief/update`,
+		method: 'post',
+		data
+	})
+}
+/**
+ * 添加订单
+ * @param {type} data
+ */
+export function AddOrder(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/order`,
+		// url: `/api/v1.0/admin/order`,
 		method: 'post',
 		data
 	})
 }
 
+/**
+ * 查看需求单详情
+ */
+export function getBriefDetail(id){
+	return request({
+		// url: `/api/v1.0/admin/brief/detail`,
+		url: `/api/bill/v1.0/admin/brief/detail`,
+		params:{
+			id
+		}
+	})
+}
+
+/**
+ * 查看服务单详情
+ */
+export function getOrderDetail(id){
+	return request({
+		// url: `/api/v1.0/admin/brief/detail`,
+		url: `/api/bill/v1.0/admin/order/detail`,
+		params:{
+			id
+		}
+	})
+}
+
+/**
+ * 充值审核列表
+ * @param {String} keywords 搜索内容
+ * @param {Number} status 充值状态
+ * @param {Number} pageIndex 当前页码数
+ * @param {Number} pageSize 页面大小
+ */
+export function getBriefPay(params){
+	return request({
+		// url: `/api/v1.0/admin/brief/detail`,
+		url: `/api/bill/v1.0/admin/brief/pay`,
+		params
+	})
+}
+
+/**
+ * 修改充值状态
+ * @param {Number} id 要修改的字段
+ * @param {String} reason 拒绝理由
+ * @param {Number} status 状态 0->等待到账,1->到账成功，2->拒绝
+ */
+export function getUpdateStatus(data){
+	return request({
+		url: `/api/bill/v1.0/admin/brief/pay/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 修改充值金额
+ * @param {Number} id 要修改的字段
+ * @param {String} fee 修改金额
+ */
+export function getUpdateFee(data){
+	return request({
+		url: `/api/bill/v1.0/admin/brief/pay/updateFee`,
+		method: 'post',
+		data
+	})
+}
+
+
+// /v1.0/admin/brief/detail
 
 /*** 公共上传文件 */
  // uploadPublicFile(){
@@ -424,10 +506,28 @@ export function getgongzhong(params) {
     params
   })
 }
+
+// 企业服务单列表
+export function getOrderlist(params) {
+  return request({
+    url: `/api/bill/v1.0/admin/order/list`,
+    method: 'get',
+    params
+  })
+}
+
 // 查询自我介绍
 export function getbiref(params) {
   return request({
     url: `/api/commons/worker/selfIntroTemplate/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 企业服务单列表详情
+export function getOrderdetail(params) {
+  return request({
+    url: `/api/bill/v1.0/admin/order/detail`,
     method: 'get',
     params
   })

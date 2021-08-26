@@ -220,14 +220,16 @@
             <div class="popIdCard flex alCen">
 
                 <el-upload
+                  name="multipartFile"
                   class="avatar-uploader"
                   list-type="picture-card"
-                  action="https://jsonplaceholder.typicode.com/posts/"
+                  :file-list="fileUris"
+                  :action="adminUrl"
                   :on-success="qiyeUp"
                   :on-remove="qiyeRemove"
                   limit:3
                 >
-                  <i class="el-icon-plus avatar-uploader-icon" />
+                  <i class="el-icon-plus" />
                 </el-upload>
                 <el-dialog :visible.sync="dialogVisible">
                   <img width="100%" :src="fileUris" alt="" />
@@ -383,7 +385,7 @@ export default {
       qyuserId:'',
       fileUris:[], //证件
       dialogVisible:false,
-
+      adminUrl: '/api/commons/file/admin/v1/upload/public',
 
     }
   },
@@ -607,25 +609,25 @@ export default {
       console.log(file)
     },
     // 企业图片
-      qiyeRemove(file) {
-        console.log(file.response);
+    qiyeRemove(file) {
+      console.log(file.response);
 
-      },
-      //图片上传数组
-      qiyeUp(file) {
-        console.log(file);
+    },
+    //图片上传数组
+    qiyeUp(file) {
+      console.log(file);
 
-        this.dialogVisible = false;
-      },
-     beforeUpload (file) {
-        console.log(file)
-        let data = new FormData()
-        data.append('multipartFile', file)
-        uploadIdCard(data).then(res => {
-          console.log(res)
+      this.dialogVisible = false;
+    },
+    beforeUpload (file) {
+      console.log(file)
+      let data = new FormData()
+      data.append('multipartFile', file)
+      uploadIdCard(data).then(res => {
+        console.log(res)
 
-        })
-        return false
+      })
+      return false
      },
      beforeUpload2(file) {
         console.log(file)

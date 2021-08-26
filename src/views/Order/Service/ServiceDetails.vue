@@ -457,6 +457,7 @@
 					total: 98400
 				}],
 				ruleForm: {},
+				orderId:null // 订单ID
 			}
 		},
 		watch: {
@@ -468,6 +469,9 @@
 				}
 
 			},
+		},
+		created(){
+		console.log(this.$route.query)	
 		},
 		methods: {
 			/** 选择分页 */
@@ -487,6 +491,13 @@
 					path: '/order/member-details'
 				})
 			},
+			getorderdetail(){
+				getOrderlist({id:this.orderId}).then(res => {
+				this.tableData = res.data.records
+				this.PageCount = res.data.total
+				this.loading = false;
+			})
+			}
 		}
 	}
 </script>

@@ -37,37 +37,49 @@
 		
 		<div class="box">
 			<!-- 表格  -->
-			<el-table :data="tableData" stripe style="width: 100%" border>
-				<el-table-column prop="date" label="序号" width="60">
+			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border>
+			 	<el-table-column
+				type="index"
+				width="50">
 				</el-table-column>
-				<el-table-column prop="name" label="ID" width="80">
+				<el-table-column prop="briefId" label="ID" width="200">
 				</el-table-column>
-				<el-table-column prop="address" label="项目名称">
+				<el-table-column prop="title" label="项目名称">
 				</el-table-column>
-				<el-table-column prop="address" label="已匹配人数">
+				<el-table-column prop="matchNum" label="已匹配人数">
 				</el-table-column>
-				<el-table-column prop="address" label="总人数">
+				<el-table-column prop="totalNum" label="总人数">
 				</el-table-column>
-				<el-table-column prop="address" label="已付金额">
+				<el-table-column prop="hadPay" label="已付金额">
 				</el-table-column>
-				<el-table-column prop="address" label="总金额">
+				<el-table-column prop="totalFee" label="总金额">
 				</el-table-column>
 				<el-table-column prop="address" label="需求单">
+					 <template slot-scope="scope">
+					<div style="color: #409EFF;text-align: center;">查看详情</div>
+					</template>
 				</el-table-column>
-				<el-table-column prop="address" label="余额预警状态">
+				<el-table-column prop="reviewStatus" label="查看工人信息">
+					<template slot-scope="scope">
+					<el-switch
+					v-model="scope.row.reviewStatus "
+					active-color="#13ce66"
+					inactive-color="#ff4949"
+					active-value="1"
+    				inactive-value="0">
+					</el-switch>
+					</template>
 				</el-table-column>
-				<el-table-column prop="address" label="查看工人信息">
+				<el-table-column prop="status" label="状态">
 				</el-table-column>
-				<el-table-column prop="address" label="状态">
-				</el-table-column>
-				<el-table-column prop="address" label="操作人">
+				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
 				<el-table-column prop="address" label="操作时间">
 				</el-table-column>
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">
 						<el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-						<el-button type="text" size="small">去招工</el-button>
+						<el-button type="text" size="small" @click='goRecruit(scope.row)'>去招工</el-button>
 						<el-button type="text" size="small">关闭</el-button>
 					</template>
 				</el-table-column>
@@ -90,6 +102,9 @@
 </template>
 
 <script>
+import {
+  	getOrderlist,
+} from '../../../api/user.js'
 	export default{
 		data(){
 			return{
@@ -101,25 +116,58 @@
 				statusList:[],
 				status:"", // 选中状态
 				value:"" ,// 选中
-				tableData:[{}] // 表格列表
+				tableData:[{}], // 表格列表
+				loading:""
 			}
+		},
+		created() {
+			this.getorder()
 		},
 		methods: {
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.PageSize = e;
 				this.PageIndex = 1;
-				// this.getPageingUser();
+				this.getorder()
 			},
 			/** 点击分页 */
 			handleCurrentChange(e) {
 				this.PageIndex = e;
-				// this.getPageingUser();
+				this.getorder()
 			},
 			/** 查看 */
 			handleClick(row){
-				this.$router.push({path:'/order/service-details'})
+				this.$router.push({
+					path:'/order/service-details',
+					query:{
+					id:row.id
+					}
+					})
 			},
+			// 订单列表接口
+			getorder(){
+				this.loading = true
+				getOrderlist({current:this.PageIndex,size:this.PageSize }).then(res => {
+					this.tableData = res.data.records
+					this.PageCount = res.data.total
+					this.loading = false;
+				})
+			},
+			// 去招工
+			goRecruit(row){
+			  this.$confirm('是否开启服务单至工人端招工', '提示', {
+				confirmButtonText: '确定',
+				cancelButtonText: '取消',
+				type: 'warning'
+				}).then(() => {
+				this.$message({
+					type: 'success',
+					message: '状态修改成功!'
+				});
+				})
+      
+    
+			}
 		}
 	}
 </script>
