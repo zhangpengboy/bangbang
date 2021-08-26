@@ -8,7 +8,7 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="creator" placeholder="ID/项目名称">
+						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch" placeholder="用户ID/账号">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -72,7 +72,7 @@
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">
 						<el-button @click="handleLook(scope.row)" type="text" size="small">查看</el-button>
-						<el-button type="text" size="small" @click="handleSumbitRelationship(scope.row)">确认联系
+						<el-button type="text" size="small"  @click="handleSumbitRelationship(scope.row)">{{scope.row.contactStatus == 0?'确认联系':'恢复未联系'}}
 						</el-button>
 						<el-button type="text" size="small" @click="handleCreate(scope.row)">创建服务单</el-button>
 						<el-button type="text" size="small">取消</el-button>
@@ -132,6 +132,11 @@
 				this.pageIndex = e;
 				this.getBriel();
 			},
+			// 搜索
+			handelSearch(){
+				this.pageIndex = 1;
+				this.getBriel();
+			},
 			/** 打开服务单 */
 			handleCreate(row) {
 				console.log(row);
@@ -162,7 +167,7 @@
 				let param = {}
 				param.id = data.id;
 				param.contactStatus = data.contactStatus;
-				param.status = data.status;
+				// param.status = data.status;
 				this.loading = true;
 				try{
 					let res = await UpdateBriel(param);
