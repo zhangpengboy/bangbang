@@ -151,6 +151,16 @@ export function getUpdateFee(data){
 	})
 }
 
+/*** 企业端修改工人查看状态 */
+export function getUpdateReviewStatus(data){
+	return request({
+		url: `/api/bill//v1.0/admin/order/updateReviewStatus`,
+		method: 'post',
+		data
+	})
+}
+
+
 
 // /v1.0/admin/brief/detail
 
