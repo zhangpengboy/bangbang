@@ -187,6 +187,14 @@ export function bizCard(data) {
     data
   })
 }
+// 修改工人名片 --工人
+export function workerBizCard(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/worker/update/bizCard`,
+    method: 'post',
+    data
+  })
+}
 
 // 修改企业端个人信息(企业名片也是这个接口)--用户
 export function userupdateInfo(data) {
@@ -408,6 +416,55 @@ export function removeCollection(params) {
   })
 }
 
-
+// 查询工种所有
+export function getgongzhong(params) {
+  return request({
+    url: `/api/commons/worker/commonsLabel/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
+// 查询自我介绍
+export function getbiref(params) {
+  return request({
+    url: `/api/commons/worker/selfIntroTemplate/v1.0/page`,
+    method: 'get',
+    params
+  })
+}
 
 // 工种、考勤、自我介绍、收款信息结束--------------------
+
+
+// 添加工作名片---用户
+export function workCardAdd(data) {
+  return request({
+    url: `/api/user/admin/common/v1.0/workCard/label/add`,
+    method: 'post',
+    data
+  })
+}
+// 添加工作名片---工人
+export function workCardAddGongRen(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/workCard/label/add`,
+    method: 'post',
+    data
+  })
+}
+// 删除工作名片---用户
+export function workCardRemove(data) {
+  return request({
+    url: `/api/user/admin/common/v1.0/workCard/label/remove`,
+    method: 'post',
+    data
+  })
+}
+// 删除工作名片---工人
+export function workCardRemoveGongRen(data) {
+  return request({
+    url: `/api/user/admin/worker/v1.0/workCard/label/remove`,
+    method: 'post',
+    data
+  })
+}
