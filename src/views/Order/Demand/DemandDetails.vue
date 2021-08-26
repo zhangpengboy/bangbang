@@ -595,7 +595,7 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
-	import {AddOrder,getBriefDetail} from '../../../api/user.js'
+	import {AddOrder,getBriefDetail,getOrderDetail} from '../../../api/user.js'
 	export default {
 		data() {
 			return {
@@ -756,14 +756,18 @@
 			console.log(id)
 			this.briefId = id;
 			this.getBriefDetail(id)
+			// this.getOrderDetail(id);
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
 
 		methods: {
+			// 查看服务单详情
+			async getOrderDetail(id){
+				let res = await getOrderDetail(id);
+				console.log('查看服务单详情',res);
+			},
 			// 查看需求单详情
 			async getBriefDetail(id){
-				
-				
 				this.loading = true;
 				try{
 					let res = await getBriefDetail(id);
