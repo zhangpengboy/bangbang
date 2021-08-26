@@ -120,7 +120,7 @@
 
 <script>
 	import {getBriefPay,getUpdateStatus,getUpdateFee} from '../../api/user.js'
-	 import moment from 'moment'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {

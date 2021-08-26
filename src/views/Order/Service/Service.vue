@@ -70,11 +70,21 @@
 					</el-switch>
 					</template>
 				</el-table-column>
-				<el-table-column prop="status" label="状态">
+				<el-table-column  label="状态">
+					<template slot-scope="scope">
+						<p v-if="scope.row.status == 1">未报名</p>
+						<p v-if="scope.row.status == 2">报名中</p>
+						<p v-if="scope.row.status == 3">进行中</p>
+						<p v-if="scope.row.status == 4">已结束</p>
+						<p v-if="scope.row.status == 5">已关闭</p>
+					</template>
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
-				<el-table-column prop="address" label="操作时间">
+				<el-table-column  label="操作时间">
+					<template slot-scope="scope">
+						{{formatDate(scope.row.updateTime)}}
+					</template>
 				</el-table-column>
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">
@@ -105,6 +115,7 @@
 import {
   	getOrderlist,
 } from '../../../api/user.js'
+import moment from 'moment'
 	export default{
 		data(){
 			return{
@@ -124,6 +135,9 @@ import {
 			this.getorder()
 		},
 		methods: {
+			formatDate(value) {
+			        return moment(value).format('YYYY-MM-DD')
+			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.PageSize = e;
@@ -155,6 +169,7 @@ import {
 			},
 			// 去招工
 			goRecruit(row){
+				console.log(row)
 			  this.$confirm('是否开启服务单至工人端招工', '提示', {
 				confirmButtonText: '确定',
 				cancelButtonText: '取消',
@@ -167,7 +182,8 @@ import {
 				})
       
     
-			}
+			},
+			getUpdateReviewStatus(){}
 		}
 	}
 </script>

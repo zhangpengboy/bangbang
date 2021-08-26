@@ -75,7 +75,7 @@
 						<el-button type="text" size="small"  @click="handleSumbitRelationship(scope.row)">{{scope.row.contactStatus == 0?'确认联系':'恢复未联系'}}
 						</el-button>
 						<el-button type="text" size="small" @click="handleCreate(scope.row)">创建服务单</el-button>
-						<el-button type="text" size="small">取消</el-button>
+						<el-button v-if="scope.row.status == 1 " type="text" size="small">取消</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
