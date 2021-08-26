@@ -85,7 +85,7 @@
 						<el-form-item label="项目介绍">
 							<el-input type="textarea" v-model="basicForm.description" :rows="4"></el-input>
 							<div class="demand-service-upload">
-								<el-upload class="avatar-uploader flex" action="/api/file/admin/v1/upload/public"
+								<el-upload class="avatar-uploader flex" action="/api/commons/file/admin/v1/upload/public"
 									list-type="picture-card" name="multipartFile" :on-remove="handleRemoveImg"
 									:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
 									:on-success="handleSuccessImg" :limit="4" :before-upload="beforeAvatarUpload">
@@ -289,7 +289,7 @@
 											<div class="demand-service-plan-box-list-item-box">
 												<el-form-item label="工种模式">
 													<!-- <el-input v-model="ruleForm.name"></el-input> -->
-													<el-select v-model="teamTypes.workType" placeholder="请选择"
+													<el-select v-model="teamTypes.workTypeVal" placeholder="请选择"
 														@change="handleTypeModel(index,inx,types_index,teamTypes)">
 														<template v-if="teamTypes.tag == '班组长'">
 															<el-option v-for="item in patternList" :key="item.value"
@@ -346,7 +346,7 @@
 
 										<!-- 管理  -->
 										<div class="demand-service-plan-box-list-item-type flex"
-											v-if="teamTypes.tag == '班组长'  && teamTypes.workType == '管理'">
+											v-if="teamTypes.tag == '班组长'  && teamTypes.workTypeVal == '管理'">
 											<!-- <div class="plan-box-btn"></div> -->
 											<el-form-item label="每日工时">
 												<div class="flex">
@@ -376,7 +376,7 @@
 
 										<!-- 普通工种  -->
 										<div class="demand-service-plan-box-list-item-type flex"
-											v-if="teamTypes.tag != '班组长'  && teamTypes.workType == '计件'">
+											v-if="teamTypes.tag != '班组长'  && teamTypes.workTypeVal == '计件'">
 											<!-- <div class="plan-box-btn"></div> -->
 											<el-form-item label="个人工程量">
 												<div class="flex">
@@ -406,7 +406,7 @@
 
 										<!-- 计件/班组长 -->
 										<div class="demand-service-plan-box-list-item-group flex fbetween"
-											v-if="teamTypes.tag == '班组长' && teamTypes.workType == '计件'  ">
+											v-if="teamTypes.tag == '班组长' && teamTypes.workTypeVal == '计件'  ">
 											<el-form-item label="个人工程量">
 												<div class="flex">
 													<el-input style="width: 150px;" v-model="teamTypes.personalQuantity"
@@ -443,7 +443,7 @@
 
 										<!-- 普通工种  -->
 										<div class="demand-service-plan-box-list-item-type flex"
-											v-if="teamTypes.workType == '计时'">
+											v-if="teamTypes.workTypeVal == '计时'">
 											<!-- <div class="plan-box-btn"></div> -->
 											<el-form-item label="每日工时">
 												<div class="flex">
@@ -595,10 +595,11 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
+	import {AddOrder} from '../../../api/user.js'
 	export default {
 		data() {
 			return {
-
+				briefId:0,
 				dialogImageUrl: "",
 				isImges: false, // 是否显示大图
 				isAddress: false, //显示添加地址
@@ -696,7 +697,7 @@
 							{
 								name: "电工", // 工种名称
 								tag: "", // 标签
-								workType: "", // 工种模式
+								workTypeVal: "", // 工种模式
 								enterStartTime: "", // 工种进场时间
 								enterEndTime: "", // 工种退场时间
 								enterDay: "", //工种工期
@@ -751,6 +752,7 @@
 		async mounted() {
 			let id = this.$route.query.id
 			console.log(id)
+			this.briefId = id;
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
 
@@ -777,8 +779,8 @@
 			},
 			// 工种模式
 			handleTypeModel(index, inx, type_index, val) {
-				let tag = val.tag;
-				let workType = val.workType;
+				let newWork = this.patternList.filter(item=>item.label == val.workTypeVal)
+				val.workType = newWork[0].value
 				val.personalQuantity = '';
 				val.number = '';
 				val.unitPrice = '';
@@ -817,14 +819,14 @@
 				let total = 0;
 				let totalNumber = 0;
 				for (let i = 0; i < teamTypes.length; i++) {
-					if (teamTypes[i].workType == '计时' && teamTypes[i].income && teamTypes[i].enterDay && teamTypes[i]
+					if (teamTypes[i].workTypeVal == '计时' && teamTypes[i].income && teamTypes[i].enterDay && teamTypes[i]
 						.number) {
 						total += teamTypes[i].income * teamTypes[i].enterDay * teamTypes[i].number;
 						if (teamTypes[i].tag == '班组长') {
 							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 						}
 					}
-					if (teamTypes[i].workType == '计件') {
+					if (teamTypes[i].workTypeVal == '计件') {
 						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.schemes[data.index].teams[data
 							.inx].unitPrice
 						if (teamTypes[i].tag == '班组长') {
@@ -832,7 +834,7 @@
 						}
 					}
 
-					if (teamTypes[i].workType == '管理') {
+					if (teamTypes[i].workTypeVal == '管理') {
 						total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 					}
 					totalNumber += Number(teamTypes[i].number);
@@ -853,20 +855,20 @@
 					// console.log(item.teamTypes)
 					item.teamTypes.forEach((data,inxx)=>{
 						console.log(data);
-						if (data.workType == '计时' && data.income && data.enterDay && data
+						if (data.workTypeVal == '计时' && data.income && data.enterDay && data
 							.number) {
 							total += data.income * data.enterDay * data.number;
 							if (data.tag == '班组长') {
 								total += data.enterDay * data.leaderFee * data.number;
 							}
 						}
-						if (data.workType == '计件') {
+						if (data.workTypeVal == '计件') {
 							total += data.number * data.personalQuantity * item.unitPrice
 							if (data.tag == '班组长') {
 								total += data.enterDay *data.leaderFee * data.number;
 							}
 						}
-						if (data.workType == '管理') {
+						if (data.workTypeVal == '管理') {
 							total += data.enterDay * data.leaderFee * data.number;
 						}
 					})
@@ -911,7 +913,7 @@
 						{
 							name: "电工", // 工种名称
 							tag: "", // 标签
-							workType: "", // 工种模式
+							workTypeVal: "", // 工种模式
 							enterStartTime: "", // 工种进场时间
 							enterEndTime: "", // 工种退场时间
 							enterDay: "", //工种工期
@@ -933,7 +935,7 @@
 				let param = {
 					name: "电工", // 工种名称
 					tag: "", // 标签
-					workType: "", // 工种模式
+					workTypeVal: "", // 工种模式
 					enterStartTime: "", // 工种进场时间
 					enterEndTime: "", // 工种退场时间
 					enterDay: "", //工种工期
@@ -1002,7 +1004,7 @@
 			// 获取当前工种标签
 			handleTag(index, inx, types_index, val) {
 				if (val.tag == '班组长') {
-					val.workType = '';
+					val.workTypeVal = '';
 				}
 				this.handleQuantity(index, inx, types_index, val)
 			},
@@ -1127,7 +1129,7 @@
 				let total = 0;
 				let allToal = 0;
 				for (let i = 0; i < teamTypes.length; i++) {
-					if (teamTypes[i].workType == '计件' && teamTypes[i].number > 0 && teamTypes[i].personalQuantity > 0) {
+					if (teamTypes[i].workTypeVal == '计件' && teamTypes[i].number > 0 && teamTypes[i].personalQuantity > 0) {
 						total += Number(teamTypes[i].number) * Number(teamTypes[i].personalQuantity)
 					}
 				}
@@ -1183,7 +1185,7 @@
 				return newDate.getFullYear() + '-' + month + '-' + day;
 			},
 			/** 提交服务单 */
-			handleAddSerice() {
+			async handleAddSerice() {
 				let param = {};
 				// 地区
 				param.address = this.allAddress.address ? this.allAddress.address : this.allAddress.city + this.allAddress
@@ -1192,6 +1194,22 @@
 				param.gpsLocation = this.allAddress.point.lng + ',' + this.allAddress.point.lat;
 				param.province = this.allAddress.province
 				param.region = this.allAddress.region // 地区
+				param.briefId  = this.briefId; // 需求单id
+				param.scope  = this.basicForm.scope;
+				param.description = this.basicForm.description;
+				param.title = this.basicForm.title;
+				param.schemes = this.schemes;
+				console.log(param);
+				let res = await AddOrder(param);
+				try{
+					console.log('成功')
+					console.log(res)
+				}catch(e){
+					console.log('-----失败')
+					console.log(e)
+					//TODO handle the exception
+				}
+				// console.log('this.basicForm:',this.basicForm)
 				// console.log(param)
 				// 总费用
 				// param.serviceFeeRate = this.serviceFeeRate;
@@ -1391,7 +1409,8 @@
 							{
 								name: "电工", // 工种名称
 								tag: "", // 标签
-								workType: "", // 工种模式
+								workTypeVal: "",  // 工种模式名称
+								workType:0, // 工种模式
 								enterStartTime: "", // 工种进场时间
 								enterEndTime: "", // 工种退场时间
 								enterDay: "", //工种工期

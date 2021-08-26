@@ -52,7 +52,7 @@ export function gongRenQueryPage(params) {
  */
 export function getBriel(data) {
 	return request({
-		url: `/api/v1.0/admin/brief`,
+		url: `/api/bill/v1.0/admin/brief`,
 		data
 	})
 }
@@ -70,7 +70,19 @@ export function UpdateBriel(data) {
 		data
 	})
 }
+/**
+ * 添加订单
+ * @param {type} data 
+ */
 
+export function AddOrder(data) {
+	return request({
+		// url: `/api/bill/v1.0/admin/order`,
+		url: `/api/v1.0/admin/order`,
+		method: 'post',
+		data
+	})
+}
 
 /*** 公共上传文件 */
  // uploadPublicFile(){
