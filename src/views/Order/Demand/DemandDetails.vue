@@ -1,12 +1,12 @@
 <template>
-	<div class="main">
+	<div class="main"   v-loading="loading">
 		<!-- tab按钮切换 -->
 		<el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
 			<el-radio-button label="top">需求单详情</el-radio-button>
 			<el-radio-button label="right">服务单</el-radio-button>
 		</el-radio-group>
 		<!-- tab按钮切换end -->
-		<div class="box">
+		<div class="box" >
 			<!-- 需求详情 -->
 			<div class="demand-deltails" v-if="tabPosition == 'top'">
 				<div class="box-demand-title">需求单信息</div>
@@ -15,23 +15,23 @@
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">状态</div>
-						<div class="demand-deltails-box-item-conter">正常</div>
+						<div class="demand-deltails-box-item-conter">{{info.status == 1?'正常':'已取消 '}}</div>
 					</div>
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">姓名</div>
-						<div class="demand-deltails-box-item-conter">张三</div>
+						<div class="demand-deltails-box-item-conter">{{info.createName }}</div>
 					</div>
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">联系方式</div>
-						<div class="demand-deltails-box-item-conter">18888888888</div>
+						<div class="demand-deltails-box-item-conter">{{info.phone}}</div>
 					</div>
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">语音</div>
 						<div class="demand-deltails-box-item-conter">
-							<m-audio class="demand-deltails-box-item-mp3" src="" text="点这里播放" v-for="(item,index) in 3">
+							<m-audio class="demand-deltails-box-item-mp3" :src="item" text="点这里播放" v-for="(item,index) in info.voices ">
 							</m-audio>
 
 						</div>
@@ -40,7 +40,7 @@
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">文字</div>
 						<div class="demand-deltails-box-item-conter">
-							需求内容...
+							{{info.content}}
 						</div>
 					</div>
 
@@ -318,7 +318,7 @@
 												<el-form-item label="工种进场时间">
 													<!-- <el-input v-model="ruleForm.name"></el-input> -->
 													<el-date-picker v-model="teamTypes.enterStartTime"
-														value-format="yyyy-MM-dd"
+														value-format="yyyy-MM-dd "
 														@change="handleStartTime(index,inx,types_index,teamTypes)"
 														type="date" placeholder="请设置进场时间">
 													</el-date-picker>
@@ -595,10 +595,12 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
-	import {AddOrder} from '../../../api/user.js'
+	import {AddOrder,getBriefDetail} from '../../../api/user.js'
 	export default {
 		data() {
 			return {
+				info:{},
+				loading:false, // 是否显示正在加载
 				briefId:0,
 				dialogImageUrl: "",
 				isImges: false, // 是否显示大图
@@ -608,7 +610,7 @@
 					label: '0'
 				}], // 方案列表
 				scheme: 0,
-				tabPosition: 'right',
+				tabPosition: 'top',
 				ruleForm: {},
 				rules: {},
 				scopeList: [], // 距离列表
@@ -753,10 +755,26 @@
 			let id = this.$route.query.id
 			console.log(id)
 			this.briefId = id;
+			this.getBriefDetail(id)
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
 
 		methods: {
+			// 查看需求单详情
+			async getBriefDetail(id){
+				
+				
+				this.loading = true;
+				try{
+					let res = await getBriefDetail(id);
+					this.loading = false;
+					console.log(res)
+					this.info = res.data;
+				}catch(e){
+					this.loading = false;
+					//TODO handle the exception
+				}
+			},
 			// 切换方案
 			handleRadio(item, index) {
 				this.scheme = index;

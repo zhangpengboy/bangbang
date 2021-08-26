@@ -74,15 +74,28 @@ export function UpdateBriel(data) {
  * 添加订单
  * @param {type} data 
  */
-
 export function AddOrder(data) {
 	return request({
-		// url: `/api/bill/v1.0/admin/order`,
-		url: `/api/v1.0/admin/order`,
+		url: `/api/bill/v1.0/admin/order`,
+		// url: `/api/v1.0/admin/order`,
 		method: 'post',
 		data
 	})
 }
+
+/**
+ * 查看需求单详情
+ */
+export function getBriefDetail(id){
+	return request({
+		// url: `/api/v1.0/admin/brief/detail`,
+		url: `/api/bill/v1.0/admin/brief/detail`,
+		params:{
+			id
+		}
+	})
+}
+// /v1.0/admin/brief/detail
 
 /*** 公共上传文件 */
  // uploadPublicFile(){
