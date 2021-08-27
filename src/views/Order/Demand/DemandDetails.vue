@@ -3,7 +3,7 @@
 		<!-- tab按钮切换 -->
 		<el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
 			<el-radio-button label="top">需求单详情</el-radio-button>
-			<el-radio-button label="right" v-if="info.orderId == 0">报价单</el-radio-button>
+			<el-radio-button label="right" >报价单</el-radio-button>
 		</el-radio-group>
 		<!-- tab按钮切换end -->
 		<div class="box" >
@@ -33,7 +33,6 @@
 						<div class="demand-deltails-box-item-conter">
 							<m-audio class="demand-deltails-box-item-mp3" :src="item" text="点这里播放" v-for="(item,index) in info.voices ">
 							</m-audio>
-
 						</div>
 					</div>
 
@@ -132,11 +131,6 @@
 				<div class="demand-service-plan">
 					<div class="box-demand-title flex fvertical">
 						<span>方案信息</span>
-						<!-- <el-radio-group class="demand-service-plan-gropu" v-model="scheme" @change="handleRadio">
-							<template v-for="(item,index) in schemeList">
-								<el-radio-button :label="item.label">{{item.name}}</el-radio-button>
-							</template>
-						</el-radio-group> -->
 						<div class="demand-service-plan-gropu flex">
 							<div class="demand-service-plan-gropu-item" :class="index==scheme?'active':''"
 								@click="handleRadio(item,index)" v-for="(item,index) in schemeList" :key="index">
@@ -309,8 +303,6 @@
 												</el-form-item>
 											</div>
 										</div>
-
-
 
 										<div class="flex fbetween">
 											<div class="demand-service-plan-box-list-item-box flex fvertical">
@@ -567,6 +559,8 @@
 				</div>
 			</div>
 			<!-- 服务单end -->
+		
+		
 		</div>
 
 		<el-dialog title="提示" :visible.sync="isAddress" width="800px" :before-close="handleClose">
@@ -1223,14 +1217,15 @@
 				param.schemes = this.schemes;
 				console.log(param);
 				let res = await AddOrder(param);
-				try{
-					console.log('成功')
-					console.log(res)
-				}catch(e){
-					console.log('-----失败')
-					console.log(e)
-					//TODO handle the exception
-				}
+				this.$message.success('添加成功');
+				// try{
+				// 	console.log('成功')
+				// 	console.log(res)
+				// }catch(e){
+				// 	console.log('-----失败')
+				// 	console.log(e)
+				// 	//TODO handle the exception
+				// }
 				// console.log('this.basicForm:',this.basicForm)
 				// console.log(param)
 				// 总费用
@@ -1520,8 +1515,6 @@
 
 
 	.demand-service {
-		// width: 900px;
-
 		.box-demand-title {
 			margin-bottom: 20px;
 		}
@@ -1566,191 +1559,216 @@
 				}
 			}
 		}
-	}
-
-
-	.demand-service-upload {
-		margin-top: 20px;
-
-		.avatar-uploader .el-upload {
+	
+		
+		.demand-service-upload {
+			margin-top: 20px;
+		
+			.avatar-uploader .el-upload {
+				border: 1px dashed #d9d9d9;
+				border-radius: 6px;
+				cursor: pointer;
+				position: relative;
+				overflow: hidden;
+			}
+		
+			.avatar-uploader .el-upload:hover {
+				border-color: #409EFF;
+			}
+		
+			.avatar-uploader-icon {
+				font-size: 28px;
+				color: #8c939d;
+				width: 80px;
+				height: 80px;
+				line-height: 80px;
+				text-align: center;
+			}
+		
+			.avatar {
+				width: 80px;
+				height: 80px;
+				display: block;
+			}
+		}
+		
+		.demand-service-plan-add {
 			border: 1px dashed #d9d9d9;
 			border-radius: 6px;
 			cursor: pointer;
 			position: relative;
 			overflow: hidden;
+			margin-left: 20px;
+		
+			.avatar-uploader-icon {
+				font-size: 28px;
+				color: #8c939d;
+				width: 40px;
+				height: 40px;
+				line-height: 40px;
+				text-align: center;
+			}
 		}
-
-		.avatar-uploader .el-upload:hover {
-			border-color: #409EFF;
+		
+		.demand-service-plan-box-info-data {
+			.el-form-item {
+				width: 33.33%;
+			}
 		}
-
-		.avatar-uploader-icon {
-			font-size: 28px;
-			color: #8c939d;
-			width: 80px;
-			height: 80px;
-			line-height: 80px;
-			text-align: center;
+		
+		.demand-service-plan-box-list-btn {
+		
+			.demand-service-plan-box-list-btn-add,
+			.demand-service-plan-box-list-btn-del {
+				width: 300px;
+				height: 50px;
+				line-height: 50px;
+				border: 1px dashed #d9d9d9;
+				text-align: center;
+				border-radius: 16px;
+				margin-right: 40px;
+				margin-bottom: 40px;
+				cursor: pointer;
+			}
+		
+			.demand-service-plan-box-list-btn-add {
+				color: #1682E6;
+			}
 		}
-
-		.avatar {
-			width: 80px;
-			height: 80px;
-			display: block;
+		
+		.demand-service-plan-box-list-item {
+			border-top: 1px dashed #d9d9d9;
+			margin: 0 20px;
+			padding: 20px 0;
 		}
-	}
-
-	.demand-service-plan-add {
-		border: 1px dashed #d9d9d9;
-		border-radius: 6px;
-		cursor: pointer;
-		position: relative;
-		overflow: hidden;
-		margin-left: 20px;
-
-		.avatar-uploader-icon {
-			font-size: 28px;
-			color: #8c939d;
-			width: 40px;
-			height: 40px;
-			line-height: 40px;
-			text-align: center;
-		}
-	}
-
-	.demand-service-plan-box-info-data {
-		.el-form-item {
+		
+		.demand-service-plan-box-list-item-box {
 			width: 33.33%;
+		
+			input {
+				width: 220px;
+			}
+		
+			.plan-box-btn {
+				position: relative;
+				// margin-right: 20px;
+				// margin-bottom: 20px;
+				// margin-left: 20px;
+				width: 56px;
+		
+				button {
+					position: absolute;
+					top: 50%;
+					left: 80%;
+					transform: translate(-50%, -80%);
+				}
+			}
 		}
-	}
-
-	.demand-service-plan-box-list-btn {
-
-		.demand-service-plan-box-list-btn-add,
-		.demand-service-plan-box-list-btn-del {
-			width: 300px;
+		
+		.demand-service-plan-box-list-item-type {
+			padding-left: 36px;
+		
+			.el-form-item {
+				width: 33.33%;
+			}
+		}
+		
+		.demand-service-plan-add-main {
+			width: 600px;
 			height: 50px;
 			line-height: 50px;
-			border: 1px dashed #d9d9d9;
+			color: #fff;
 			text-align: center;
+			background-color: rgba(0, 121, 254, 1);
 			border-radius: 16px;
-			margin-right: 40px;
-			margin-bottom: 40px;
+			margin: 0 auto 20px;
+		}
+		
+		
+		
+		.demand-service-plan-box-foot {
+			margin: 0 60px;
+		
+			.demand-service-plan-box-foot-item {
+				width: 50%;
+				margin-bottom: 20px;
+				.demand-service-plan-box-foot-item-server{
+					input{
+						width: 200px;
+					}
+				}
+				input {
+					width: 300px;
+				}
+		
+				span {
+					width: 100px;
+					margin-right: 10px;
+				}
+		
+				.demand-service-plan-box-foot-item-company {
+					margin-left: 20px;
+		
+					input {
+						width: 80px;
+					}
+				}
+			}
+		}
+		
+		
+		.demand-service-plan-box-foot-server-order {
+			width: 260px;
+			height: 40px;
+			line-height: 40px;
+			margin: 40px auto 20px;
+			color: #fff;
+			background-color: rgba(0, 121, 254, 1);
+			border-radius: 8px;
 			cursor: pointer;
 		}
-
-		.demand-service-plan-box-list-btn-add {
-			color: #1682E6;
-		}
-	}
-
-	.demand-service-plan-box-list-item {
-		border-top: 1px dashed #d9d9d9;
-		margin: 0 20px;
-		padding: 20px 0;
-	}
-
-	.demand-service-plan-box-list-item-box {
-		width: 33.33%;
-
-		input {
-			width: 220px;
-		}
-
-		.plan-box-btn {
-			position: relative;
-			// margin-right: 20px;
-			// margin-bottom: 20px;
-			// margin-left: 20px;
-			width: 56px;
-
-			button {
-				position: absolute;
-				top: 50%;
-				left: 80%;
-				transform: translate(-50%, -80%);
-			}
-		}
-	}
-
-	.demand-service-plan-box-list-item-type {
-		padding-left: 36px;
-
-		.el-form-item {
-			width: 33.33%;
-		}
-	}
-
-	.demand-service-plan-add-main {
-		width: 600px;
-		height: 50px;
-		line-height: 50px;
-		color: #fff;
-		text-align: center;
-		background-color: rgba(0, 121, 254, 1);
-		border-radius: 16px;
-		margin: 0 auto 20px;
-	}
-
-
-
-	.demand-service-plan-box-foot {
-		margin: 0 60px;
-
-		.demand-service-plan-box-foot-item {
-			width: 50%;
-			margin-bottom: 20px;
-			.demand-service-plan-box-foot-item-server{
-				input{
-					width: 200px;
-				}
-			}
-			input {
-				width: 300px;
-			}
-
-			span {
-				width: 100px;
-				margin-right: 10px;
-			}
-
-			.demand-service-plan-box-foot-item-company {
-				margin-left: 20px;
-
-				input {
-					width: 80px;
+		
+		
+		.demand-service-plan-gropu {
+			border-radius: 16rpx;
+			overflow: hidden;
+		
+			.demand-service-plan-gropu-item {
+				padding: 10px 20px;
+				font-size: 14px;
+				border-radius: 0;
+				border: 1px solid #DCDFE6;
+				background-color: #FFFFFF;
+				cursor: pointer;
+		
+				&.active {
+					color: #FFFFFF;
+					background-color: #1890ff;
+					border-color: #1890ff;
 				}
 			}
 		}
+		
+		
+	
 	}
 
-
-	.demand-service-plan-box-foot-server-order {
-		width: 260px;
-		height: 40px;
-		line-height: 40px;
-		margin: 40px auto 20px;
-		color: #fff;
-		background-color: rgba(0, 121, 254, 1);
-		border-radius: 8px;
-		cursor: pointer;
-	}
 
 	.autoAddressClass {
 		li {
 			i.el-icon-search {
 				margin-top: 11px;
 			}
-
+	
 			.mgr10 {
 				margin-right: 10px;
 			}
-
+	
 			.title {
 				text-overflow: ellipsis;
 				overflow: hidden;
 			}
-
+	
 			.address {
 				line-height: 1;
 				font-size: 12px;
@@ -1759,24 +1777,6 @@
 			}
 		}
 	}
-
-	.demand-service-plan-gropu {
-		border-radius: 16rpx;
-		overflow: hidden;
-
-		.demand-service-plan-gropu-item {
-			padding: 10px 20px;
-			font-size: 14px;
-			border-radius: 0;
-			border: 1px solid #DCDFE6;
-			background-color: #FFFFFF;
-			cursor: pointer;
-
-			&.active {
-				color: #FFFFFF;
-				background-color: #1890ff;
-				border-color: #1890ff;
-			}
-		}
-	}
+	
+	
 </style>

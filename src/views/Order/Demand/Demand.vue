@@ -74,7 +74,9 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-						{{scope.row.status == 1 ?'正常':'已取消'}}
+						<!-- {{scope.row.status == 1 ?'正常':'已取消'}} -->
+						<p v-if="scope.row.status == 1 || scope.row.status == 0">正常</p>
+						<p v-if="scope.row.status == 2">已取消</p>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" width="220">

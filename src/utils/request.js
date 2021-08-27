@@ -58,10 +58,7 @@ service.interceptors.response.use(
 			// store.dispatch('user/resetToken').then(() => {
 			// 	location.reload()
 			// })
-		} else if (response.status == 200) {
-      // console.log(response)
-			return response.request;
-		} else {
+		}else {
 			  Message({
 			    message: res.msg || 'Error',
 			    type: 'error',
