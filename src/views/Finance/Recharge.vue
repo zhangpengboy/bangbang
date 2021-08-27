@@ -320,13 +320,4 @@
 		}
 
 	}
-
-	
-	.table-img{
-		width: 40px;
-		height: 40px;
-		margin-right: 10px;
-		margin-bottom: 10px;
-		// background-color: #F44336;
-	}
 </style>

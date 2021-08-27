@@ -3,7 +3,7 @@
 		<!-- tab按钮切换 -->
 		<el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
 			<el-radio-button label="top">需求单详情</el-radio-button>
-			<el-radio-button label="right">服务单</el-radio-button>
+			<el-radio-button label="right" v-if="info.orderId == 0">报价单</el-radio-button>
 		</el-radio-group>
 		<!-- tab按钮切换end -->
 		<div class="box" >
@@ -47,7 +47,7 @@
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">关联服务单</div>
 						<div class="demand-deltails-box-item-conter">
-							<el-button type="text">查看详情</el-button>
+							<el-button type="text">{{info.order?'已创建':''}}</el-button>
 						</div>
 					</div>
 				</div>

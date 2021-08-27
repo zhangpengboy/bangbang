@@ -38,7 +38,7 @@
 			<el-table :data="tableData" stripe style="width: 100%" border>
 				<el-table-column prop="date" label="序号" width="60">
 					<template slot-scope="scope">
-						{{pageSzie * (pageIndex -1) +1 + scope.$index}}
+						{{pageSize * (pageIndex -1) +1 + scope.$index}}
 					</template>
 				</el-table-column>
 				<el-table-column prop="id" label="ID" width="200">
@@ -62,7 +62,15 @@
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
+				<el-table-column  label="创建时间">
+					<template slot-scope="scope">
+						<span>{{formatDate(scope.row.createTime)}}</span>
+					</template>
+				</el-table-column>
 				<el-table-column prop="updateTime" label="操作时间">
+					<template slot-scope="scope">
+						<span>{{formatDate(scope.row.updateTime)}}</span>
+					</template>
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
@@ -85,7 +93,7 @@
 			<div class="flex fcenter page">
 				<el-pagination class="page" id="page" background @size-change="handleSizeChange"
 					@current-change="handleCurrentChange" :current-page="pageIndex" :page-sizes="[10, 20, 30, 40]"
-					:page-size="pageSzie" layout="total, prev, pager, next,sizes, jumper" :total="PageCount">
+					:page-size="pageSize" layout="total, prev, pager, next,sizes, jumper" :total="PageCount">
 				</el-pagination>
 			</div>
 			<!-- 分页end -->
@@ -98,12 +106,13 @@
 	import {
 		getBriel,UpdateBriel
 	} from '../../../api/user.js'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
 				tableData: [], // 表单列表
 				pageIndex: 1, // 页码
-				pageSzie: 10, // 显示多少条数据
+				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				serach: "", // 搜索
 				value: "", // 选中
@@ -117,13 +126,16 @@
 			this.getBriel();
 		},
 		methods: {
+			formatDate(value) {
+				return moment(value).format('YYYY-MM-DD')
+			},
 			/** 查看 */
 			handleLook() {
 				console.log('执行111')
 			},
 			/** 选择分页 */
 			handleSizeChange(e) {
-				this.pageSzie = e;
+				this.pageSize = e;
 				this.pageIndex = 1;
 				this.getBriel();
 			},
@@ -166,7 +178,7 @@
 			async UpdateBriel(data){
 				let param = {}
 				param.id = data.id;
-				param.contactStatus = data.contactStatus;
+				param.contactStatus = data.contactStatus ? 0 : 1;
 				// param.status = data.status;
 				this.loading = true;
 				try{
@@ -185,7 +197,7 @@
 			async getBriel() {
 				let param = {};
 				param.pageIndex = this.pageIndex;
-				param.pageSzie = this.pageSzie;
+				param.pageSize = this.pageSize;
 				param.creator = this.creator;
 				param.updator = this.updator;
 				this.loading = true;

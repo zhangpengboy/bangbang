@@ -11,7 +11,7 @@
 		<!-- tab按钮切换end -->
 
 		<!--  成员名单 -->
-		<div class="service-details-member">
+		<div class="service-details-member" v-if="tabPosition == 'member'">
 			<div class="top">
 				<div class="top-title ">数据筛选</div>
 				<div class="top-content flex fvertical fbetween">
@@ -31,7 +31,7 @@
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>招工状态：</span>
-							<el-select v-model="value" placeholder="选择跟进人">
+							<el-select v-model="status" placeholder="选择跟进人">
 								<el-option v-for="item in options" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -136,7 +136,7 @@
 
 
 						<div class="service-details-member-box-list-item flex fvertical " v-for="item in 5">
-							
+
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>工种</span>
 								<el-input class="f1" :disabled="true" value="电工"></el-input>
@@ -231,7 +231,7 @@
 										<el-input class="member-min-input" :disabled="true" value="元/天"></el-input>
 									</div>
 								</div>
-								
+
 							</div>
 
 
@@ -272,8 +272,8 @@
 								</div>
 							</div>
 							<!-- 计时end -->
-							
-							
+
+
 							<div class="service-details-member-box-list-remarks flex fvertical">
 								<span>工作描述</span>
 								<el-input type="textarea" class="f1" :disabled="true"></el-input>
@@ -289,23 +289,19 @@
 											<span>张三 18888888888</span>
 											<i class="el-icon-error"></i>
 										</div>
-							
+
 										<div class="service-details-member-box-list-worker-user-add flex fvertical fbetween fcenter"
 											@click="dialogVisible = true">
 											<!-- <span>张三 18888888888</span> -->
 											<i class="el-icon-plus"></i>
 										</div>
-							
+
 									</div>
 								</div>
 							</div>
-							<!-- 匹配员工end -->							
+							<!-- 匹配员工end -->
 						</div>
 
-
-					
-					
-					
 					</div>
 					<!--  报名列表信息end -->
 
@@ -318,7 +314,7 @@
 
 
 		<!--  添加成员 -->
-		<el-dialog title="添加成员" :visible.sync="dialogVisible" width="600px" :before-close="handleClose">
+		<el-dialog title="添加成员" :visible.sync="dialogVisible" width="600px">
 
 			<el-form :model="ruleForm" status-icon ref="ruleForm" label-width="100px"
 				class="service-details-member-add-user">
@@ -368,12 +364,12 @@
 					<div class="top-content-item flex fvertical">
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
-							<el-input class="top-content-item-input" v-model="serach" placeholder="ID/项目名称">
+							<el-input class="top-content-item-input" v-model="keywords" placeholder="ID/项目名称">
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
-							<span>跟进人：</span>
-							<el-select v-model="value" placeholder="选择跟进人">
+							<span>状态：</span>
+							<el-select v-model="status" placeholder="请选择">
 								<el-option v-for="item in options" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -393,26 +389,52 @@
 					<el-button>导出</el-button>
 				</div>
 				<!--  表格 -->
-				<el-table :data="tableData" border style="width: 100%">
-					<el-table-column prop="date" label="ID">
+				<el-table :data="tableData" border style="width: 100%" :stripe="true">
+					<el-table-column prop="orderNum" label="ID"  width="170">
 					</el-table-column>
-					<el-table-column prop="name" label="项目名称">
+					<el-table-column prop="title" label="项目名称"  width="120">
 					</el-table-column>
-					<el-table-column prop="address" label="图片">
+					<el-table-column  label="图片" >
+						<template  slot-scope="scope">
+							<img :src="item" class="table-img"  v-for="(item,index) in scope.row.images" :key="index" />
+						</template>
 					</el-table-column>
-					<el-table-column prop="address" label="充值金额">
+					<el-table-column prop="fee" label="充值金额"  width="120">
 					</el-table-column>
-					<el-table-column prop="address" label="状态">
+					<el-table-column  label="状态"  width="80">
+						<template  slot-scope="scope">
+							<p v-if="scope.row.status == 0" class="color-warning">等待对账</p>
+							<p v-if="scope.row.status == 1" class="color-success">对账通过</p>
+							<p v-if="scope.row.status == 2" class="color-error">已驳回</p>
+						</template>
 					</el-table-column>
-					<el-table-column prop="address" label="申请时间">
+					<el-table-column label="申请时间" >
+						<template slot-scope="scope">
+							<p>{{formatDate(scope.row.createTime)}}</p>
+						</template>
 					</el-table-column>
-					<el-table-column prop="address" label="操作人">
+					<el-table-column prop="updateName" label="操作人" width="100">
 					</el-table-column>
-					<el-table-column prop="address" label="操作时间">
+					<el-table-column label="操作时间" >
+						<template slot-scope="scope">
+							<p>{{formatDate(scope.row.updateTime)}}</p>
+						</template>
 					</el-table-column>
-					<el-table-column prop="address" label="操作">
+					<el-table-column prop="address" label="操作" >
+						<template slot-scope="scope">
+							<template v-if="scope.row.status == 0">
+								<el-button size="mini" type="primary" @click="handleMoney(scope.$index,scope.row)">修改金额
+								</el-button>
+								<el-button size="mini" type="success" @click="handleAdopt(scope.$index, scope.row)">通过
+								</el-button>
+								<el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">拒绝
+								</el-button>
+							</template>
+							<el-button  v-if="scope.row.status == 2 " type="text" size="mini" @click="handleLook(scope.row)">查看理由</el-button>
+						</template>
 					</el-table-column>
 				</el-table>
+				
 				<!--  表格end -->
 				<!-- 分页  -->
 				<div class="flex fcenter page">
@@ -426,19 +448,33 @@
 
 		</div>
 		<!-- 充值页面end  -->
+		
+		<!--  拒绝理由 -->
+		<el-dialog title="拒绝理由" :visible.sync="isLook" width="30%" :before-close="handleCloseLookReason">
+			<span>{{reason}}</span>
+			<span slot="footer" class="dialog-footer ">
+				<el-button type="primary" @click="isLook = false">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!--  拒绝理由end -->
+		
 	</div>
 </template>
 
 <script>
+	import {getBriefPay} from '../../../api/user.js'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
+				isLook:false,
+				reason:"",
 				dialogVisible: false,
 				scheme: "name",
 				PageIndex: 1, // 页码
 				PageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
-				tableData: [],
+				tableData: [], // 充值列表数据
 				tabPosition: "order",
 				rechargeList: [{
 					title: "项目余额/元",
@@ -457,7 +493,22 @@
 					total: 98400
 				}],
 				ruleForm: {},
-				orderId:null // 订单ID
+				orderId: null, // 订单ID
+				keywords: "", // 充值搜索内容
+				status: "", //状态
+				options: [{
+					value: '',
+					label: "全部"
+				}, {
+					value: 0,
+					label: "等待对账"
+				}, {
+					value: 2,
+					label: "已驳回"
+				}, {
+					value: 1,
+					label: "对账通过"
+				}], // 状态列表
 			}
 		},
 		watch: {
@@ -470,10 +521,29 @@
 
 			},
 		},
-		created(){
-		console.log(this.$route.query)	
+		mounted() {
+			// console.log(this.$route.query)
+			let orderId = this.$route.query.id;
+			console.log(orderId)
+			this.getBriefPay(orderId);
 		},
 		methods: {
+			formatDate(value) {
+			        return moment(value).format('YYYY-MM-DD')
+			},
+			/** 充值列表 */
+			async getBriefPay(orderId) {
+				let param = {};
+				param.pageIndex = this.PageIndex;
+				param.pageSize = this.PageSize;
+				param.keywords = this.keywords;
+				param.status = this.status;
+				param.orderId = orderId;
+				let res = await getBriefPay(param);
+				this.PageCount = res.data.total;
+				this.tableData = res.data.records
+				console.log(res);
+			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.PageSize = e;
@@ -491,13 +561,16 @@
 					path: '/order/member-details'
 				})
 			},
-			getorderdetail(){
-				getOrderlist({id:this.orderId}).then(res => {
-				this.tableData = res.data.records
-				this.PageCount = res.data.total
-				this.loading = false;
-			})
-			}
+			/** 查看理由 */
+			handleLook(row) {
+				this.isLook = true;
+				console.log(row)
+				this.reason = row.reason;
+			},
+			/** 关闭查看理由 */
+			handleCloseLookReason() {
+				this.isLook = false
+			},
 		}
 	}
 </script>
@@ -585,6 +658,7 @@
 			margin-top: 20px;
 
 			border-bottom: 1px dashed rgb(121, 121, 121);
+
 			.service-details-member-box-list-item-main {
 				width: 28%;
 				margin-right: 40px;
