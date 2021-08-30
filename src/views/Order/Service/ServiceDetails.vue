@@ -9,22 +9,22 @@
 			<el-radio-button label="evaluate">评价</el-radio-button>
 		</el-radio-group>
 		<!-- tab按钮切换end -->
-		
+
 		<!-- 服务单 -->
-		<div class="demand-service" v-show="tabPosition == 'order'" >
+		<div class="demand-service" v-show="tabPosition == 'order'">
 			<div class="box-demand-title">项目信息</div>
 			<!-- 项目信息 -->
 			<div class="demand-service-info">
-				<el-form :model="basicForm"  ref="ruleForm" label-width="100px" class="demo-ruleForm">
+				<el-form :model="basicForm" ref="ruleForm" label-width="100px" class="demo-ruleForm">
 					<el-form-item label="项目名称">
 						<el-input v-model="basicForm.title" :disabled="true"></el-input>
-		
+
 					</el-form-item>
-		
+
 					<!-- 	<el-form-item label="项目简称" >
 						<el-input v-model="ruleForm.name"></el-input>
 					</el-form-item> -->
-		
+
 					<div class="flex  ">
 						<el-form-item label="项目开始时间">
 							<el-input :disabled="true" v-model="basicForm.startTime" placeholder="同步最早开始时间"></el-input>
@@ -36,23 +36,21 @@
 					<el-form-item label="项目工期">
 						<el-input :disabled="true" :value="basicForm.duration"></el-input>
 					</el-form-item>
-		
+
 					<el-form-item label="项目介绍">
 						<el-input type="textarea" :disabled="true" v-model="basicForm.description" :rows="4"></el-input>
 						<div class="demand-service-upload">
-							  <el-image 
-							    style="width: 100px; height: 100px" v-for="(item,index) in basicForm.images" :src="item">
-							  </el-image
-		
-							<el-dialog :visible.sync="isImges">
-								<img width="100%" :src="dialogImageUrl" alt="">
+							<el-image style="width: 100px; height: 100px" v-for="(item,index) in basicForm.images"
+								:src="item">
+							</el-image <el-dialog :visible.sync="isImges">
+							<img width="100%" :src="dialogImageUrl" alt="">
 							</el-dialog>
-		
+
 							<!-- 	<img v-if="basicForm.images.length" v-for="(item,index) in basicForm.images" :src="item"
 								class="avatar"> -->
 						</div>
 					</el-form-item>
-		
+
 					<el-form-item label="项目地址">
 						<!-- 详情地址 -->
 						<!-- 详情地址 -->
@@ -64,9 +62,9 @@
 						</div>
 						<!-- 详情地址end -->
 						<!-- 详情地址end -->
-		
+
 					</el-form-item>
-		
+
 					<el-form-item label="打卡范围">
 						<el-select v-model="basicForm.scope" :disabled="true" placeholder="请选择">
 							<el-option v-for="item in scopeList" :key="item.value" :label="item.label"
@@ -77,7 +75,7 @@
 				</el-form>
 			</div>
 			<!-- 项目信息end -->
-		
+
 			<!-- 方案信息 -->
 			<div class="demand-service-plan">
 				<div class="box-demand-title flex fvertical">
@@ -87,25 +85,26 @@
 							@click="handleRadio(item,index)" v-for="(item,index) in schemes" :key="index">
 							方案{{getNumberTurnChinese(index+1)}}</div>
 					</div>
-		
+
 				</div>
-		
-				<div class="demand-service-plan-box" v-if="scheme==index" v-for="(item,index) in schemes"
-					:key="index">
+
+				<div class="demand-service-plan-box" v-if="scheme==index" v-for="(item,index) in schemes" :key="index">
 					<!-- 方案标题  -->
-					<div class="demand-service-plan-box-title flex fbetween">
-						<span class="box-demand-title">方案{{getNumberTurnChinese(index+1)}}：</span>
+					<div class="demand-service-plan-box-title flex fvertical">
+						<span>方案{{getNumberTurnChinese(index+1)}}：</span>
 						<!-- <div class="demand-service-plan-box-del " v-if="schemes.length >1"
 							@click="handleDeleteProject(index)">
 							<i class="el-icon-delete"></i>
 							<span>删除方案</span>
 						</div> -->
+						<el-tag v-if="item.id ==  basicForm.schemeId">选中方案</el-tag>
 					</div>
+
 					<!-- 方案标题end  -->
-		
+
 					<!-- 方案基本信息  -->
 					<el-form :model="item" ref="ruleForm" label-width="100px">
-		
+
 						<div class="flex demand-service-plan-box-item">
 							<el-form-item label="方案标签">
 								<el-input v-model="item.tag" :disabled="true"></el-input>
@@ -114,36 +113,36 @@
 								<el-input v-model="item.description" :disabled="true"></el-input>
 							</el-form-item>
 						</div>
-		
+
 						<div class="flex demand-service-plan-box-item">
 							<el-form-item class="" label="换人次数">
 								<div class="flex">
 									<el-input class="f1" v-model="item.replaceTimes" :disabled="true"></el-input>
-									<el-input class="demand-service-plan-box-item-second" :disabled="true"
-										value="次"></el-input>
+									<el-input class="demand-service-plan-box-item-second" :disabled="true" value="次">
+									</el-input>
 								</div>
 							</el-form-item>
 							<el-form-item label="方案总工程量">
-								<el-input v-model="item.totalUnit"  :disabled="true"></el-input>
+								<el-input v-model="item.totalUnit" :disabled="true"></el-input>
 							</el-form-item>
 						</div>
-		
+
 					</el-form>
 					<!-- 方案基本信息end  -->
-		
+
 					<div class="demand-service-plan-main" v-for="(teams,inx) in item.teams" :key="inx">
-		
+
 						<!-- 班组信息 -->
 						<div class="demand-service-plan-box-info">
 							<el-form :model="teams" label-width="120px">
-		
+
 								<div class="flex demand-service-plan-box-info-data">
 									<el-form-item label="班组名称">
 										<el-input v-model="teams.name" :disabled="true"></el-input>
 									</el-form-item>
 									<el-form-item label="进场时间">
-										<el-input :value="formatDate(teams.enterStartTime)"  :disabled="true"></el-input>
-		
+										<el-input :value="formatDate(teams.enterStartTime)" :disabled="true"></el-input>
+
 									</el-form-item>
 									<el-form-item label="班组工期">
 										<el-input v-model="teams.enterDay" :disabled="true"></el-input>
@@ -151,14 +150,14 @@
 								</div>
 								<div class="flex  demand-service-plan-box-info-data">
 									<el-form-item label="退场时间">
-										<el-input :value="formatDate(teams.enterEndTime)"  :disabled="true"></el-input>
+										<el-input :value="formatDate(teams.enterEndTime)" :disabled="true"></el-input>
 									</el-form-item>
 									<el-form-item label="班组工程量">
 										<div class="flex">
 											<el-input class="f1" v-model="teams.totalQuantity" :disabled="true">
 											</el-input>
-											<el-select style="width: 120px;margin-left: 10px;" :disabled="true" v-model="teams.unit"
-												placeholder="请选择">
+											<el-select style="width: 120px;margin-left: 10px;" :disabled="true"
+												v-model="teams.unit" placeholder="请选择">
 												<el-option v-for="item in companyList" :key="item.value"
 													:label="item.label" :value="item.value">
 												</el-option>
@@ -173,33 +172,33 @@
 										</div>
 									</el-form-item>
 								</div>
-		
+
 								<div class="flex  demand-service-plan-box-info-data">
 									<el-form-item label="上班时间">
-										<el-time-picker :disabled="true" is-range v-model="teams.workTimeList" range-separator="至"
-											start-placeholder="开始时间" format='HH:mm'
+										<el-time-picker :disabled="true" is-range v-model="teams.workTimeList"
+											range-separator="至" start-placeholder="开始时间" format='HH:mm'
 											@change="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
 											placeholder="选择时间范围" :clearable="false">
 										</el-time-picker>
 									</el-form-item>
 									<el-form-item label="午休时间">
-										<el-time-picker is-range :disabled="true" v-model="teams.restTimeList" format='HH:mm'
-											range-separator="至" start-placeholder="开始时间"
+										<el-time-picker is-range :disabled="true" v-model="teams.restTimeList"
+											format='HH:mm' range-separator="至" start-placeholder="开始时间"
 											@change="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
 											placeholder="选择时间范围">
 										</el-time-picker>
 									</el-form-item>
 								</div>
-		
+
 							</el-form>
 						</div>
 						<!-- 班组信息end -->
-		
+
 						<!-- 工种列表数据 -->
 						<div class="demand-service-plan-box-list">
 							<div class="demand-service-plan-box-list-item"
 								v-for="(teamTypes,types_index) in teams.teamTypes">
-		
+
 								<el-form :model="teamTypes" ref="ruleForm" label-width="100px">
 									<!-- 固定基本工种  -->
 									<div class="flex fbetween">
@@ -231,14 +230,15 @@
 										<div class="demand-service-plan-box-list-item-box">
 											<el-form-item label="工种模式">
 												<!-- <el-input v-model="ruleForm.name"></el-input> -->
-												<el-select :disabled="true" v-model="teamTypes.workTypeVal" placeholder="请选择"
+												<el-select :disabled="true" v-model="teamTypes.workTypeVal"
+													placeholder="请选择"
 													@change="handleTypeModel(index,inx,types_index,teamTypes)">
 													<template v-if="teamTypes.tag == '班组长'">
 														<el-option v-for="item in patternList" :key="item.value"
 															:label="item.label" :value="item.label">
 														</el-option>
 													</template>
-		
+
 													<template v-else>
 														<template v-for="(item,index) in patternList">
 															<el-option v-if="index != patternList.length -1"
@@ -251,15 +251,16 @@
 											</el-form-item>
 										</div>
 									</div>
-		
-		
-		
+
+
+
 									<div class="flex fbetween">
 										<div class="demand-service-plan-box-list-item-box flex fvertical">
 											<div class="plan-box-btn"></div>
 											<el-form-item label="工种进场时间">
-												<el-input :disabled="true" :value="formatDate(teamTypes.enterStartTime)"></el-input>
-										<!-- 		<el-date-picker v-model="teamTypes.enterStartTime"
+												<el-input :disabled="true"
+													:value="formatDate(teamTypes.enterStartTime)"></el-input>
+												<!-- 		<el-date-picker v-model="teamTypes.enterStartTime"
 													value-format="yyyy-MM-dd "
 													:value="formatDate()"
 													type="date" placeholder="请设置进场时间">
@@ -269,7 +270,8 @@
 										<div class="demand-service-plan-box-list-item-box">
 											<el-form-item label="工种工期">
 												<div class="flex">
-													<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.enterDay"
+													<el-input style="width: 200px;" :disabled="true"
+														v-model="teamTypes.enterDay"
 														@input="handleDuration(index,inx,types_index,teamTypes)">
 													</el-input>
 													<span style="padding-left: 20px;">天</span>
@@ -278,14 +280,14 @@
 										</div>
 										<div class="demand-service-plan-box-list-item-box">
 											<el-form-item label="工种退场时间">
-												<el-input :value="formatDate(teamTypes.enterEndTime)"  :disabled="true">
+												<el-input :value="formatDate(teamTypes.enterEndTime)" :disabled="true">
 												</el-input>
-		
+
 											</el-form-item>
 										</div>
 									</div>
 									<!-- 固定基本工种end  -->
-		
+
 									<!-- 管理  -->
 									<div class="demand-service-plan-box-list-item-type flex"
 										v-if="teamTypes.tag == '班组长'  && teamTypes.workTypeVal == '管理'">
@@ -300,14 +302,16 @@
 										</el-form-item>
 										<el-form-item label="带班管理费">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.leaderFee">
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.leaderFee">
 												</el-input>
 												<span style="padding-left: 20px;">元</span>
 											</div>
 										</el-form-item>
 										<el-form-item label="人数">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.number"
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.number"
 													@input="handleQuantity(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">人</span>
@@ -315,14 +319,15 @@
 										</el-form-item>
 									</div>
 									<!-- 管理end  -->
-		
+
 									<!-- 普通工种  -->
 									<div class="demand-service-plan-box-list-item-type flex"
 										v-if="teamTypes.tag != '班组长'  && teamTypes.workTypeVal == '计件'">
 										<!-- <div class="plan-box-btn"></div> -->
 										<el-form-item label="个人工程量">
 											<div class="flex">
-												<el-input :disabled="true" style="width: 200px;" v-model="teamTypes.personalQuantity"
+												<el-input :disabled="true" style="width: 200px;"
+													v-model="teamTypes.personalQuantity"
 													@input="handleQuantity(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
@@ -337,7 +342,8 @@
 										</el-form-item>
 										<el-form-item label="人数">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.number"
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.number"
 													@input="handleQuantity(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">人</span>
@@ -345,14 +351,15 @@
 										</el-form-item>
 									</div>
 									<!-- 普通工种end  -->
-		
+
 									<!-- 计件/班组长 -->
 									<div class="demand-service-plan-box-list-item-group flex fbetween"
 										v-if="teamTypes.tag == '班组长' && teamTypes.workTypeVal == '计件'  ">
 										<el-form-item label="个人工程量">
 											<div class="flex">
-												<el-input style="width: 150px;"  v-model="teamTypes.personalQuantity"
-													@input="handleQuantity(index,inx,types_index,teamTypes)" :disabled="true">
+												<el-input style="width: 150px;" v-model="teamTypes.personalQuantity"
+													@input="handleQuantity(index,inx,types_index,teamTypes)"
+													:disabled="true">
 												</el-input>
 												<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
 											</div>
@@ -366,7 +373,8 @@
 										</el-form-item>
 										<el-form-item label="人数">
 											<div class="flex">
-												<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.number"
+												<el-input style="width: 150px;" :disabled="true"
+													v-model="teamTypes.number"
 													@input="handleQuantity(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">人</span>
@@ -374,15 +382,16 @@
 										</el-form-item>
 										<el-form-item label="带班管理费">
 											<div class="flex">
-												<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.leaderFee">
+												<el-input style="width: 150px;" :disabled="true"
+													v-model="teamTypes.leaderFee">
 												</el-input>
 												<span style="padding-left: 20px;">元/天</span>
 											</div>
 										</el-form-item>
 									</div>
 									<!-- 计件/班组长end -->
-		
-		
+
+
 									<!-- 普通工种  -->
 									<div class="demand-service-plan-box-list-item-type flex"
 										v-if="teamTypes.workTypeVal == '计时'">
@@ -397,7 +406,8 @@
 										</el-form-item>
 										<el-form-item label="工时单价">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.unitPrice"
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.unitPrice"
 													@input="handleUnitPrice(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">元/小时</span>
@@ -406,13 +416,14 @@
 										<el-form-item label="每日收入">
 											<div class="flex">
 												<el-input style="width: 220px;" :disabled="true"
-													v-model="teamTypes.income" ></el-input>
+													v-model="teamTypes.income"></el-input>
 												<!-- <span style="padding-left: 20px;">人</span> -->
 											</div>
 										</el-form-item>
 										<el-form-item label="人数">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.number"
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.number"
 													@input="handleQuantity(index,inx,types_index,teamTypes)">
 												</el-input>
 												<span style="padding-left: 20px;">人</span>
@@ -420,36 +431,37 @@
 										</el-form-item>
 										<el-form-item label="加班费">
 											<div class="flex">
-												<el-input style="width: 200px;" :disabled="true" v-model="teamTypes.overtimeFee">
+												<el-input style="width: 200px;" :disabled="true"
+													v-model="teamTypes.overtimeFee">
 												</el-input>
 												<span style="padding-left: 20px;">元/小时</span>
 											</div>
 										</el-form-item>
 										<el-form-item label="带班管理费" v-if="teamTypes.tag == '班组长'">
 											<div class="flex">
-												<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.leaderFee">
+												<el-input style="width: 150px;" :disabled="true"
+													v-model="teamTypes.leaderFee">
 												</el-input>
 												<span style="padding-left: 20px;">元/天</span>
 											</div>
 										</el-form-item>
 									</div>
 									<!-- 普通工种end  -->
-		
-		
+
+
 									<!--  工作描述 -->
 									<div class="demand-service-plan-box-list-item-text">
 										<el-form-item label="工作描述">
 											<el-input :disabled="true" type="textarea" placeholder="请输入"
-												:autosize="{ minRows: 2, maxRows: 4}"
-												v-model="teamTypes.description">
+												:autosize="{ minRows: 2, maxRows: 4}" v-model="teamTypes.description">
 											</el-input>
 										</el-form-item>
 									</div>
 									<!--  工作描述end -->
-		
+
 								</el-form>
 							</div>
-		
+
 							<!-- <div class="demand-service-plan-box-list-btn flex fvertical fcenter">
 								<div class="demand-service-plan-box-list-btn-add" @click="handleAddWork(index,inx)">
 									添加工种</div>
@@ -459,10 +471,10 @@
 						</div>
 						<!-- 工种列表数据end -->
 					</div>
-		
+
 					<!-- <div class="demand-service-plan-add-main flex fcenter" @click="handleAddGroup(index)">添加班组</div> -->
-		
-		
+
+
 					<!-- 总费用 -->
 					<div class="demand-service-plan-box-foot flex fcenter ">
 						<div class="demand-service-plan-box-foot-item flex fvertical">
@@ -472,7 +484,9 @@
 						<div class="demand-service-plan-box-foot-item flex fvertical">
 							<span> 信息服务费</span>
 							<div class="flex">
-								<el-input :disabled="true" class="f1 demand-service-plan-box-foot-item-server" @input="handleInputToals(index)"  v-model="item.serviceFeeRate" placeholder="请输入信息服务费比例">
+								<el-input :disabled="true" class="f1 demand-service-plan-box-foot-item-server"
+									@input="handleInputToals(index)" v-model="item.serviceFeeRate"
+									placeholder="请输入信息服务费比例">
 								</el-input>
 								<el-input value="%" :disabled="true"
 									class="f1 demand-service-plan-box-foot-item-company"></el-input>
@@ -488,7 +502,8 @@
 						<div class="demand-service-plan-box-foot-item flex fvertical">
 							<span> 税费</span>
 							<div class="flex">
-								<el-input class="f1" :disabled="true" v-model="item.taxRate" @input="handleInputToals(index)" placeholder="请输入信息服务费比例"></el-input>
+								<el-input class="f1" :disabled="true" v-model="item.taxRate"
+									@input="handleInputToals(index)" placeholder="请输入信息服务费比例"></el-input>
 								<el-input value="%" :disabled="true"
 									class="f1 demand-service-plan-box-foot-item-company"></el-input>
 								<el-input :value="item.taxRateNum" :disabled="true"
@@ -507,8 +522,8 @@
 			</div>
 		</div>
 		<!-- 服务单end -->
-		
-		
+
+
 
 		<!--  成员名单 -->
 		<div class="service-details-member" v-if="tabPosition == 'member'">
@@ -518,12 +533,12 @@
 					<div class="top-content-item flex fvertical">
 						<div class="flex fvertical top-content-item-status">
 							<span>工种：</span>
-							<el-input class="top-content-item-input" v-model="serach" placeholder="ID/项目名称">
+							<el-input class="top-content-item-input" v-model="teamTypeName" placeholder="ID/项目名称">
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>工种标签：</span>
-							<el-select v-model="value" placeholder="选择跟进人">
+							<el-select v-model="memberTab" placeholder="选择跟进人">
 								<el-option v-for="item in options" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -531,7 +546,7 @@
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>招工状态：</span>
-							<el-select v-model="status" placeholder="选择跟进人">
+							<el-select v-model="memberStatus" placeholder="选择跟进人">
 								<el-option v-for="item in options" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -541,15 +556,15 @@
 
 
 					<div class="top-content-btn">
-						<el-button type="primary" >查询</el-button>
-						<el-button >重置</el-button>
+						<el-button type="primary">查询</el-button>
+						<el-button>重置</el-button>
 					</div>
 				</div>
 			</div>
 
 			<div class="box">
 				<div class="service-details-member-top flex fvertical fbetween">
-					<el-radio-group v-model="scheme" style="margin-bottom: 30px;">
+					<el-radio-group v-model="member" style="margin-bottom: 30px;">
 						<el-radio-button label="name">方案名单</el-radio-button>
 						<el-radio-button label="delay">延期方案名单</el-radio-button>
 					</el-radio-group>
@@ -565,26 +580,30 @@
 
 						<div class="service-details-member-box-info-item flex fvertical">
 							<span class="service-details-member-box-info-item-name">方案标签</span>
-							<el-input class="f1" :disabled="true" placeholder="请输入内容"></el-input>
+							<el-input class="f1" :value="memberInfo.scheme.tag" :disabled="true" placeholder="请输入内容">
+							</el-input>
 						</div>
 
 						<div class="service-details-member-box-info-item flex fvertical">
 							<span class="service-details-member-box-info-item-name">简介</span>
-							<el-input class="f1" :disabled="true" placeholder="请输入内容"></el-input>
+							<el-input class="f1" :disabled="true" :value="memberInfo.scheme.description"
+								placeholder="请输入内容"></el-input>
 						</div>
 
 						<div class="service-details-member-box-info-item flex fvertical">
 							<span class="service-details-member-box-info-item-name">换人次数</span>
 
 							<div class="flex f1">
-								<el-input class="f1" :disabled="true" placeholder="请输入内容"></el-input>
+								<el-input class="f1" :disabled="true" :value="memberInfo.scheme.replaceTimes"
+									placeholder="请输入内容"></el-input>
 								<el-input class="member-min-input" value="次" :disabled="true"></el-input>
 							</div>
 						</div>
 
 						<div class="service-details-member-box-info-item flex fvertical">
 							<span class="service-details-member-box-info-item-name">方案总工程量</span>
-							<el-input class="f1" :disabled="true" placeholder="请输入内容"></el-input>
+							<el-input class="f1" :disabled="true" :value="memberInfo.scheme.totalUnit"
+								placeholder="请输入内容"></el-input>
 						</div>
 
 					</div>
@@ -593,196 +612,221 @@
 
 
 					<!--  报名列表信息 -->
-					<div class="service-details-member-box-list">
+					<div class="service-details-member-box-list" v-for="(item,index) in memberInfo.teams" :key="index">
 						<div class="service-details-member-box-list-top flex fvertical ">
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>班组名称</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="item.name" :disabled="true" class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>进场时间</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="formatDate(item.enterStartTime)" :disabled="true"
+									class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>退场时间</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="formatDate(item.enterEndTime)" :disabled="true"
+									class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>班组工期</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="bjDate(item.enterStartTime,item.enterEndTime)"
+									:disabled="true" class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>班组工程量</span>
 								<div class="flex f1">
-									<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
-									<el-input class="member-min-input" placeholder="次" :disabled="true"></el-input>
+									<el-input placeholder="请输入内容" :value="item.totalUnit" :disabled="true" class="f1">
+									</el-input>
+									<el-input class="member-min-input" placeholder="" :disabled="true"></el-input>
 								</div>
 
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>计件单价</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="item.unitPrice" :disabled="true" class="f1">
+								</el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>上班时间</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<el-input placeholder="请输入内容" :value="formatDate(item.workStartTime)" :disabled="true"
+									class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>午休时间</span>
-								<el-input placeholder="请输入内容" :disabled="true" class="f1"></el-input>
+								<span>{{formatDateTime(item.restStartTime)}}~{{formatDateTime(item.restEndTime)}}</span>
+								<!-- <el-input placeholder="请输入内容" :value="formatDate(item.enterEndTime)" :disabled="true" class="f1"></el-input> -->
+								<!-- <span></span> -->
+
 							</div>
 
 						</div>
 
 
-						<div class="service-details-member-box-list-item flex fvertical " v-for="item in 5">
+						<div class="service-details-member-box-list-item flex fvertical "
+							v-for="(items,inx) in item.teamTypes">
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>工种</span>
-								<el-input class="f1" :disabled="true" value="电工"></el-input>
+								<el-input class="f1" :disabled="true" :value="items.name"></el-input>
 							</div>
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>工种标签</span>
-								<el-input class="f1" :disabled="true" value="电工"></el-input>
+								<el-input class="f1" :disabled="true" :value="items.tag"></el-input>
 							</div>
 
 							<div class="service-details-member-box-list-item-main flex fvertical ">
 								<span>工种模式</span>
-								<el-input class="f1" :disabled="true" value="电工"></el-input>
+								<el-input class="f1" :disabled="true" :value="getPatternList(items.workType)">
+								</el-input>
 							</div>
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>进场时间</span>
-								<el-input class="f1" :disabled="true" value="电工"></el-input>
+								<el-input class="f1" :disabled="true" :value="formatDate(items.enterStartTime)">
+								</el-input>
 							</div>
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>工种工期</span>
 								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="次"></el-input>
+									<el-input class="f1" :disabled="true"
+										:value="bjDate(items.enterStartTime,items.enterEndTime)"></el-input>
+									<el-input class="member-min-input" :disabled="true" value="天"></el-input>
 								</div>
 							</div>
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>退场时间</span>
-								<el-input class="f1" :disabled="true" value="2021-6-25"></el-input>
+								<el-input class="f1" :disabled="true" :value="formatDate(items.enterEndTime)">
+								</el-input>
 							</div>
 
 
 
 							<!-- 普通 -->
-
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>个人工程量</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="㎡"></el-input>
+							<template v-if="items.workType == 1">
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>个人工程量</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" value="电工"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="㎡"></el-input>
+									</div>
 								</div>
-							</div>
 
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>计件单价</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="元/㎡"></el-input>
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>计件单价</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" :value="items.unitPrice"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="元/㎡"></el-input>
+									</div>
 								</div>
-							</div>
 
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>人数</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="人"></el-input>
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>人数</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" :value="items.number"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="人"></el-input>
+									</div>
 								</div>
-							</div>
+
+							</template>
+
+
 							<!-- 普通end -->
 
 
 							<!-- 带班计件管理 -->
-							<div class="flex fvertical fbetween service-details-member-box-list-item-admin">
+							<!-- 				<div class="flex fvertical fbetween service-details-member-box-list-item-admin">
 								<div class=" flex fvertical service-details-member-box-list-item-admin-conter">
 									<span class="service-details-member-box-list-item-admin-name">个人工程量</span>
 									<div class="flex fvertical f1">
-										<el-input class="f1" :disabled="true" value="2000"></el-input>
+										<el-input class="f1" :disabled="true" :value="items.personalQuantity">
+										</el-input>
 										<el-input class="member-min-input" :disabled="true" value="㎡"></el-input>
 									</div>
-
 								</div>
 								<div class=" flex fvertical service-details-member-box-list-item-admin-conter">
 									<span class="service-details-member-box-list-item-admin-name">计件单价</span>
 									<div class="flex fvertical f1">
-										<el-input class="f1" :disabled="true" value="2000"></el-input>
+										<el-input class="f1" :disabled="true" :value="items.unitPrice"></el-input>
 										<el-input class="member-min-input" :disabled="true" value="元/㎡"></el-input>
 									</div>
 								</div>
 								<div class=" flex fvertical service-details-member-box-list-item-admin-conter">
 									<span class="service-details-member-box-list-item-admin-name">人数</span>
 									<div class="flex fvertical f1">
-										<el-input class="f1" :disabled="true" value="2000"></el-input>
+										<el-input class="f1" :disabled="true" :value="items.number"></el-input>
 										<el-input class="member-min-input" :disabled="true" value="人"></el-input>
 									</div>
 								</div>
-								<div class=" flex fvertical service-details-member-box-list-item-admin-conter">
-									<span class="service-details-member-box-list-item-admin-name">带班管理费</span>
-									<div class="flex fvertical f1">
-										<el-input class="f1" :disabled="true" value="2000"></el-input>
-										<el-input class="member-min-input" :disabled="true" value="元/天"></el-input>
+							
+
+							</div> -->
+
+							<!-- 带班计件管理end -->
+
+							<template v-if="items.workType == 2">
+								<!-- 计时 -->
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>每日工时</span>
+									<el-input class="f1" :disabled="true" value=""></el-input>
+								</div>
+
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>工时单价</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" :value="items.unitPrice"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="元/小时"></el-input>
 									</div>
 								</div>
 
-							</div>
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>每日收入</span>
+									<el-input class="f1" :disabled="true" value=""></el-input>
+								</div>
+
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>人数</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" :value="items.number"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="人"></el-input>
+									</div>
+								</div>
+
+								<div class="service-details-member-box-list-item-main flex fvertical">
+									<span>加班费</span>
+									<div class="flex f1">
+										<el-input class="f1" :disabled="true" :value="items.overtimeFee"></el-input>
+										<el-input class="member-min-input" :disabled="true" value="元/小时"></el-input>
+									</div>
+								</div>
+								<!-- 计时end -->
+							</template>
 
 
-							<!-- 带班计件管理end -->
-							<!-- 计时 -->
-
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>每日工时</span>
-								<el-input class="f1" :disabled="true" value="㎡"></el-input>
-							</div>
-
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>工时单价</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="元/小时"></el-input>
+							<div class=" flex fvertical service-details-member-box-list-item-main"
+								v-if="items.tag == '班组长' || items.workType == 3">
+								<span class="service-details-member-box-list-item-admin-name">带班管理费</span>
+								<div class="flex fvertical f1">
+									<el-input class="f1" :disabled="true" :value="item.leaderFee"></el-input>
+									<el-input class="member-min-input" :disabled="true" value="元/天"></el-input>
 								</div>
 							</div>
 
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>每日收入</span>
-								<el-input class="f1" :disabled="true" value="240元"></el-input>
-							</div>
 
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>人数</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="人"></el-input>
-								</div>
-							</div>
-
-							<div class="service-details-member-box-list-item-main flex fvertical">
-								<span>加班费</span>
-								<div class="flex f1">
-									<el-input class="f1" :disabled="true" value="电工"></el-input>
-									<el-input class="member-min-input" :disabled="true" value="元/小时"></el-input>
-								</div>
-							</div>
-							<!-- 计时end -->
-
-
-							<div class="service-details-member-box-list-remarks flex fvertical">
+							<div class="service-details-member-box-list-remarks flex fvertical" style="width: 100%;">
 								<span>工作描述</span>
-								<el-input type="textarea" class="f1" :disabled="true"></el-input>
+								<el-input type="textarea" class="f1" :value="items.description " :disabled="true">
+								</el-input>
 							</div>
 							<!-- 匹配员工 -->
 							<div class="service-details-member-box-list-worker flex fvertical">
 								<span class="service-details-member-box-list-worker-title">招工人员</span>
 								<div class="f1">
-									<span class="service-details-member-box-list-worker-name">完成匹配（3/3）</span>
+									<span
+										class="service-details-member-box-list-worker-name">完成匹配（{{items.matchNum+'/'+items.number}}）</span>
 									<div class="service-details-member-box-list-worker-user flex fvertical">
 										<div class="service-details-member-box-list-worker-user-item flex fvertical fbetween"
 											v-for="item in 10">
@@ -801,13 +845,9 @@
 							</div>
 							<!-- 匹配员工end -->
 						</div>
-
 					</div>
 					<!--  报名列表信息end -->
-
 				</div>
-
-
 			</div>
 		</div>
 		<!--  成员名单end -->
@@ -847,13 +887,14 @@
 
 		<!-- 充值页面  -->
 		<div class="service-details-evaluate" v-if="tabPosition == 'recharge'" v-loading="loadingRecharge">
-			<div class="service-details-evaluate-top flex fvertical">
+			<!-- 充值列表总数据  -->
+			<!-- 	<div class="service-details-evaluate-top flex fvertical">
 				<div class="service-details-evaluate-top-item" v-for="(item,index) in rechargeList" :key="index">
 					<p class="service-details-evaluate-top-item-title">{{item.title}}</p>
 					<p class="service-details-evaluate-top-item-price">{{item.total}}</p>
 				</div>
-			</div>
-
+			</div> -->
+			<!-- 充值列表总数据end  -->
 			<div class="top">
 				<div class="top-title ">数据筛选</div>
 				<div class="top-content flex fvertical fbetween">
@@ -961,7 +1002,10 @@
 <script>
 	import loadBMap from '../../../utils/loadBMap.js'
 	import {
-		getBriefPay,getOrderdetail
+		getBriefPay,
+		getOrderdetail,
+		getOrderTeamType,
+		getMembers
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -970,10 +1014,10 @@
 				isLook: false,
 				reason: "",
 				dialogVisible: false,
-				scheme: "name",
-				PageIndex: 1, // 页码
-				PageSize: 10, // 显示多少条数据
-				PageCount: 0, // 总条数
+				member: "name",
+				PageIndex: 1, // 充值-页码
+				PageSize: 10, // 充值-显示多少条数据
+				PageCount: 0, // 充值-总条数
 				tableData: [], // 充值列表数据
 				tabPosition: "order",
 				rechargeList: [{
@@ -995,7 +1039,7 @@
 				ruleForm: {},
 				orderId: null, // 订单ID
 				keywords: "", // 充值搜索内容
-				status: "", //状态
+				status: "", //状态 
 				companyList: [{ // 工程列表
 					label: '㎡',
 					value: 1,
@@ -1031,15 +1075,15 @@
 					value: 1,
 					label: "对账通过"
 				}], // 状态列表
-				orderId:"",
-				loadingRecharge:false,
-				basicForm:{}, // 服务单详情
-				dialogImageUrl:[],
-				allAddress:{},
-				isImges:false,
-				schemeList:[],
-				scopeList:[],
-				schemes:[], // 方案列表
+				orderId: "",
+				loadingRecharge: false,
+				basicForm: {}, // 服务单详情
+				dialogImageUrl: [],
+				allAddress: {},
+				isImges: false,
+				schemeList: [],
+				scopeList: [],
+				schemes: [], // 方案列表
 				patternList: [{ // 工种模式
 					label: "计件",
 					value: 1,
@@ -1050,7 +1094,7 @@
 					label: "管理",
 					value: 3,
 				}],
-				
+
 				tagList: [{ // 工种模式
 					label: "班组长",
 					value: 1,
@@ -1064,6 +1108,11 @@
 				addressMap: "",
 				addressMk: "",
 				scheme: 0,
+				teamTypeName: "", // 成员名单搜索
+				memberStatus: "", // 成员-招工状态
+				memberTab: "", // 成员-工种标签
+				memberInfo: {}, // 成员列表
+
 			}
 		},
 		watch: {
@@ -1081,13 +1130,67 @@
 			this.getBriefPay(this.orderId);
 			this.getOrderdetail(this.orderId);
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
+			this.getOrderTeamType();
 		},
 		methods: {
+			// 获取成员列表
+			async getMembers(teamTypeId) {
+				let param = {};
+				param.teamTypeId = teamTypeId
+				let res = await getMembers(param);
+				this.memberInfo.teams[index].teamTypes[inx].push({
+					userList: res.data
+				});
+				console.log(this.memberInfo)
+
+			},
+
+			//获取工种模式
+			getPatternList(val) {
+				for (let i = 0; i < this.patternList.length; i++) {
+					if (val == this.patternList[i].label) {
+						return this.patternList[i].label
+					}
+				}
+			},
+			// 时间比较
+			bjDate(start, end) {
+				return moment(end).diff(moment(start), 'days');
+			},
+			/** 获取成员列表 */
+			async getOrderTeamType() {
+				let param = {};
+				param.orderId = this.orderId;
+				param.teamTypeName = this.teamTypeName;
+				param.teamTypeTag = this.memberTab;
+				param.status = this.memberStatus;
+				try {
+					let res = await getOrderTeamType(param);
+					this.memberInfo = res.data;
+					// console.log('获取成员列表::', res);
+					let teams = res.data.teams;
+					teams.forEach((item,index)=>{
+						item.teamTypes((data,inx)=>{
+							this.getMembers(data.id)
+						})
+					})
+					// for (let i = 0; i < teams.length; i++) {
+					// 	for (let j = 0; j < teams[i].teamTypes.length; j++) {
+					// 		this.getMembers(teams[i].teamTypes[j].id, i, j)
+					// 	}
+					// }
+				} catch (e) {
+					//TODO handle the exception
+				}
+			},
+			formatDateTime(value) {
+				return value ? moment(value).format('hh:mm:ss') : '';
+			},
 			formatDate(value) {
-				return moment(value).format('YYYY-MM-DD');
+				return value ? moment(value).format('YYYY-MM-DD') : '';
 			},
 			// 方案切换
-			handleRadio(item,index){
+			handleRadio(item, index) {
 				this.scheme = index;
 			},
 			// 下标转中文
@@ -1098,28 +1201,29 @@
 			// 获取工程量单位
 			geUnit(val) {
 				let res = this.companyList.filter(item => item.value == val)
-				// console.log(res)
-				return res.length > 0 ? res[0].label :this.companyList[0].label
+				return res.length > 0 ? res[0].label : this.companyList[0].label
 			},
-			
+
 			/** 删除方案 */
-			handleAddPlan(){
-				
+			handleAddPlan() {
+
 			},
 			/** 获取服务单详情 */
-			async getOrderdetail(orderId){
-				let res = await getOrderdetail({id:orderId});
+			async getOrderdetail(orderId) {
+				let res = await getOrderdetail({
+					id: orderId
+				});
 				this.basicForm = res.data;
-				
-				console.log(res)
 				this.schemes = res.data.schemes
-				// console.log()
 				let lng = res.data.gpsLocation.split(',')[0];
 				let lat = res.data.gpsLocation.split(',')[1]
-				this.getDetailsAdderss({lng,lat})
+				this.getDetailsAdderss({
+					lng,
+					lat
+				})
 			},
 			/** 重置充值 */
-			handleReset(){
+			handleReset() {
 				this.keywords = '';
 				this.status = '';
 				this.PageIndex = 1;
@@ -1143,16 +1247,25 @@
 						title: '地址'
 					};
 					let infoWindow = new BMap.InfoWindow(this.basicForm.address, opts);
-					this.addressMap.openInfoWindow(infoWindow,point);
+					this.addressMap.openInfoWindow(infoWindow, point);
 					this.addressMk = new BMap.Marker(point, {
 						enableDragging: false
 					})
 					this.addressMap.addOverlay(this.addressMk) //将覆盖物添加到地图中
+
+					this.addressMk.addEventListener('click', () => {
+						let infoWindow = new BMap.InfoWindow(this.basicForm.address, opts);
+						this.addressMap.openInfoWindow(infoWindow, point);
+						this.addressMk = new BMap.Marker(point, {
+							enableDragging: false
+						})
+					})
+
 				})
-			
+
 			},
 			/** 搜索充值 */
-			handleSearch(){
+			handleSearch() {
 				this.PageIndex = 1;
 				this.getBriefPay(this.orderId)
 			},
@@ -1165,12 +1278,12 @@
 				param.status = this.status;
 				param.orderId = orderId;
 				this.loadingRecharge = true;
-				try{
+				try {
 					let res = await getBriefPay(param);
 					this.loadingRecharge = false;
 					this.PageCount = res.data.total;
 					this.tableData = res.data.records
-				}catch(e){
+				} catch (e) {
 					this.loadingRecharge = false;
 					//TODO handle the exception
 				}
@@ -1195,7 +1308,6 @@
 			/** 查看理由 */
 			handleLook(row) {
 				this.isLook = true;
-				console.log(row)
 				this.reason = row.reason;
 			},
 			/** 关闭查看理由 */
@@ -1377,52 +1489,52 @@
 		.box-demand-title {
 			margin-bottom: 20px;
 		}
-	
+
 		.demand-service-end-item {
 			padding-left: 60px;
 		}
-	
+
 		.demand-service-plan {
-	
+
 			.demand-service-plan-gropu {
 				padding-left: 20px;
 			}
-	
+
 			.demand-service-plan-box {
 				border: 1px dashed #d9d9d9;
 				border-radius: 20px;
-	
+
 				.demand-service-plan-box-title {
 					padding: 20px 20px;
-	
+
 					.demand-service-plan-box-del {
 						cursor: pointer;
 					}
 				}
-	
+
 				.demand-service-plan-box-item {
 					.el-form-item {
 						width: 48%;
 						margin-right: 2%;
 					}
-	
+
 					.demand-service-plan-box-item-second {
 						width: 80px;
 						margin-left: 15px;
 						color: #000000;
 					}
 				}
-	
+
 				.demand-service-plan-box-info {
 					padding: 0 20px;
 				}
 			}
 		}
-	
-		
+
+
 		.demand-service-upload {
 			margin-top: 20px;
-		
+
 			.avatar-uploader .el-upload {
 				border: 1px dashed #d9d9d9;
 				border-radius: 6px;
@@ -1430,11 +1542,11 @@
 				position: relative;
 				overflow: hidden;
 			}
-		
+
 			.avatar-uploader .el-upload:hover {
 				border-color: #409EFF;
 			}
-		
+
 			.avatar-uploader-icon {
 				font-size: 28px;
 				color: #8c939d;
@@ -1443,14 +1555,14 @@
 				line-height: 80px;
 				text-align: center;
 			}
-		
+
 			.avatar {
 				width: 80px;
 				height: 80px;
 				display: block;
 			}
 		}
-		
+
 		.demand-service-plan-add {
 			border: 1px dashed #d9d9d9;
 			border-radius: 6px;
@@ -1458,7 +1570,7 @@
 			position: relative;
 			overflow: hidden;
 			margin-left: 20px;
-		
+
 			.avatar-uploader-icon {
 				font-size: 28px;
 				color: #8c939d;
@@ -1468,15 +1580,15 @@
 				text-align: center;
 			}
 		}
-		
+
 		.demand-service-plan-box-info-data {
 			.el-form-item {
 				width: 33.33%;
 			}
 		}
-		
+
 		.demand-service-plan-box-list-btn {
-		
+
 			.demand-service-plan-box-list-btn-add,
 			.demand-service-plan-box-list-btn-del {
 				width: 300px;
@@ -1489,32 +1601,32 @@
 				margin-bottom: 40px;
 				cursor: pointer;
 			}
-		
+
 			.demand-service-plan-box-list-btn-add {
 				color: #1682E6;
 			}
 		}
-		
+
 		.demand-service-plan-box-list-item {
 			border-top: 1px dashed #d9d9d9;
 			margin: 0 20px;
 			padding: 20px 0;
 		}
-		
+
 		.demand-service-plan-box-list-item-box {
 			width: 33.33%;
-		
+
 			input {
 				width: 220px;
 			}
-		
+
 			.plan-box-btn {
 				position: relative;
 				// margin-right: 20px;
 				// margin-bottom: 20px;
 				// margin-left: 20px;
 				width: 56px;
-		
+
 				button {
 					position: absolute;
 					top: 50%;
@@ -1523,15 +1635,15 @@
 				}
 			}
 		}
-		
+
 		.demand-service-plan-box-list-item-type {
 			padding-left: 36px;
-		
+
 			.el-form-item {
 				width: 33.33%;
 			}
 		}
-		
+
 		.demand-service-plan-add-main {
 			width: 600px;
 			height: 50px;
@@ -1542,40 +1654,42 @@
 			border-radius: 16px;
 			margin: 0 auto 20px;
 		}
-		
-		
-		
+
+
+
 		.demand-service-plan-box-foot {
 			margin: 0 60px;
-		
+
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
-				.demand-service-plan-box-foot-item-server{
-					input{
+
+				.demand-service-plan-box-foot-item-server {
+					input {
 						width: 200px;
 					}
 				}
+
 				input {
 					width: 300px;
 				}
-		
+
 				span {
 					width: 100px;
 					margin-right: 10px;
 				}
-		
+
 				.demand-service-plan-box-foot-item-company {
 					margin-left: 20px;
-		
+
 					input {
 						width: 80px;
 					}
 				}
 			}
 		}
-		
-		
+
+
 		.demand-service-plan-box-foot-server-order {
 			width: 260px;
 			height: 40px;
@@ -1586,12 +1700,12 @@
 			border-radius: 8px;
 			cursor: pointer;
 		}
-		
-		
+
+
 		.demand-service-plan-gropu {
 			border-radius: 16rpx;
 			overflow: hidden;
-		
+
 			.demand-service-plan-gropu-item {
 				padding: 10px 20px;
 				font-size: 14px;
@@ -1599,7 +1713,7 @@
 				border: 1px solid #DCDFE6;
 				background-color: #FFFFFF;
 				cursor: pointer;
-		
+
 				&.active {
 					color: #FFFFFF;
 					background-color: #1890ff;
@@ -1607,10 +1721,8 @@
 				}
 			}
 		}
-		
-		
-	
+
+
+
 	}
-	
-	
 </style>

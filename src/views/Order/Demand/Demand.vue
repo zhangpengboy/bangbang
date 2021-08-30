@@ -47,10 +47,10 @@
 				</el-table-column>
 				<el-table-column prop="phone" label="手机号码">
 				</el-table-column>
-				<el-table-column label="语音">
+				<el-table-column label="语音" width="140">
 					<template slot-scope="scope">
 						<template v-for="(item,index) in scope.row.voices">
-							<m-audio :key="index" class="demand-deltails-box-item-mp3" v-if="index == 0" :src="item"
+							<m-audio :key="index" :showDuration="false"  class="demand-deltails-box-item-mp3" v-if="index == 0" :src="item.url"
 								text="点这里播放">
 							</m-audio>
 						</template>
@@ -74,9 +74,10 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-						<!-- {{scope.row.status == 1 ?'正常':'已取消'}} -->
-						<p v-if="scope.row.status == 1 || scope.row.status == 0">正常</p>
-						<p v-if="scope.row.status == 2">已取消</p>
+						<div  v-if="scope.row.status == 0">未发报价单</div>
+						<div  v-else-if="scope.row.status == 1">已发报价单</div>
+						<div  v-else-if="scope.row.status == 2">已取消</div>
+						<div  v-else-if="scope.row.status == 3">已转至服务单</div>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" width="220">
@@ -84,7 +85,7 @@
 						<el-button @click="handleLook(scope.row)" type="text" size="small">查看</el-button>
 						<el-button type="text" size="small"  @click="handleSumbitRelationship(scope.row)">{{scope.row.contactStatus == 0?'确认联系':'恢复未联系'}}
 						</el-button>
-						<el-button type="text" size="small" @click="handleCreate(scope.row)">创建服务单</el-button>
+						<el-button type="text" v-if="scope.row.orderId == 0" size="small" @click="handleCreate(scope.row)">创建报价单</el-button>
 						<el-button v-if="scope.row.status == 1 " type="text" size="small">取消</el-button>
 					</template>
 				</el-table-column>
@@ -132,8 +133,13 @@
 				return moment(value).format('YYYY-MM-DD')
 			},
 			/** 查看 */
-			handleLook() {
-				console.log('执行111')
+			handleLook(row) {
+				this.$router.push({
+					path: '/order/demand-details',
+					query:{
+						id:row.id
+					}
+				})
 			},
 			/** 选择分页 */
 			handleSizeChange(e) {
@@ -153,7 +159,7 @@
 			},
 			/** 打开服务单 */
 			handleCreate(row) {
-				console.log(row);
+				// console.log(row);
 				this.$router.push({
 					path: '/order/demand-details',
 					query:{

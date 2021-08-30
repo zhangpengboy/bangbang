@@ -98,6 +98,7 @@ export function getBriefDetail(id) {
 
 /**
  * 查看服务单详情
+ * @param {Number} id 服务单id 
  */
 export function getOrderDetail(id) {
 	return request({
@@ -174,7 +175,53 @@ export function getServiceUpdateStatus(data) {
 	})
 }
 
+/**
+ * 成员名单列表
+ * @param {String} teamTypeId 模板id
+ */
+export function getMembers(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/enroll/members`,
+		params
+	})
+}
 
+/**
+ * 详细报名数据
+ * @param {String} orderId  订单id
+ */
+export function getMembersList(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/enroll/memberList`,
+		params
+	})
+}
+
+/**
+ * 取消-成员报名
+ * @param {Number} id 用户id
+ * @param {Number} status 用户状态   
+ */
+export function getMembersEnrollCancel(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/enroll/cancel`,
+		data
+	})
+}
+
+/**
+ * 订单工种(成员)列表
+ * @param {String} orderId  订单id
+ * @param {String} teamTypeName 工种名称
+ * @param {String} teamTypeTag 工种标签 
+ * @param {Number} status 招工状态 
+ */
+export function getOrderTeamType(params) {
+	return request({
+		url: `/api/bill//v1.0/admin/order/orderTeamType`,
+		params
+	})
+}
 
 // /v1.0/admin/brief/detail
 

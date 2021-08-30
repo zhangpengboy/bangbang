@@ -1,12 +1,12 @@
 <template>
-	<div class="main"   v-loading="loading">
+	<div class="main" v-loading="loading">
 		<!-- tab按钮切换 -->
 		<el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
 			<el-radio-button label="top">需求单详情</el-radio-button>
-			<el-radio-button label="right" >报价单</el-radio-button>
+			<el-radio-button label="right">报价单</el-radio-button>
 		</el-radio-group>
 		<!-- tab按钮切换end -->
-		<div class="box" >
+		<div class="box">
 			<!-- 需求详情 -->
 			<div class="demand-deltails" v-if="tabPosition == 'top'">
 				<div class="box-demand-title">需求单信息</div>
@@ -15,7 +15,11 @@
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">状态</div>
-						<div class="demand-deltails-box-item-conter">{{info.status == 1?'正常':'已取消 '}}</div>
+						<div class="demand-deltails-box-item-conter" v-if="info.status == 0">未发报价单</div>
+						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 1">已发报价单</div>
+						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 2">已取消</div>
+						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 3">已转至服务单</div>
+
 					</div>
 
 					<div class="demand-deltails-box-item flex">
@@ -31,7 +35,8 @@
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">语音</div>
 						<div class="demand-deltails-box-item-conter">
-							<m-audio class="demand-deltails-box-item-mp3" :src="item" text="点这里播放" v-for="(item,index) in info.voices ">
+							<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点击播放"
+								v-for="(item,index) in info.voices ">
 							</m-audio>
 						</div>
 					</div>
@@ -42,15 +47,13 @@
 							{{info.content}}
 						</div>
 					</div>
-
 					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">关联服务单</div>
+						<div class="demand-deltails-box-item-title">是否创建报价单</div>
 						<div class="demand-deltails-box-item-conter">
-							<el-button type="text">{{info.order?'已创建':''}}</el-button>
+							<span :class="info.order?'':'color-error'">{{info.order?'已创建':'未创建'}}</span>
 						</div>
 					</div>
 				</div>
-
 
 			</div>
 			<!-- 需求详情end -->
@@ -84,8 +87,9 @@
 						<el-form-item label="项目介绍">
 							<el-input type="textarea" v-model="basicForm.description" :rows="4"></el-input>
 							<div class="demand-service-upload">
-								<el-upload class="avatar-uploader flex" action="/api/commons/file/admin/v1/upload/public"
-									list-type="picture-card" name="multipartFile" :on-remove="handleRemoveImg"
+								<el-upload class="avatar-uploader flex"
+									action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
+									name="multipartFile" :on-remove="handleRemoveImg"
 									:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
 									:on-success="handleSuccessImg" :limit="4" :before-upload="beforeAvatarUpload">
 									<i class="el-icon-plus avatar-uploader-icon"></i>
@@ -522,7 +526,9 @@
 							<div class="demand-service-plan-box-foot-item flex fvertical">
 								<span> 信息服务费</span>
 								<div class="flex">
-									<el-input class="f1 demand-service-plan-box-foot-item-server" @input="handleInputToals(index)"  v-model="item.serviceFeeRate" placeholder="请输入信息服务费比例">
+									<el-input class="f1 demand-service-plan-box-foot-item-server"
+										@input="handleInputToals(index)" v-model="item.serviceFeeRate"
+										placeholder="请输入信息服务费比例">
 									</el-input>
 									<el-input value="%" :disabled="true"
 										class="f1 demand-service-plan-box-foot-item-company"></el-input>
@@ -538,7 +544,8 @@
 							<div class="demand-service-plan-box-foot-item flex fvertical">
 								<span> 税费</span>
 								<div class="flex">
-									<el-input class="f1" v-model="item.taxRate" @input="handleInputToals(index)" placeholder="请输入信息服务费比例"></el-input>
+									<el-input class="f1" v-model="item.taxRate" @input="handleInputToals(index)"
+										placeholder="请输入信息服务费比例"></el-input>
 									<el-input value="%" :disabled="true"
 										class="f1 demand-service-plan-box-foot-item-company"></el-input>
 									<el-input :value="item.taxRateNum" :disabled="true"
@@ -559,8 +566,6 @@
 				</div>
 			</div>
 			<!-- 服务单end -->
-		
-		
 		</div>
 
 		<el-dialog title="提示" :visible.sync="isAddress" width="800px" :before-close="handleClose">
@@ -589,13 +594,17 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
-	import {AddOrder,getBriefDetail,getOrderDetail} from '../../../api/user.js'
+	import {
+		AddOrder,
+		getBriefDetail,
+		getOrderDetail
+	} from '../../../api/user.js'
 	export default {
 		data() {
 			return {
-				info:{},
-				loading:false, // 是否显示正在加载
-				briefId:0,
+				info: {},
+				loading: false, // 是否显示正在加载
+				briefId: 0,
 				dialogImageUrl: "",
 				isImges: false, // 是否显示大图
 				isAddress: false, //显示添加地址
@@ -687,8 +696,8 @@
 						enterEndTime: "", // 退场时间
 						enterDay: "", // 班组工期
 						totalQuantity: "", // 班组工程量
-						totalNum:0,  // 总人数
-						totalFee:0, // 班组总费用
+						totalNum: 0, // 总人数
+						totalFee: 0, // 班组总费用
 						teamTypes: [ // 工种列表
 							{
 								name: "电工", // 工种名称
@@ -747,28 +756,26 @@
 
 		async mounted() {
 			let id = this.$route.query.id
-			console.log(id)
+			// console.log(id)
 			this.briefId = id;
 			this.getBriefDetail(id)
-			// this.getOrderDetail(id);
+			this.getOrderDetail(id);
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
-
 		methods: {
 			// 查看服务单详情
-			async getOrderDetail(id){
+			async getOrderDetail(id) {
 				let res = await getOrderDetail(id);
-				console.log('查看服务单详情',res);
+				console.log('查看服务单详情', res);
 			},
 			// 查看需求单详情
-			async getBriefDetail(id){
+			async getBriefDetail(id) {
 				this.loading = true;
-				try{
+				try {
 					let res = await getBriefDetail(id);
 					this.loading = false;
-					console.log(res)
 					this.info = res.data;
-				}catch(e){
+				} catch (e) {
 					this.loading = false;
 					//TODO handle the exception
 				}
@@ -779,7 +786,6 @@
 			},
 			// 删除方案
 			handleDeleteProject(index) {
-				console.log(index)
 				this.schemes.splice(index, 1);
 				this.schemeList.splice(index, 1);
 				if (index > 1) {
@@ -790,12 +796,18 @@
 			},
 			// 删除单个工种
 			handleDeleteWork(index, inx, type_index, val) {
-				this.schemes[index].teams[inx].teamTypes.splice(type_index, 1)
-				this.handleQuantity(index, inx, type_index, val)
+				 this.$confirm('是否删除当前工种信息？', '提示', {
+				          confirmButtonText: '确定',
+				          cancelButtonText: '取消',
+				          type: 'warning'
+				        }).then(() => {
+				          this.schemes[index].teams[inx].teamTypes.splice(type_index, 1)
+				          this.handleQuantity(index, inx, type_index, val)
+				        }).catch(() => {});
 			},
 			// 工种模式
 			handleTypeModel(index, inx, type_index, val) {
-				let newWork = this.patternList.filter(item=>item.label == val.workTypeVal)
+				let newWork = this.patternList.filter(item => item.label == val.workTypeVal)
 				val.workType = newWork[0].value
 				val.personalQuantity = '';
 				val.number = '';
@@ -819,9 +831,6 @@
 			},
 			//  方案输入单价
 			handleTeamsUniprice(index, inx, val) {
-				console.log(index);
-				console.log(inx);
-				console.log(val);
 				val.unitPrice = val.unitPrice.replace(/[^0-9.]/g, '');
 				this.getGroupTotal({
 					index,
@@ -855,21 +864,21 @@
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
-				this.schemes[data.index].teams[data.inx].totalNum =  totalNumber
+				this.schemes[data.index].teams[data.inx].totalNum = totalNumber
 				this.schemes[data.index].teams[data.inx].totalFee = total;
 				this.getTotal(data.index)
 			},
 			// 计算总费用
-			handleInputToals(index){
+			handleInputToals(index) {
 				this.getTotal(index)
 			},
 			// 计算总的社工服务费
-			getTotal(index){
+			getTotal(index) {
 				let teams = this.schemes[index].teams;
 				let total = 0;
-				teams.forEach((item,inx)=>{
+				teams.forEach((item, inx) => {
 					// console.log(item.teamTypes)
-					item.teamTypes.forEach((data,inxx)=>{
+					item.teamTypes.forEach((data, inxx) => {
 						console.log(data);
 						if (data.workTypeVal == '计时' && data.income && data.enterDay && data
 							.number) {
@@ -881,7 +890,7 @@
 						if (data.workTypeVal == '计件') {
 							total += data.number * data.personalQuantity * item.unitPrice
 							if (data.tag == '班组长') {
-								total += data.enterDay *data.leaderFee * data.number;
+								total += data.enterDay * data.leaderFee * data.number;
 							}
 						}
 						if (data.workTypeVal == '管理') {
@@ -898,15 +907,23 @@
 				this.schemes[index].taxRateNum = (totals * taxRate) / 100;
 				this.schemes[index].totalFee = total + Number(this.schemes[index].taxRateNum) + Number(this
 					.schemes[index].serviceFeeRateNum)
-			
+
 			},
 			// 删除组
 			hanldeRemoveGroup(index, inx) {
-				this.schemes[index].teams.splice(inx, 1)
+				this.$confirm('是否班组删除信息', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(()=>{
+					this.schemes[index].teams.splice(inx, 1);
+					this.getTotal(index);
+				})
+				
 			},
 			// 添加组
 			handleAddGroup(index) {
-				console.log(index);
+				// console.log(index);
 				let param = {
 					name: "", // 班组名称
 					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
@@ -968,7 +985,7 @@
 			},
 			// 午休时间
 			handleRestTime(index, inx, val) {
-				console.log(val);
+				// console.log(val);
 				if (!val.restTimeList || val.restTimeList.length == 0) {
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
@@ -1203,35 +1220,25 @@
 			/** 提交服务单 */
 			async handleAddSerice() {
 				let param = {};
+				if (!this.allAddress.point) {
+					return this.$message.error('请选择地址');
+				}
 				// 地区
-				param.address = this.allAddress.address ? this.allAddress.address : this.allAddress.city + this.allAddress
+				param.address = this.allAddress.address ? this.allAddress.address : this.allAddress.city + this
+					.allAddress
 					.title;
 				param.city = this.allAddress.city;
 				param.gpsLocation = this.allAddress.point.lng + ',' + this.allAddress.point.lat;
 				param.province = this.allAddress.province
 				param.region = this.allAddress.region // 地区
-				param.briefId  = this.briefId; // 需求单id
-				param.scope  = this.basicForm.scope;
+				param.briefId = this.briefId; // 需求单id
+				param.scope = this.basicForm.scope;
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
 				param.schemes = this.schemes;
-				console.log(param);
+				// console.log(param);
 				let res = await AddOrder(param);
 				this.$message.success('添加成功');
-				// try{
-				// 	console.log('成功')
-				// 	console.log(res)
-				// }catch(e){
-				// 	console.log('-----失败')
-				// 	console.log(e)
-				// 	//TODO handle the exception
-				// }
-				// console.log('this.basicForm:',this.basicForm)
-				// console.log(param)
-				// 总费用
-				// param.serviceFeeRate = this.serviceFeeRate;
-				// param.taxRate = this.taxRate;
-				// console.log(this.allAddress)
 			},
 			/** 确认添加项目地址 */
 			handleAddress() {
@@ -1338,7 +1345,7 @@
 					title: item.title
 				};
 				let infoWindow = new BMap.InfoWindow(item.address ? item.address : item.city + item.title, opts);
-				console.log(item)
+				// console.log(item)
 				this.form.address = item.address ? item.address : item.city + item.title; //记录详细地址，含建筑物名
 				this.form.addrPoint = item.point; //记录当前选中地址坐标
 				this.form.allAddress = item;
@@ -1359,7 +1366,7 @@
 				var that = this;
 				var geco = new BMap.Geocoder();
 				geco.getLocation(point, function(res) {
-					console.log('内容解析', res) //内容见下图
+					// console.log('内容解析', res) //内容见下图
 					that.mk.setPosition(point) //重新设置标注的地理坐标
 					that.map.panTo(point) //将地图的中心点更改为给定的点
 					that.form.address = res.address; //记录该点的详细地址信息
@@ -1426,8 +1433,8 @@
 							{
 								name: "电工", // 工种名称
 								tag: "", // 标签
-								workTypeVal: "",  // 工种模式名称
-								workType:0, // 工种模式
+								workTypeVal: "", // 工种模式名称
+								workType: 0, // 工种模式
 								enterStartTime: "", // 工种进场时间
 								enterEndTime: "", // 工种退场时间
 								enterDay: "", //工种工期
@@ -1494,7 +1501,7 @@
 			}
 
 			.demand-deltails-box-item-title {
-				width: 120px;
+				width: 160px;
 				background-color: #f2f2f2;
 				padding: 20px;
 				text-align: right;
@@ -1559,11 +1566,11 @@
 				}
 			}
 		}
-	
-		
+
+
 		.demand-service-upload {
 			margin-top: 20px;
-		
+
 			.avatar-uploader .el-upload {
 				border: 1px dashed #d9d9d9;
 				border-radius: 6px;
@@ -1571,11 +1578,11 @@
 				position: relative;
 				overflow: hidden;
 			}
-		
+
 			.avatar-uploader .el-upload:hover {
 				border-color: #409EFF;
 			}
-		
+
 			.avatar-uploader-icon {
 				font-size: 28px;
 				color: #8c939d;
@@ -1584,14 +1591,14 @@
 				line-height: 80px;
 				text-align: center;
 			}
-		
+
 			.avatar {
 				width: 80px;
 				height: 80px;
 				display: block;
 			}
 		}
-		
+
 		.demand-service-plan-add {
 			border: 1px dashed #d9d9d9;
 			border-radius: 6px;
@@ -1599,7 +1606,7 @@
 			position: relative;
 			overflow: hidden;
 			margin-left: 20px;
-		
+
 			.avatar-uploader-icon {
 				font-size: 28px;
 				color: #8c939d;
@@ -1609,15 +1616,15 @@
 				text-align: center;
 			}
 		}
-		
+
 		.demand-service-plan-box-info-data {
 			.el-form-item {
 				width: 33.33%;
 			}
 		}
-		
+
 		.demand-service-plan-box-list-btn {
-		
+
 			.demand-service-plan-box-list-btn-add,
 			.demand-service-plan-box-list-btn-del {
 				width: 300px;
@@ -1630,32 +1637,32 @@
 				margin-bottom: 40px;
 				cursor: pointer;
 			}
-		
+
 			.demand-service-plan-box-list-btn-add {
 				color: #1682E6;
 			}
 		}
-		
+
 		.demand-service-plan-box-list-item {
 			border-top: 1px dashed #d9d9d9;
 			margin: 0 20px;
 			padding: 20px 0;
 		}
-		
+
 		.demand-service-plan-box-list-item-box {
 			width: 33.33%;
-		
+
 			input {
 				width: 220px;
 			}
-		
+
 			.plan-box-btn {
 				position: relative;
 				// margin-right: 20px;
 				// margin-bottom: 20px;
 				// margin-left: 20px;
 				width: 56px;
-		
+
 				button {
 					position: absolute;
 					top: 50%;
@@ -1664,15 +1671,15 @@
 				}
 			}
 		}
-		
+
 		.demand-service-plan-box-list-item-type {
 			padding-left: 36px;
-		
+
 			.el-form-item {
 				width: 33.33%;
 			}
 		}
-		
+
 		.demand-service-plan-add-main {
 			width: 600px;
 			height: 50px;
@@ -1683,40 +1690,42 @@
 			border-radius: 16px;
 			margin: 0 auto 20px;
 		}
-		
-		
-		
+
+
+
 		.demand-service-plan-box-foot {
 			margin: 0 60px;
-		
+
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
-				.demand-service-plan-box-foot-item-server{
-					input{
+
+				.demand-service-plan-box-foot-item-server {
+					input {
 						width: 200px;
 					}
 				}
+
 				input {
 					width: 300px;
 				}
-		
+
 				span {
 					width: 100px;
 					margin-right: 10px;
 				}
-		
+
 				.demand-service-plan-box-foot-item-company {
 					margin-left: 20px;
-		
+
 					input {
 						width: 80px;
 					}
 				}
 			}
 		}
-		
-		
+
+
 		.demand-service-plan-box-foot-server-order {
 			width: 260px;
 			height: 40px;
@@ -1727,12 +1736,12 @@
 			border-radius: 8px;
 			cursor: pointer;
 		}
-		
-		
+
+
 		.demand-service-plan-gropu {
 			border-radius: 16rpx;
 			overflow: hidden;
-		
+
 			.demand-service-plan-gropu-item {
 				padding: 10px 20px;
 				font-size: 14px;
@@ -1740,7 +1749,7 @@
 				border: 1px solid #DCDFE6;
 				background-color: #FFFFFF;
 				cursor: pointer;
-		
+
 				&.active {
 					color: #FFFFFF;
 					background-color: #1890ff;
@@ -1748,9 +1757,9 @@
 				}
 			}
 		}
-		
-		
-	
+
+
+
 	}
 
 
@@ -1759,16 +1768,16 @@
 			i.el-icon-search {
 				margin-top: 11px;
 			}
-	
+
 			.mgr10 {
 				margin-right: 10px;
 			}
-	
+
 			.title {
 				text-overflow: ellipsis;
 				overflow: hidden;
 			}
-	
+
 			.address {
 				line-height: 1;
 				font-size: 12px;
@@ -1777,6 +1786,4 @@
 			}
 		}
 	}
-	
-	
 </style>

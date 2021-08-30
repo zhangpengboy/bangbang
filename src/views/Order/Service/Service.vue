@@ -66,7 +66,7 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-						<p v-if="scope.row.status == 1">未报名</p>
+						<p v-if="scope.row.status == 1">未招工</p>
 						<p v-if="scope.row.status == 2">报名中</p>
 						<p v-if="scope.row.status == 3">进行中</p>
 						<p v-if="scope.row.status == 4">已结束</p>
@@ -84,10 +84,9 @@
 					<template slot-scope="scope">
 						<el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
 						<template v-if="scope.row.status != 5">
-							<el-button type="text" size="small" @click='goRecruit(scope.row)'>去招工</el-button>
-							<el-button type="text" size="small" @click="handleClose(scope.row)">关闭</el-button>
+							<el-button type="text" size="small" v-if="scope.row.status == 1" @click='goRecruit(scope.row)'>去招工</el-button>
+							<el-button type="text" size="small" v-if="scope.row.status != 4 || scope.row.status != 5"  @click="handleClose(scope.row)">关闭</el-button>
 						</template>
-						
 					</template>
 				</el-table-column>
 			</el-table>
@@ -252,6 +251,3 @@
 		}
 	}
 </script>
-
-<style>
-</style>

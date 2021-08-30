@@ -1,7 +1,7 @@
 <template>
 	<div class="member-details page">
 		<!-- 头部  -->
-		<div class="top  ">
+<!-- 		<div class="top  ">
 			<div class="top-title ">数据筛选</div>
 			<div class="top-content flex fvertical fbetween">
 				<div class="top-content-item flex fvertical f1">
@@ -61,7 +61,7 @@
 					<el-button>重置</el-button>
 				</div>
 			</div>
-		</div>
+		</div> -->
 		<!-- 头部end  -->
 		<div class="box">
 			<!-- 表格数据  -->
