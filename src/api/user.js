@@ -166,7 +166,7 @@ export function getUpdateReviewStatus(data) {
  *  修改服务单状态
  * @param {Number} id 当前列表ID
  * @param {Number} status  ->未招工，2->报名中,3->进行中，4->已结束,5->已关闭  
- */
+ * */
 export function getServiceUpdateStatus(data) {
 	return request({
 		url: `/api/bill/v1.0/admin/order/updateStatus`,
@@ -178,7 +178,7 @@ export function getServiceUpdateStatus(data) {
 /**
  * 成员名单列表
  * @param {String} teamTypeId 模板id
- */
+ * */
 export function getMembers(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/enroll/members`,
@@ -189,7 +189,7 @@ export function getMembers(params) {
 /**
  * 详细报名数据
  * @param {String} orderId  订单id
- */
+ * */
 export function getMembersList(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/enroll/memberList`,
@@ -198,13 +198,26 @@ export function getMembersList(params) {
 }
 
 /**
+ * 浏览记录
+ * @param {String} orderId  订单id
+ * */
+ export function getBrowseList(params) {
+ 	return request({
+ 		url: `/api/bill/v1.0/admin/brief/enroll/browseList`,
+ 		params
+ 	})
+ }
+
+
+/**
  * 取消-成员报名
  * @param {Number} id 用户id
  * @param {Number} status 用户状态   
- */
+ * */
 export function getMembersEnrollCancel(data) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/enroll/cancel`,
+		method: 'post',
 		data
 	})
 }

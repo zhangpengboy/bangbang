@@ -11,7 +11,7 @@
 		<!-- tab按钮切换end -->
 
 		<!-- 服务单 -->
-		<div class="demand-service" v-show="tabPosition == 'order'">
+		<div class="demand-service" v-show="tabPosition == 'order'" v-loading="loading">
 			<div class="box-demand-title">项目信息</div>
 			<!-- 项目信息 -->
 			<div class="demand-service-info">
@@ -27,14 +27,17 @@
 
 					<div class="flex  ">
 						<el-form-item label="项目开始时间">
-							<el-input :disabled="true" v-model="basicForm.startTime" placeholder="同步最早开始时间"></el-input>
+							<el-input :disabled="true" :value="formatDate(basicForm.enterStartTime)"
+								placeholder="同步最早开始时间"></el-input>
 						</el-form-item>
 						<el-form-item class="demand-service-end-item" label="项目竣工时间">
-							<el-input :disabled="true" v-model="basicForm.endTime" placeholder="同步最晚结束时间"></el-input>
+							<el-input :disabled="true" :value="formatDate(basicForm.enterEndTime)"
+								placeholder="同步最晚结束时间"></el-input>
 						</el-form-item>
 					</div>
 					<el-form-item label="项目工期">
-						<el-input :disabled="true" :value="basicForm.duration"></el-input>
+						<el-input :disabled="true"
+							:value="getDateDiff(basicForm.enterStartTime,basicForm.enterEndTime)"></el-input>
 					</el-form-item>
 
 					<el-form-item label="项目介绍">
@@ -42,8 +45,9 @@
 						<div class="demand-service-upload">
 							<el-image style="width: 100px; height: 100px" v-for="(item,index) in basicForm.images"
 								:src="item">
-							</el-image <el-dialog :visible.sync="isImges">
-							<img width="100%" :src="dialogImageUrl" alt="">
+							</el-image>
+							<el-dialog :visible.sync="isImges">
+								<img width="100%" :src="dialogImageUrl" alt="">
 							</el-dialog>
 
 							<!-- 	<img v-if="basicForm.images.length" v-for="(item,index) in basicForm.images" :src="item"
@@ -526,7 +530,8 @@
 
 
 		<!--  成员名单 -->
-		<div class="service-details-member" v-if="tabPosition == 'member'">
+		<div class="service-details-member" v-if="tabPosition == 'member' && memberInfo.scheme"
+			v-loading="memberLoading">
 			<div class="top">
 				<div class="top-title ">数据筛选</div>
 				<div class="top-content flex fvertical fbetween">
@@ -539,7 +544,7 @@
 						<div class="flex fvertical top-content-item-status">
 							<span>工种标签：</span>
 							<el-select v-model="memberTab" placeholder="选择跟进人">
-								<el-option v-for="item in options" :key="item.value" :label="item.label"
+								<el-option v-for="item in memberTagList" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
 							</el-select>
@@ -547,7 +552,7 @@
 						<div class="flex fvertical top-content-item-status">
 							<span>招工状态：</span>
 							<el-select v-model="memberStatus" placeholder="选择跟进人">
-								<el-option v-for="item in options" :key="item.value" :label="item.label"
+								<el-option v-for="item in memberStatusList" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
 							</el-select>
@@ -556,8 +561,8 @@
 
 
 					<div class="top-content-btn">
-						<el-button type="primary">查询</el-button>
-						<el-button>重置</el-button>
+						<el-button type="primary" @click="handelSeracMember">查询</el-button>
+						<el-button @click="handleResetMember">重置</el-button>
 					</div>
 				</div>
 			</div>
@@ -568,7 +573,8 @@
 						<el-radio-button label="name">方案名单</el-radio-button>
 						<el-radio-button label="delay">延期方案名单</el-radio-button>
 					</el-radio-group>
-					<div class="top-content-status">报名中</div>
+					<div class="top-content-status" v-if="memberInfo.orderStatus==2">报名中</div>
+					<div class="top-content-status" v-if="memberInfo.orderStatus==3">进行中</div>
 					<!-- <el-tag size="medium">标签一</el-tag> -->
 					<el-button type="primary" @click="handleOpenMember">查看详细报名数据</el-button>
 				</div>
@@ -826,19 +832,19 @@
 								<span class="service-details-member-box-list-worker-title">招工人员</span>
 								<div class="f1">
 									<span
-										class="service-details-member-box-list-worker-name">完成匹配（{{items.matchNum+'/'+items.number}}）</span>
+										class="service-details-member-box-list-worker-name">{{items.matchNum == items.number?'完成匹配':'匹配中'}}（{{items.matchNum+'/'+items.number}}）</span>
 									<div class="service-details-member-box-list-worker-user flex fvertical">
 										<div class="service-details-member-box-list-worker-user-item flex fvertical fbetween"
-											v-for="item in 10">
-											<span>张三 18888888888</span>
-											<i class="el-icon-error"></i>
+											v-for="(res,list_index) in items.list">
+											<span>{{res.name}} {{res.phone}}</span>
+											<i class="el-icon-error"
+												@click="handleDeteleUser(res,index,inx,list_index)"></i>
 										</div>
 
-										<div class="service-details-member-box-list-worker-user-add flex fvertical fbetween fcenter"
+										<!-- 	<div class="service-details-member-box-list-worker-user-add flex fvertical fbetween fcenter"
 											@click="dialogVisible = true">
-											<!-- <span>张三 18888888888</span> -->
 											<i class="el-icon-plus"></i>
-										</div>
+										</div> -->
 
 									</div>
 								</div>
@@ -1005,7 +1011,8 @@
 		getBriefPay,
 		getOrderdetail,
 		getOrderTeamType,
-		getMembers
+		getMembers,
+		getMembersEnrollCancel
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -1112,7 +1119,31 @@
 				memberStatus: "", // 成员-招工状态
 				memberTab: "", // 成员-工种标签
 				memberInfo: {}, // 成员列表
-
+				memberTagList: [{
+					label: "全部",
+					value: '',
+				}, { // 工种模式
+					label: "班组长",
+					value: 1,
+				}, {
+					label: "普通",
+					value: 2,
+				}, {
+					label: "小工",
+					value: 3,
+				}],
+				memberStatusList: [{
+					label: "全部",
+					value: "",
+				}, {
+					label: "完成匹配",
+					value: 1,
+				}, {
+					label: "匹配中",
+					value: 2,
+				}],
+				memberLoading: false,
+				loading: false
 			}
 		},
 		watch: {
@@ -1133,16 +1164,57 @@
 			this.getOrderTeamType();
 		},
 		methods: {
-			// 获取成员列表
-			async getMembers(teamTypeId) {
+			// 计算班组工期
+			getDateDiff(start, end) {
+				if (start && end) {
+					var diffValue = Math.abs(new Date(end).getTime() - new Date(start).getTime());
+					var second = 1000,
+						minute = second * 60,
+						hour = minute * 60,
+						day = hour * 24,
+						month = day * 30,
+						year = month * 12;
+					return Math.ceil(diffValue / day);
+				}
+				return 0
+			},
+			// 取消报名
+			handleDeteleUser(row, index, inx, list_index) {
+				console.log(this.memberInfo.teams[index].teamTypes[inx].list)
+				this.$confirm('是否确定删除用户', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.getDeteleUser(row.id, index, inx, list_index);
+				}).catch(() => {});
+			},
+			// 删除用户列表
+			async getDeteleUser(id, index, inx, list_index) {
 				let param = {};
-				param.teamTypeId = teamTypeId
-				let res = await getMembers(param);
-				this.memberInfo.teams[index].teamTypes[inx].push({
-					userList: res.data
-				});
-				console.log(this.memberInfo)
+				param.id = id;
+				param.status = 2;
+				try {
+					let res = await getMembersEnrollCancel(param);
+					this.$message.success('删除成功')
+					let list = this.memberInfo.teams[index].teamTypes[inx].list.splice(list_index, 1);
+					this.$forceUpdate();
+				} catch (e) {
+					//TODO handle the exception
+				}
 
+			},
+			// 获取成员列表
+			getMembers() {
+				this.memberInfo.teams.forEach((item, index) => {
+					item.teamTypes.forEach(async (data, inx) => {
+						let teamTypeId = data.id;
+						let res = await getMembers({
+							teamTypeId
+						});
+						data.list = res.data;
+					})
+				})
 			},
 
 			//获取工种模式
@@ -1157,6 +1229,12 @@
 			bjDate(start, end) {
 				return moment(end).diff(moment(start), 'days');
 			},
+			/** 查询成员名单信息 */
+			handelSeracMember() {
+				this.getOrderTeamType();
+			},
+			/** 重置员名单信息 */
+			handleResetMember() {},
 			/** 获取成员列表 */
 			async getOrderTeamType() {
 				let param = {};
@@ -1165,21 +1243,13 @@
 				param.teamTypeTag = this.memberTab;
 				param.status = this.memberStatus;
 				try {
+					this.memberLoading = true;
 					let res = await getOrderTeamType(param);
+					this.memberLoading = false;
 					this.memberInfo = res.data;
-					// console.log('获取成员列表::', res);
-					let teams = res.data.teams;
-					teams.forEach((item,index)=>{
-						item.teamTypes((data,inx)=>{
-							this.getMembers(data.id)
-						})
-					})
-					// for (let i = 0; i < teams.length; i++) {
-					// 	for (let j = 0; j < teams[i].teamTypes.length; j++) {
-					// 		this.getMembers(teams[i].teamTypes[j].id, i, j)
-					// 	}
-					// }
+					this.getMembers();
 				} catch (e) {
+					this.memberLoading = false;
 					//TODO handle the exception
 				}
 			},
@@ -1210,17 +1280,24 @@
 			},
 			/** 获取服务单详情 */
 			async getOrderdetail(orderId) {
-				let res = await getOrderdetail({
-					id: orderId
-				});
-				this.basicForm = res.data;
-				this.schemes = res.data.schemes
-				let lng = res.data.gpsLocation.split(',')[0];
-				let lat = res.data.gpsLocation.split(',')[1]
-				this.getDetailsAdderss({
-					lng,
-					lat
-				})
+				try {
+					this.loading = true;
+					let res = await getOrderdetail({
+						id: orderId
+					});
+					this.loading = false;
+					this.basicForm = res.data;
+					this.schemes = res.data.schemes
+					let lng = res.data.gpsLocation.split(',')[0];
+					let lat = res.data.gpsLocation.split(',')[1]
+					this.getDetailsAdderss({
+						lng,
+						lat
+					})
+				} catch (e) {
+					this.loading = false;
+					//TODO handle the exception
+				}
 			},
 			/** 重置充值 */
 			handleReset() {
@@ -1301,8 +1378,9 @@
 			},
 			/** 打开查看详情名单 */
 			handleOpenMember() {
+				console.log(this.orderId);
 				this.$router.push({
-					path: '/order/member-details'
+					path: `/order/member-details?orderID=${this.orderId}`
 				})
 			},
 			/** 查看理由 */
