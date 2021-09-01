@@ -158,7 +158,7 @@
 									</el-form-item>
 									<el-form-item label="班组工程量">
 										<div class="flex">
-											<el-input class="f1" v-model="teams.totalQuantity" :disabled="true">
+											<el-input class="f1" v-model="teams.totalUnit" :disabled="true">
 											</el-input>
 											<el-select style="width: 120px;margin-left: 10px;" :disabled="true"
 												v-model="teams.unit" placeholder="请选择">
