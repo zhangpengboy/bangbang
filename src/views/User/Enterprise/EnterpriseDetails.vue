@@ -129,13 +129,14 @@
               action="123"
               :before-upload="beforeUpload"
               :show-file-list="false"
+              :disabled="isEditShM"
               ref="newupload"
               name="multipartFile"
               :with-credentials='true'
               :auto-upload="true"
               :on-success="upIdCard"
             >
-              <img v-if="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardUri " :src="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardUri" class="avatar">
+              <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
             <div class="mt10 text-center">身份证正面</div>
@@ -147,13 +148,14 @@
               action="123"
               :before-upload="beforeUpload2"
               :show-file-list="false"
+              :disabled="isEditShM"
               ref="newupload"
               name="multipartFile"
               :auto-upload="true"
               :with-credentials='true'
               :on-success="upIdCardBack"
             >
-              <img v-if="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardReverseUri" :src="userInfo.realNameAuthDTO&&userInfo.realNameAuthDTO.idCardReverseUri" class="avatar">
+              <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
               <i v-else class="el-icon-plus avatar-uploader-icon" />
             </el-upload>
             <div class="mt10 text-center">身份证背面</div>
@@ -213,6 +215,7 @@
             name="multipartFile"
             :action="adminUrl"
             list-type="picture-card"
+            :disabled="isEditQiY"
             :file-list="renZhengInfo.fileUris"
             :on-success="qiyeUpsuccess"
             :on-remove="qiyeRemove"
@@ -281,7 +284,10 @@
       qiYeRealNameAuth,
       qiYeApply,
       enterQiYeApply,
-      uploadIdCard
+      uploadIdCard,
+      uploadIdCardByAli,
+      uploadpublic,
+      getPreSignFile
   } from '../../../api/user.js'
   import { parseTime } from '@/utils/index.js'
 
@@ -349,8 +355,12 @@ export default {
                nation:data.realNameAuthDTO.nation,
                idNo:data.realNameAuthDTO.idNo,
                householdRegister:data.realNameAuthDTO.householdRegister,
+               idCardUri:data.realNameAuthDTO.idCardUri,
+               idCardUriUp:data.realNameAuthDTO.idCardUri,
+               idCardReverseUri:data.realNameAuthDTO.idCardReverseUri,
             }
-          }
+            this.getIdUrl(data.realNameAuthDTO.idCardUri)
+          }       
           if(data.enterpriseCertApplyDTO){
             this.renZhengInfo = data.enterpriseCertApplyDTO
             var imgdata = data.enterpriseCertApplyDTO.fileUris.split(',')
@@ -386,7 +396,11 @@ export default {
                nation:data.realNameAuthDTO.nation,
                idNo:data.realNameAuthDTO.idNo,
                householdRegister:data.realNameAuthDTO.householdRegister,
+               idCardUri:data.realNameAuthDTO.idCardUri,
+               idCardUriUp:data.realNameAuthDTO.idCardUri,
+               idCardReverseUri:data.realNameAuthDTO.idCardReverseUri,
             }
+            this.getIdUrl(data.realNameAuthDTO.idCardUri)
           }
           if(data.enterpriseCertApplyDTO){
             this.renZhengInfo = data.enterpriseCertApplyDTO
@@ -471,10 +485,10 @@ export default {
          age:this.realNameInfo.age,
          gender:gender,
          householdRegister:this.realNameInfo.householdRegister,
-         // idCardReverseUri:this.realNameInfo.idCardReverseUri,
-         // idCardUri:this.realNameInfo.idCardUri,
-         idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-         idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardReverseUri:this.realNameInfo.idCardReverseUri,
+         idCardUri:this.realNameInfo.idCardUriUp,
+         // idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         // idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
          idNo:this.realNameInfo.idNo,
          nation:this.realNameInfo.nation,
          nativePlace:this.realNameInfo.nativePlace,
@@ -571,19 +585,37 @@ export default {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadIdCardByAli(data).then(res => {
          console.log(res)
-
+        this.realNameInfo.realName = res.data.realName
+        this.realNameInfo.gender = res.data.gender
+        this.realNameInfo.nation = res.data.nation
+        this.realNameInfo.age = res.data.age
+        this.realNameInfo.idNo = res.data.idNo
+        this.realNameInfo.idCardUriUp = res.data.idCardUri
+        this.getIdUrl(res.data.idCardUri)
        })
        return false
+    },
+    // 解析身份证照片
+    getIdUrl(url){
+    	var query = {
+    		uri:url
+    	}
+    	 getPreSignFile(query).then(res => {
+    	   console.log(res)
+         this.realNameInfo.idCardUri = res.data
+         this.realNameInfo = Object.assign({}, this.realNameInfo)
+    	 })
     },
     beforeUpload2(file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadpublic(data).then(res => {
          console.log(res)
-
+          this.realNameInfo.idCardReverseUri = res.data
+          this.realNameInfo = Object.assign({}, this.realNameInfo)
        })
        return false
     },

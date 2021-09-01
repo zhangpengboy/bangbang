@@ -107,11 +107,11 @@ export default {
         appType: 2
       },
       loginRules: {
-        username: [{
-          required: true,
-          trigger: 'blur',
-          validator: validateUsername
-        }],
+        // username: [{
+        //   required: true,
+        //   trigger: 'blur',
+        //   validator: validateUsername
+        // }],
         password: [{
           required: true,
           trigger: 'blur',
@@ -208,7 +208,7 @@ export default {
           var sha256 = require('js-sha256').sha256
           const password = new Buffer(this.loginForm.password, 'utf8')
           const param = Object.assign({}, this.loginForm)
-          // console.log(param);
+          // console.log(param); 
           param.password = this.arrayBufferToBase64(sha256.arrayBuffer(password))
           try {
             const res = await getLogin(param)

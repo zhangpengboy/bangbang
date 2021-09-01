@@ -9,6 +9,7 @@ import {
 } from '@/utils/auth'
 import uuid from 'node-uuid'
 // create an axios instance
+var that = this;
 const service = axios.create({
 	withCredentials: true, // send cookies when cross-domain requests
 	// timeout: 5000 // request timeout
@@ -54,7 +55,9 @@ service.interceptors.response.use(
 		if (res.code == 200) {
 			return res;
 		} else if (res.code == 401) {
-			this.$router.push(`/?redirect=${this.$route.fullPath}`)
+			// this.$router.push(`/?redirect=${this.$route.fullPath}`)
+      // this.$router.push('/')
+     location.href = '/login'
 			// store.dispatch('user/resetToken').then(() => {
 			// 	location.reload()
 			// })

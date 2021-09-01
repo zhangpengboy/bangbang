@@ -201,7 +201,10 @@ import {
     gongRenRealNameAuth,
     uploadIdCard,
     gongrenupdateUserStatus,
-    exportCsvGongren
+    exportCsvGongren,
+    uploadIdCardByAli,
+    getPreSignFile,
+    uploadpublic
 } from '../../../api/user.js'
 
 export default {
@@ -247,6 +250,7 @@ export default {
 
       realNamePop: false,
       idCard: '',
+      idCardUp: '', //上传用的
       idCardBack: '',
       // 实名认证
       rnName:'',
@@ -414,19 +418,35 @@ export default {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadIdCardByAli(data).then(res => {
          console.log(res)
-
+         this.rnName = res.data.realName
+         this.rnGender = res.data.gender
+         this.rnNation = res.data.nation
+         this.rnAge = res.data.age
+         this.rnIdnum = res.data.idNo
+         this.idCardUp = res.data.idCardUri
+         this.getIdUrl(res.data.idCardUri)
        })
        return false
+    },
+    // 解析身份证照片
+    getIdUrl(url){
+    	var query = {
+    		uri:url
+    	}
+    	 getPreSignFile(query).then(res => {
+    	   console.log(res)
+         this.idCard = res.data
+    	 })
     },
     beforeUpload2(file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadpublic(data).then(res => {
          console.log(res)
-
+         this.idCardBack = res.data
        })
        return false
     },
@@ -450,8 +470,8 @@ export default {
          age:this.rnAge,
          gender:this.rnGender,
          householdRegister:this.rnHouse,
-         idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-         idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardReverseUri:this.idCardBack,
+         idCardUri:this.idCardUp,
          idNo:this.rnIdnum,
          nation:this.rnNation,
          nativePlace:this.rnNativePlace,
