@@ -8,7 +8,8 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch" placeholder="用户ID/账号">
+						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch"
+							placeholder="用户ID/账号">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -21,8 +22,8 @@
 					</div>
 				</div>
 				<div class="top-content-btn">
-					<el-button type="primary"查询</el-button>
-					<el-button>重置</el-button>
+					<el-button type="primary" 查询</el-button>
+						<el-button>重置</el-button>
 				</div>
 			</div>
 		</div>
@@ -50,8 +51,8 @@
 				<el-table-column label="语音" width="140">
 					<template slot-scope="scope">
 						<template v-for="(item,index) in scope.row.voices">
-							<m-audio :key="index" :showDuration="false"  class="demand-deltails-box-item-mp3" v-if="index == 0" :src="item.url"
-								text="点这里播放">
+							<m-audio :key="index" :showDuration="false" class="demand-deltails-box-item-mp3"
+								v-if="index == 0" :src="item.url" text="点这里播放">
 							</m-audio>
 						</template>
 					</template>
@@ -62,7 +63,7 @@
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
-				<el-table-column  label="创建时间">
+				<el-table-column label="创建时间">
 					<template slot-scope="scope">
 						<span>{{formatDate(scope.row.createTime)}}</span>
 					</template>
@@ -74,19 +75,25 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-						<div  v-if="scope.row.status == 0">未发报价单</div>
-						<div  v-else-if="scope.row.status == 1">已发报价单</div>
-						<div  v-else-if="scope.row.status == 2">已取消</div>
-						<div  v-else-if="scope.row.status == 3">已转至服务单</div>
+						<div v-if="scope.row.status == 0">未发报价单</div>
+						<div v-else-if="scope.row.status == 1">已发报价单</div>
+						<div v-else-if="scope.row.status == 2">已取消</div>
+						<div v-else-if="scope.row.status == 3">已转至服务单</div>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">
 						<el-button @click="handleLook(scope.row)" type="text" size="small">查看</el-button>
-						<el-button type="text" size="small"  @click="handleSumbitRelationship(scope.row)">{{scope.row.contactStatus == 0?'确认联系':'恢复未联系'}}
-						</el-button>
-						<el-button type="text" v-if="scope.row.orderId == 0" size="small" @click="handleCreate(scope.row)">创建报价单</el-button>
-						<el-button v-if="scope.row.status == 1 " type="text" size="small">取消</el-button>
+						<template v-if="scope.row.status != 2 ">
+							<el-button type="text" size="small" @click="handleSumbitRelationship(scope.row)">
+								{{scope.row.contactStatus == 0?'确认联系':'恢复未联系'}}
+							</el-button>
+							<el-button type="text" v-if="scope.row.orderId == 0" size="small"
+								@click="handleCreate(scope.row)">创建报价单</el-button>
+						</template>
+						
+						<el-button v-if="scope.row.status == 0 " type="text" size="small"
+							@click="handleClose(scope.row)">取消</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -107,7 +114,8 @@
 
 <script>
 	import {
-		getBriel,UpdateBriel
+		getBriel,
+		UpdateBriel
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -132,12 +140,29 @@
 			formatDate(value) {
 				return moment(value).format('YYYY-MM-DD')
 			},
+			/** 取消订单 */
+			handleClose(row) {
+				this.$confirm('是否取消需求单?', '确认提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					let param = {};
+					param.id = row.id;
+					param.status = 2;
+					this.UpdateBriel(param, true);
+				}).catch(() => {
+
+				});
+
+
+			},
 			/** 查看 */
 			handleLook(row) {
 				this.$router.push({
 					path: '/order/demand-details',
-					query:{
-						id:row.id
+					query: {
+						id: row.id
 					}
 				})
 			},
@@ -153,7 +178,7 @@
 				this.getBriel();
 			},
 			// 搜索
-			handelSearch(){
+			handelSearch() {
 				this.pageIndex = 1;
 				this.getBriel();
 			},
@@ -162,8 +187,8 @@
 				// console.log(row);
 				this.$router.push({
 					path: '/order/demand-details',
-					query:{
-						id:row.id
+					query: {
+						id: row.id
 					}
 				})
 			},
@@ -175,27 +200,30 @@
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-					// let {id,contactStatus,status} = row;
 					this.UpdateBriel(row);
-					// console.log(row)
 				}).catch(() => {
-					
+
 				});
 			},
 			/** 更新需求单状态 */
-			async UpdateBriel(data){
+			async UpdateBriel(data, isshow = false) {
 				let param = {}
-				param.id = data.id;
-				param.contactStatus = data.contactStatus ? 0 : 1;
+				if (isshow) {
+					param = data;
+				} else {
+					param.id = data.id;
+					param.contactStatus = data.contactStatus ? 0 : 1;
+				}
+
 				// param.status = data.status;
 				this.loading = true;
-				try{
+				try {
 					let res = await UpdateBriel(param);
 					console.log(res);
 					this.loading = false;
 					this.$message.success('操作成功');
 					this.getBriel();
-				}catch(e){
+				} catch (e) {
 					this.loading = false
 					console.log(e)
 					//TODO handle the exception

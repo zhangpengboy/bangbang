@@ -35,7 +35,7 @@
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">语音</div>
 						<div class="demand-deltails-box-item-conter">
-							<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点击播放"
+							<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点这里播放"
 								v-for="(item,index) in info.voices ">
 							</m-audio>
 						</div>
@@ -787,8 +787,7 @@
 		},
 
 		async mounted() {
-			let id = this.$route.query.id
-			// console.log(id)
+			let id = this.$route.query.id;
 			this.gettypeWorkClass();
 			this.briefId = id;
 			this.getBriefDetail(id)
@@ -811,8 +810,6 @@
 						})
 					})
 				}
-				
-				console.log('gettypeWorkClass::', res);
 			},
 			formatDateTime(value) {
 				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
@@ -1309,6 +1306,8 @@
 				param.schemes = this.schemes;
 				let res = await AddOrder(param);
 				this.$message.success('添加成功');
+				this.getBriefDetail(this.briefId);
+				
 			},
 			/** 确认添加项目地址 */
 			handleAddress() {
