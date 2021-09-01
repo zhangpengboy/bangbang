@@ -98,7 +98,7 @@ export function getBriefDetail(id) {
 
 /**
  * 查看服务单详情
- * @param {Number} id 服务单id 
+ * @param {Number} id 服务单id
  */
 export function getOrderDetail(id) {
 	return request({
@@ -114,7 +114,7 @@ export function getOrderDetail(id) {
  * 充值审核列表
  * @param {String} keywords 搜索内容
  * @param {Number} status 充值状态
- * @param {Number} orderId 服务单id 不传查询全部 
+ * @param {Number} orderId 服务单id 不传查询全部
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
  */
@@ -165,7 +165,7 @@ export function getUpdateReviewStatus(data) {
 /**
  *  修改服务单状态
  * @param {Number} id 当前列表ID
- * @param {Number} status  ->未招工，2->报名中,3->进行中，4->已结束,5->已关闭  
+ * @param {Number} status  ->未招工，2->报名中,3->进行中，4->已结束,5->已关闭
  * */
 export function getServiceUpdateStatus(data) {
 	return request({
@@ -212,7 +212,7 @@ export function getMembersList(params) {
 /**
  * 取消-成员报名
  * @param {Number} id 用户id
- * @param {Number} status 用户状态   
+ * @param {Number} status 用户状态
  * */
 export function getMembersEnrollCancel(data) {
 	return request({
@@ -226,8 +226,8 @@ export function getMembersEnrollCancel(data) {
  * 订单工种(成员)列表
  * @param {String} orderId  订单id
  * @param {String} teamTypeName 工种名称
- * @param {String} teamTypeTag 工种标签 
- * @param {Number} status 招工状态 
+ * @param {String} teamTypeTag 工种标签
+ * @param {Number} status 招工状态
  */
 export function getOrderTeamType(params) {
 	return request({
@@ -279,6 +279,22 @@ export function uploadIdCard(data) {
 		url: `/api/commons/file/admin/v1/upload/idCard`,
 		method: 'post',
 		data
+	})
+}
+// 身份证OCR并上传--阿里
+export function uploadIdCardByAli(data) {
+	return request({
+		url: `/api/commons/file/admin/v1/upload/idCardByAli`,
+		method: 'post',
+		data
+	})
+}
+// 通过文件uri获取私有文件,uri为文件目录+文件名+后缀,以临时url的形式下载文件,一小时有效
+export function getPreSignFile(params) {
+	return request({
+		url: `/api/commons/file/admin/v1/getPreSignFile`,
+		method: 'get',
+		params
 	})
 }
 // 查询单条数据(具体的数据结构看对应的企业/工人管理里面的详情接口) ---用户
@@ -648,6 +664,14 @@ export function workCardRemove(data) {
 export function workCardRemoveGongRen(data) {
 	return request({
 		url: `/api/user/admin/worker/v1.0/workCard/label/remove`,
+		method: 'post',
+		data
+	})
+}
+// 上传文件到公共bucket
+export function uploadpublic(data) {
+	return request({
+		url: `/api/commons/file/admin/v1/upload/public`,
 		method: 'post',
 		data
 	})

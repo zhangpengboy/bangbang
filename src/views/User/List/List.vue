@@ -98,7 +98,7 @@
         <el-table-column prop="userType" label="用户登录" :formatter="userTypeFormat"/>
         <el-table-column prop="userStatus" label="状态" :formatter="userStatusFormat"/>
         <el-table-column prop="createTime" label="注册时间" />
-        <el-table-column prop="updater" label="操作人" />
+        <el-table-column prop="updaterName" label="操作人" />
         <el-table-column prop="updateTime" label="操作时间" />
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
@@ -280,7 +280,10 @@ import {
     uploadIdCard,
     realNameAuth,
     qiYeApply,
-    exportCsvUser
+    exportCsvUser,
+    uploadIdCardByAli,
+    getPreSignFile,
+    uploadpublic
 } from '../../../api/user.js'
 
 export default {
@@ -360,6 +363,7 @@ export default {
 
       realNamePop: false,
       idCard: '',
+      idCardUp: '', //上传用的
       idCardBack: '',
 
       qiyeRZPop: false,
@@ -619,23 +623,40 @@ export default {
 
       this.dialogVisible = false;
     },
+    // 身份证正面
     beforeUpload (file) {
       console.log(file)
       let data = new FormData()
       data.append('multipartFile', file)
-      uploadIdCard(data).then(res => {
+      uploadIdCardByAli(data).then(res => {
         console.log(res)
-
+        this.rnName = res.data.realName
+        this.rnGender = res.data.gender
+        this.rnNation = res.data.nation
+        this.rnAge = res.data.age
+        this.rnIdnum = res.data.idNo
+        this.idCardUp = res.data.idCardUri
+        this.getIdUrl(res.data.idCardUri)
       })
       return false
+     },
+     // 解析身份证照片
+     getIdUrl(url){
+     	var query = {
+     		uri:url
+     	}
+     	 getPreSignFile(query).then(res => {
+     	   console.log(res)
+          this.idCard = res.data
+     	 })
      },
      beforeUpload2(file) {
         console.log(file)
         let data = new FormData()
         data.append('multipartFile', file)
-        uploadIdCard(data).then(res => {
+        uploadpublic(data).then(res => {
           console.log(res)
-
+          this.idCardBack = res.data
         })
         return false
      },
@@ -652,8 +673,8 @@ export default {
           age:this.rnAge,
           gender:this.rnGender,
           householdRegister:this.rnHouse,
-          idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-          idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+          idCardReverseUri:this.idCardBack,
+          idCardUri:this.idCardUp,
           idNo:this.rnIdnum,
           nation:this.rnNation,
           nativePlace:this.rnNativePlace,

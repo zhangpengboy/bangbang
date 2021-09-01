@@ -119,6 +119,7 @@
               :before-upload="beforeUpload"
               :show-file-list="false"
               ref="newupload"
+              :disabled='isEditShM'
               name="multipartFile"
               :with-credentials='true'
               :auto-upload="true"
@@ -137,6 +138,7 @@
               :before-upload="beforeUpload2"
               :show-file-list="false"
               ref="newupload"
+              :disabled='isEditShM'
               name="multipartFile"
               :auto-upload="true"
               :with-credentials='true'
@@ -407,7 +409,10 @@ import {
     getbiref,
     workCardAddGongRen,
     workCardRemove,
-    workCardRemoveGongRen
+    workCardRemoveGongRen,
+    uploadIdCardByAli,
+    uploadpublic,
+    getPreSignFile
 } from '../../../api/user.js'
 import { regionData, CodeToText } from "element-china-area-data";
 
@@ -559,9 +564,10 @@ export default {
           idNo:data.realNameAuthDTO.idNo,
           householdRegister:data.realNameAuthDTO.householdRegister,
           idCardUri:data.realNameAuthDTO.idCardUri,
+          idCardUriUp:data.realNameAuthDTO.idCardUri,
           idCardReverseUri:data.realNameAuthDTO.idCardReverseUri
         }
-
+         this.getIdUrl(data.realNameAuthDTO.idCardUri)
         }
         this.bizCardInfo = {
           id:data.bizCard.id,
@@ -634,9 +640,10 @@ export default {
           idNo:data.realNameAuthDTO.idNo,
           householdRegister:data.realNameAuthDTO.householdRegister,
           idCardUri:data.realNameAuthDTO.idCardUri,
+          idCardUriUp:data.realNameAuthDTO.idCardUri,
           idCardReverseUri:data.realNameAuthDTO.idCardReverseUri
         }
-
+        this.getIdUrl(data.realNameAuthDTO.idCardUri)
         }
         this.bizCardInfo = {
           id:data.bizCard.id,
@@ -732,8 +739,8 @@ export default {
          age:this.realNameInfo.age,
          gender:gender,
          householdRegister:this.realNameInfo.householdRegister,
-         idCardReverseUri:this.realNameInfo.idCardReverseUri?this.realNameInfo.idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-         idCardUri:this.realNameInfo.idCardUri?this.realNameInfo.idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
+         idCardReverseUri:this.realNameInfo.idCardReverseUri,
+         idCardUri:this.realNameInfo.idCardUriUp,
          // idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
          // idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
          idNo:this.realNameInfo.idNo,
@@ -780,19 +787,38 @@ export default {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadIdCardByAli(data).then(res => {
          console.log(res)
-
+         this.realNameInfo.realName = res.data.realName
+         this.realNameInfo.gender = res.data.gender
+         this.realNameInfo.nation = res.data.nation
+         this.realNameInfo.age = res.data.age
+         this.realNameInfo.idNo = res.data.idNo
+         this.realNameInfo.idCardUriUp = res.data.idCardUri
+         this.getIdUrl(res.data.idCardUri)
        })
        return false
+    },
+    // 解析身份证照片
+    getIdUrl(url){
+    	var query = {
+    		uri:url
+    	}
+    	 getPreSignFile(query).then(res => {
+    	   console.log(res)
+         this.realNameInfo.idCardUri = res.data
+         this.realNameInfo = Object.assign({}, this.realNameInfo)
+    	 })
     },
     beforeUpload2(file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadIdCard(data).then(res => {
+       uploadpublic(data).then(res => {
          console.log(res)
-
+         var data = res.data
+         this.realNameInfo.idCardReverseUri = res.data
+         this.realNameInfo = Object.assign({}, this.realNameInfo)
        })
        return false
     },
@@ -967,7 +993,7 @@ export default {
             }
           })
       }
-      
+
 
     },
     // 删除工作地
@@ -991,7 +1017,7 @@ export default {
             }
           })
       }
-      
+
     },
     // 选择自我介绍
     chosebiref(id){
