@@ -28,6 +28,7 @@ module.exports = {
 		proxy: { //配置跨域
 			'/api': {
 				// target:'http://192.9.200.208:8070/',
+				// target:'http://183.60.156.101:22880/',
 				target: 'http://183.60.156.101:22778/',
 				// target:"http://183.60.156.101:22780/",
 				// ws: true,

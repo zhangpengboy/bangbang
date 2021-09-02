@@ -124,8 +124,8 @@
 
 							<el-form-item label="打卡范围">
 								<el-select v-model="basicForm.scope" placeholder="请选择">
-									<el-option v-for="item in scopeList" :key="item.value" :label="item.label"
-										:value="item.value">
+									<el-option v-for="item in scopeList" :key="item.radius" :label="item.radius"
+										:value="item.radius">
 									</el-option>
 								</el-select>
 							</el-form-item>
@@ -268,7 +268,8 @@
 													</div>
 													<el-form-item label="工种">
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
-														<el-select v-model="teamTypes.name" filterable  placeholder="请选择">
+														<el-select v-model="teamTypes.name" filterable
+															placeholder="请选择">
 															<el-option v-for="item in options" :key="item.labelName"
 																:label="item.labelName" :value="item.labelName">
 															</el-option>
@@ -334,7 +335,8 @@
 												</div>
 												<div class="demand-service-plan-box-list-item-box">
 													<el-form-item label="工种退场时间">
-														<el-input v-model="teamTypes.enterEndTime" :disabled="true">
+														<el-input :value="formatDate(teamTypes.enterEndTime)"
+															:disabled="true">
 														</el-input>
 
 													</el-form-item>
@@ -611,7 +613,8 @@
 		AddOrder,
 		getBriefDetail,
 		getOrderDetail,
-		gettypeWorkClass
+		gettypeWorkClass,
+		getAttendanceClass
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -699,7 +702,7 @@
 						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
 							0)], // 上班/下班 时间数组
 						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
-						workEndTime: this.formatDateTime(Date(2016, 9, 10, 18, 0)), // 下班时间
+						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
 						workTimelen: 10, // 上班时长
 						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
 							0)], // 午休时间数组
@@ -789,11 +792,23 @@
 		async mounted() {
 			let id = this.$route.query.id;
 			this.gettypeWorkClass();
+			this.getAttendanceClass();
 			this.briefId = id;
 			this.getBriefDetail(id)
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
 		methods: {
+			// 打卡范围
+			async getAttendanceClass() {
+				let param = {
+					pageSize: 9999,
+					pageNum: 1,
+				}
+				let res = await getAttendanceClass(param);
+				console.log('打卡范围:::', res);
+				this.scopeList = res.data.list;
+				this.basicForm.scope = res.data.list[0].radius
+			},
 			/** 获取工种列表 */
 			async gettypeWorkClass() {
 				let param = {};
@@ -801,10 +816,10 @@
 				param.pageNum = 1;
 				let res = await gettypeWorkClass(param);
 				this.options = res.data.list;
-				if(this.options.length > 0){
-					this.schemes.forEach(item=>{
-						item.teams.forEach(data=>{
-							data.teamTypes.forEach(team_type=>{
+				if (this.options.length > 0) {
+					this.schemes.forEach(item => {
+						item.teams.forEach(data => {
+							data.teamTypes.forEach(team_type => {
 								team_type.name = this.options[0].labelName
 							})
 						})
@@ -1301,13 +1316,34 @@
 				param.region = this.allAddress.region // 地区
 				param.briefId = this.briefId; // 需求单id
 				param.scope = this.basicForm.scope;
+				param.images = this.basicForm.images
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
-				param.schemes = this.schemes;
+				let schemes = this.deepClone(this.schemes);
+				for(let i = 0 ; i  < schemes.length;i++){
+					for(let j = 0 ; j < schemes[i].teams.length;j++){
+						schemes[i].teams[j].enterEndTime = new Date(schemes[i].teams[j].enterEndTime).getTime();
+						schemes[i].teams[j].enterStartTime = new Date(schemes[i].teams[j].enterStartTime).getTime();
+						schemes[i].teams[j].restEndTime = new Date(schemes[i].teams[j].restEndTime).getTime();
+						schemes[i].teams[j].restStartTime = new Date(schemes[i].teams[j].restStartTime).getTime();
+						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
+						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
+						for(let k = 0 ; k < schemes[i].teams[j].teamTypes.length;k++){
+								schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k].enterStartTime).getTime();
+								schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k].enterEndTime).getTime();
+						}
+					}
+				}
+				param.schemes = schemes;
 				let res = await AddOrder(param);
 				this.$message.success('添加成功');
 				this.getBriefDetail(this.briefId);
-				
+
+			},
+			deepClone(obj){
+			    let _obj = JSON.stringify(obj),
+			        objClone = JSON.parse(_obj);
+			    return objClone
 			},
 			/** 确认添加项目地址 */
 			handleAddress() {
@@ -1549,7 +1585,8 @@
 			},
 			// 图片删除
 			handleRemoveImg(file, fileList) {
-				this.basicForm = fileList.map(item => item.response.data)
+				this.basicForm.images = fileList;
+				// this.basicForm = fileList.map(item => item.response.data)
 			},
 			// 图片上传成功
 			handleSuccessImg(response, file, fileList) {

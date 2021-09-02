@@ -236,6 +236,18 @@ export function getOrderTeamType(params) {
 	})
 }
 
+/**
+ * 修改服务单
+ * @param {Object}  
+ * */
+ export function getUpdateOrder(data) {
+ 	return request({
+ 		url: `/api/bill/v1.0/admin/order/update`,
+ 		method: 'post',
+ 		data
+ 	})
+ }
+
 // /v1.0/admin/brief/detail
 
 /*** 公共上传文件 */
@@ -632,6 +644,8 @@ export function getOrderdetail(params) {
 		params
 	})
 }
+
+
 
 // 工种、考勤、自我介绍、收款信息结束--------------------
 
