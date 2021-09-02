@@ -4,8 +4,11 @@
 	<div class="demand-service">
 		<div class="box-demand-title flex fbetween">
 			<span>项目信息</span>
-			<el-button type="primary" v-if="isShowEdit" @click="handleUpdate">修改</el-button>
-			<el-button type="danger" v-else @click="handleCloseEdit">取消</el-button>
+			<template v-if="editFrom.schemeId == 0">
+				<el-button type="primary" v-if="isShowEdit" @click="handleUpdate">修改</el-button>
+				<el-button type="danger" v-else @click="handleCloseEdit">取消</el-button>
+			</template>
+			
 		</div>
 		<!-- 项目信息 -->
 		<div class="demand-service-info">
@@ -1052,6 +1055,7 @@
 				for (let i = 0; i < this.editFrom.schemes[index].teams.length; i++) {
 					allToal += this.editFrom.schemes[index].teams[i].totalUnit;
 				}
+				console.log()
 				this.editFrom.schemes[index].totalUnit = allToal;
 				this.getGroupTotal({
 					index,
