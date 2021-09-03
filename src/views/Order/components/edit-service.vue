@@ -193,14 +193,14 @@
 								<el-form-item label="上班时间">
 									<el-time-picker :disabled="isShowEdit" is-range v-model="teams.workTimeList"
 										range-separator="至" start-placeholder="开始时间" format='HH:mm'
-										@change="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
+										@input="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
 										placeholder="选择时间范围" :clearable="false">
 									</el-time-picker>
 								</el-form-item>
 								<el-form-item label="午休时间">
 									<el-time-picker :disabled="isShowEdit" is-range v-model="teams.restTimeList"
 										format='HH:mm' range-separator="至" start-placeholder="开始时间"
-										@change="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
+										@input="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
 										placeholder="选择时间范围">
 									</el-time-picker>
 								</el-form-item>
@@ -654,14 +654,15 @@
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
 					return;
-				};
-				this.editFrom.schemes[index].teams[inx].restStartTime = this.formatDateTime(val.restTimeList[0]);
-				this.editFrom.schemes[index].teams[inx].restEndTime = this.formatDateTime(val.restTimeList[1]);
+				};			
+				val.restStartTime = this.formatDateTime(val.restTimeList[0]);
+				val.restEndTime = this.formatDateTime(val.restTimeList[1]);
 				let stratTime = Date.parse(val.restTimeList[0]);
 				let endTime = Date.parse(val.restTimeList[1]);
-				this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
+				val.restTimelen = this.timeFn(stratTime, endTime);
 				this.handleWorkTime(index, inx, val);
-			
+				this.$forceUpdate();
+				
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
@@ -673,7 +674,8 @@
 				this.editFrom.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
 				let timeLen = val.workTimelen - val.restTimelen;
-				this.getCalculationUnitPrice(timeLen, teamTypes)
+				this.getCalculationUnitPrice(timeLen, teamTypes);
+				this.$forceUpdate();
 			},
 			// 计算工时单价
 			getCalculationUnitPrice(timeLen, list) {
