@@ -848,7 +848,6 @@
 					pageNum: 1,
 				}
 				let res = await getAttendanceClass(param);
-				console.log('打卡范围:::', res);
 				this.scopeList = res.data.list;
 			},
 
@@ -1227,6 +1226,7 @@
 				this.scheme = index;
 			},
 			getDataInfo(data) {
+				console.log('调用编辑-----',data);
 				this.editFrom = data;
 				this.schemeList = data.schemes;
 				this.gettypeWorkClass();

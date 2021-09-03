@@ -43,7 +43,7 @@
 
 					<div class="demand-deltails-box-item flex">
 						<div class="demand-deltails-box-item-title">文字</div>
-						<div class="demand-deltails-box-item-conter">
+						<div class="demand-deltails-box-item-conter f1">
 							{{info.content}}
 						</div>
 					</div>
@@ -780,7 +780,6 @@
 				if (val == 'right') {
 					if (this.info.orderId > 0) {
 						this.$nextTick(() => {
-							// console.log()
 							this.$refs.editFrom.getDataInfo(this.editFrom)
 						})
 					}
@@ -837,7 +836,14 @@
 				try {
 					let res = await getOrderDetail(id);
 					this.editFrom = res.data;
-
+					if(this.tabPosition == 'right'){
+						if (this.info.orderId > 0) {
+							this.$nextTick(() => {
+								this.$refs.editFrom.getDataInfo(this.editFrom)
+							})
+						}
+					}
+					
 				} catch (e) {
 					console.log(e)
 					//TODO handle the exception
@@ -851,7 +857,6 @@
 					let res = await getBriefDetail(id);
 					this.loading = false;
 					this.info = res.data;
-					console.log(res.data)
 					if (res.data.orderId > 0) {
 						this.getOrderDetail(res.data.orderId);
 					}
