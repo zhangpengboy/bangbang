@@ -495,6 +495,13 @@ export const asyncRoutes = [{
 			meta: {
 				title: '服务单'
 			}
+		},{
+			path: 'examine',
+			component: () => import('@/views/Order/Service/Examine'),
+			name: 'OrderExamine',
+			meta: {
+				title: '取消报名审核'
+			}
 		}]
 	},
 	{
