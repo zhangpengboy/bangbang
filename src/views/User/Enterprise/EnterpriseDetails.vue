@@ -219,7 +219,7 @@
             :file-list="renZhengInfo.fileUris"
             :on-success="qiyeUpsuccess"
             :on-remove="qiyeRemove"
-            limit:3>
+            :limit='3'>
             <i class="el-icon-plus"></i>
           </el-upload>
           <el-dialog :visible.sync="qiyeDiaLog">
