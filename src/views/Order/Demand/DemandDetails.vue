@@ -1548,7 +1548,7 @@
 						totalFee: 0, // 班组总费用
 						teamTypes: [ // 工种列表
 							{
-								name: "电工", // 工种名称
+								name:  this.options[0].labelName ? this.options[0].labelName : '', // 工种名称
 								tag: "", // 标签
 								workTypeVal: "", // 工种模式名称
 								workType: 0, // 工种模式
