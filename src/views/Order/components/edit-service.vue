@@ -275,8 +275,10 @@
 										<el-form-item label="工种进场时间">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-date-picker :disabled="isShowEdit" v-model="teamTypes.enterStartTime"
-												value-format="yyyy-MM-dd " type="date"
+												type="date"
+												value-format="yyyy-MM-dd" 
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
+												:clearable="false"
 												placeholder="请设置进场时间">
 											</el-date-picker>
 										</el-form-item>
@@ -645,6 +647,57 @@
 			}
 		},
 		methods: {
+			// 午休时间
+			handleRestTime(index, inx, val) {
+				console.log('午休：：',val);
+				if (!val.restTimeList || val.restTimeList.length == 0) {
+					val.restTimelen = 0;
+					this.handleWorkTime(index, inx, val);
+					return;
+				};
+				this.editFrom.schemes[index].teams[inx].restStartTime = this.formatDateTime(val.restTimeList[0]);
+				this.editFrom.schemes[index].teams[inx].restEndTime = this.formatDateTime(val.restTimeList[1]);
+				let stratTime = Date.parse(val.restTimeList[0]);
+				let endTime = Date.parse(val.restTimeList[1]);
+				this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
+				this.handleWorkTime(index, inx, val);
+			
+			},
+			//  上班时间
+			handleWorkTime(index, inx, val) {
+				console.log('上班时间',val);
+				this.editFrom.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
+				this.editFrom.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
+				let stratTime = Date.parse(val.workTimeList[0]);
+				let endTime = Date.parse(val.workTimeList[1]);
+				this.editFrom.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
+				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
+				let timeLen = val.workTimelen - val.restTimelen;
+				this.getCalculationUnitPrice(timeLen, teamTypes)
+			},
+			// 计算工时单价
+			getCalculationUnitPrice(timeLen, list) {
+				for (let i = 0; i < list.length; i++) {
+					list[i].dailyFee = list[i].unitPrice * timeLen
+				}
+			},
+			// 计算时分
+			timeFn(startTime, endTime) { //di作为一个变量传进来
+				//如果时间格式是正确的，那下面这一步转化时间格式就可以不用了
+				var dateBegin = new Date(startTime); //将-转化为/，使用new Date
+				var dateEnd = new Date(endTime); //获取当前时间
+				var dateDiff = dateEnd.getTime() - dateBegin.getTime(); //时间差的毫秒数
+				var dayDiff = Math.floor(dateDiff / (24 * 3600 * 1000)); //计算出相差天数
+				var leave1 = dateDiff % (24 * 3600 * 1000) //计算天数后剩余的毫秒数
+				var hours = Math.floor(leave1 / (3600 * 1000)) //计算出小时数
+				//计算相差分钟数
+				var leave2 = leave1 % (3600 * 1000) //计算小时数后剩余的毫秒数
+				var minutes = Math.floor(leave2 / (60 * 1000)) //计算相差分钟数
+				//计算相差秒数
+				var leave3 = leave2 % (60 * 1000) //计算分钟数后剩余的毫秒数
+				var seconds = Math.round(leave3 / 1000);
+				return ((hours * 100) + minutes) / 100
+			},
 			// 删除图片
 			handleDeteleImg(item,index){
 				this.editFrom.images.splice(index,1)
@@ -1005,7 +1058,7 @@
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
 				let num = val.enterDay;
 				if (val.enterStartTime && num >= 1) {
-					let date = this.dateChange(num, this.formatDate(val.enterStartTime));
+					let date = this.dateChange((num-1), this.formatDate(val.enterStartTime));
 					val.enterEndTime = date;
 					this.editFrom.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes)
 					this.editFrom.schemes[index].teams[inx].enterDay = this.getDateDiff(this.editFrom.schemes[index].teams[
@@ -1046,7 +1099,7 @@
 				let total = 0;
 				let allToal = 0;
 				for (let i = 0; i < teamTypes.length; i++) {
-					if (teamTypes[i].workTypeVal == '计件' && teamTypes[i].number > 0 && teamTypes[i].personalQuantity > 0) {
+					if (teamTypes[i].workType == 1 && teamTypes[i].number > 0 && teamTypes[i].personalQuantity > 0) {
 						total += Number(teamTypes[i].number) * Number(teamTypes[i].personalQuantity)
 					}
 				}
@@ -1054,7 +1107,7 @@
 				for (let i = 0; i < this.editFrom.schemes[index].teams.length; i++) {
 					allToal += this.editFrom.schemes[index].teams[i].totalUnit;
 				}
-				console.log()
+				// console.log('计算班组工程量',allToal);
 				this.editFrom.schemes[index].totalUnit = allToal;
 				this.getGroupTotal({
 					index,
@@ -1226,7 +1279,6 @@
 				this.scheme = index;
 			},
 			getDataInfo(data) {
-				console.log('调用编辑-----',data);
 				this.editFrom = data;
 				this.schemeList = data.schemes;
 				this.gettypeWorkClass();

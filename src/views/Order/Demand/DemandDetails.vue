@@ -319,6 +319,7 @@
 														<el-date-picker v-model="teamTypes.enterStartTime"
 															value-format="yyyy-MM-dd "
 															@change="handleStartTime(index,inx,types_index,teamTypes)"
+															:clearable="false"
 															type="date" placeholder="请设置进场时间">
 														</el-date-picker>
 													</el-form-item>
@@ -804,7 +805,6 @@
 					pageNum: 1,
 				}
 				let res = await getAttendanceClass(param);
-				console.log('打卡范围:::', res);
 				this.scopeList = res.data.list;
 				this.basicForm.scope = res.data.list[0].radius
 			},
@@ -1221,6 +1221,7 @@
 						day = hour * 24,
 						month = day * 30,
 						year = month * 12;
+						console.log('getDateDiff::',diffValue,day);
 					return Math.ceil(diffValue / day);
 				}
 				return 0
@@ -1228,16 +1229,17 @@
 
 			/** 工种进场时间 */
 			handleStartTime(index, inx, types_index, val) {
-				let teamTypes = this.schemes[index].teams[inx].teamTypes
+				let teamTypes = this.schemes[index].teams[inx].teamTypes;
 				let num = val.enterDay;
+				console.log('this.schemes[index].teams[inx]',this.schemes[index].teams[inx]);
+				// let enterStartTime = 
 				if (val.enterStartTime && num >= 1) {
-					let date = this.dateChange(num, val.enterStartTime);
+					let date = this.dateChange((num-1), val.enterStartTime);
 					val.enterEndTime = date;
-					this.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes)
-					this.schemes[index].teams[inx].enterDay = this.getDateDiff(this.schemes[index].teams[inx]
-						.enterStartTime, this.schemes[index].teams[inx]
-						.enterEndTime);
+					this.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes);
+					this.schemes[index].teams[inx].enterDay = this.getDateDiff(val.enterStartTime, val.enterEndTime);
 				} else {
+					console.log('退出')
 					this.schemes[index].teams[inx].enterEndTime = "";
 					this.schemes[index].teams[inx].enterDay = 0
 					val.enterEndTime = "";
