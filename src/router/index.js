@@ -100,9 +100,9 @@ export const constantRoutes = [
 			name: 'UserDetail',
 			meta: {
 				title: '用户详情',
-        activeMenu: '/user/List/List'
+				activeMenu: '/user/List/List'
 			},
-      hidden: true
+			hidden: true
 		}, {
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),
@@ -121,10 +121,10 @@ export const constantRoutes = [
 			path: 'enterprisedetails',
 			component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
 			name: 'enterprisedetails',
-      hidden: true,
+			hidden: true,
 			meta: {
 				title: '企业详情',
-        affix: false
+				affix: false
 			}
 		}, {
 			path: 'workerList',
@@ -189,6 +189,13 @@ export const constantRoutes = [
 				title: '服务单'
 			}
 		}, {
+			path: 'examine',
+			component: () => import('@/views/Order/Service/Examine'),
+			name: 'OrderExamine',
+			meta: {
+				title: '取消报名审核'
+			}
+		}, {
 			path: 'service-details',
 			component: () => import('@/views/Order/Service/ServiceDetails'),
 			name: 'OrderServiceDetails',
@@ -220,7 +227,7 @@ export const constantRoutes = [
 				component: () => import('@/views/animate/index'),
 				name: 'AnimateIndex',
 				meta: {
-					title: '过渡动画'
+					title: '过渡动画1'
 				}
 			},
 			{
@@ -417,17 +424,15 @@ export const asyncRoutes = [{
 			meta: {
 				title: '企业列表'
 			},
-      children:[
-        {
-        	path: 'enterprisedetails',
-        	component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-        	name: 'enterpriseList',
-          hidden: true,
-        	meta: {
-        		title: '企业详情'
-        	}
-        }
-      ]
+			children: [{
+				path: 'enterprisedetails',
+				component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
+				name: 'enterpriseList',
+				hidden: true,
+				meta: {
+					title: '企业详情'
+				}
+			}]
 		}, {
 			path: 'workerList',
 			component: () => import('@/views/User/Worker/WorkerList'),

@@ -22,8 +22,8 @@
 					</div>
 				</div>
 				<div class="top-content-btn">
-					<el-button type="primary" 查询</el-button>
-						<el-button>重置</el-button>
+						<el-button type="primary" @click="handelSearch"> 查询</el-button>
+						<el-button @click="handleReset">重置</el-button>
 				</div>
 			</div>
 		</div>
@@ -127,7 +127,10 @@
 				PageCount: 0, // 总条数
 				serach: "", // 搜索
 				value: "", // 选中
-				options: [],
+				options: [{
+					value:"",
+					label:"全部"
+				}],
 				creator: "", // 输入查询
 				updator: "", // 跟进人ID
 				loading: false
@@ -137,6 +140,14 @@
 			this.getBriel();
 		},
 		methods: {
+			/** 重置 */
+			handleReset(){
+				this.creator = '';
+				this.value = '';
+				this.pageIndex = 1;
+				this.getBriel();
+			},
+			
 			formatDate(value) {
 				return moment(value).format('YYYY-MM-DD')
 			},

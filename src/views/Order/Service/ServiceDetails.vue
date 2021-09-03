@@ -538,8 +538,14 @@
 					<div class="top-content-item flex fvertical">
 						<div class="flex fvertical top-content-item-status">
 							<span>工种：</span>
-							<el-input class="top-content-item-input" v-model="teamTypeName" placeholder="ID/项目名称">
-							</el-input>
+							<el-select v-model="teamTypeName" filterable clearable placeholder="选择跟进人">
+								<el-option v-for="item in teamTypeNameList" :key="item.labelName" :label="item.labelName"
+									:value="item.labelName">
+								</el-option>
+							</el-select>
+							<!-- <el-input class="top-content-item-input" v-model="teamTypeName" placeholder="ID/项目名称">
+								
+							</el-input> -->
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>工种标签：</span>
@@ -1012,7 +1018,8 @@
 		getOrderdetail,
 		getOrderTeamType,
 		getMembers,
-		getMembersEnrollCancel
+		getMembersEnrollCancel,
+		gettypeWorkClass
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -1047,6 +1054,7 @@
 				orderId: null, // 订单ID
 				keywords: "", // 充值搜索内容
 				status: "", //状态 
+				teamTypeNameList:[],// 工种列表
 				companyList: [{ // 工程列表
 					label: '㎡',
 					value: 1,
@@ -1162,8 +1170,19 @@
 			this.getOrderdetail(this.orderId);
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 			this.getOrderTeamType();
+			this.gettypeWorkClass();
 		},
 		methods: {
+			// 获取工种列表
+			async gettypeWorkClass(){
+				let param = {};
+				param.pageSize = 10000;
+				param.pageNum = 1;
+				let res = await gettypeWorkClass(param);
+				// console.log(res);
+				this.teamTypeNameList = res.data.list;
+				
+			},
 			// 计算班组工期
 			getDateDiff(start, end) {
 				if (start && end) {

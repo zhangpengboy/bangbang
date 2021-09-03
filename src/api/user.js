@@ -201,12 +201,12 @@ export function getMembersList(params) {
  * 浏览记录
  * @param {String} orderId  订单id
  * */
- export function getBrowseList(params) {
- 	return request({
- 		url: `/api/bill/v1.0/admin/brief/enroll/browseList`,
- 		params
- 	})
- }
+export function getBrowseList(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/enroll/browseList`,
+		params
+	})
+}
 
 
 /**
@@ -240,13 +240,42 @@ export function getOrderTeamType(params) {
  * 修改服务单
  * @param {Object}  
  * */
- export function getUpdateOrder(data) {
- 	return request({
- 		url: `/api/bill/v1.0/admin/order/update`,
- 		method: 'post',
- 		data
- 	})
- }
+export function getUpdateOrder(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/order/update`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 获取取消报名审核列表
+ * @param {String} keywords 搜索内容
+ * @param {Number} status 状态
+ * @param {Number} pageIndex 当前页码数
+ * @param {Number} pageSize 页面大小
+ * */
+export function getExamieList(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/cancel`,
+		params
+	})
+}
+
+/**
+ * 修改取消报名审核状态
+ * @param {Number} id 当前列表ID
+ * @param {Number} status 状态 1 是通过  2是拒绝
+ * */
+export function getUpdateExamieList(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/cancel`,
+		method: 'post',
+		data
+	})
+}
+
+
 
 // /v1.0/admin/brief/detail
 

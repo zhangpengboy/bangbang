@@ -319,8 +319,7 @@
 														<el-date-picker v-model="teamTypes.enterStartTime"
 															value-format="yyyy-MM-dd "
 															@change="handleStartTime(index,inx,types_index,teamTypes)"
-															:clearable="false"
-															type="date" placeholder="请设置进场时间">
+															:clearable="false" type="date" placeholder="请设置进场时间">
 														</el-date-picker>
 													</el-form-item>
 												</div>
@@ -836,14 +835,14 @@
 				try {
 					let res = await getOrderDetail(id);
 					this.editFrom = res.data;
-					if(this.tabPosition == 'right'){
+					if (this.tabPosition == 'right') {
 						if (this.info.orderId > 0) {
 							this.$nextTick(() => {
 								this.$refs.editFrom.getDataInfo(this.editFrom)
 							})
 						}
 					}
-					
+
 				} catch (e) {
 					console.log(e)
 					//TODO handle the exception
@@ -949,9 +948,9 @@
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
-				this.schemes[data.index].teams[data.inx].totalNum = totalNumber
+
+				this.schemes[data.index].teams[data.inx].totalNum = totalNumber;
 				this.schemes[data.index].teams[data.inx].totalFee = total;
-				// console.log('this.schemes[data.index].teams[data.inx]',this.schemes[data.index].teams[data.inx])
 				this.getTotal(data.index);
 			},
 			// 计算总费用
@@ -1221,7 +1220,7 @@
 						day = hour * 24,
 						month = day * 30,
 						year = month * 12;
-						console.log('getDateDiff::',diffValue,day);
+					console.log('getDateDiff::', diffValue, day);
 					return Math.ceil(diffValue / day);
 				}
 				return 0
@@ -1231,10 +1230,10 @@
 			handleStartTime(index, inx, types_index, val) {
 				let teamTypes = this.schemes[index].teams[inx].teamTypes;
 				let num = val.enterDay;
-				console.log('this.schemes[index].teams[inx]',this.schemes[index].teams[inx]);
+				console.log('this.schemes[index].teams[inx]', this.schemes[index].teams[inx]);
 				// let enterStartTime = 
 				if (val.enterStartTime && num >= 1) {
-					let date = this.dateChange((num-1), val.enterStartTime);
+					let date = this.dateChange((num - 1), val.enterStartTime);
 					val.enterEndTime = date;
 					this.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes);
 					this.schemes[index].teams[inx].enterDay = this.getDateDiff(val.enterStartTime, val.enterEndTime);
@@ -1327,17 +1326,19 @@
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
 				let schemes = this.deepClone(this.schemes);
-				for(let i = 0 ; i  < schemes.length;i++){
-					for(let j = 0 ; j < schemes[i].teams.length;j++){
+				for (let i = 0; i < schemes.length; i++) {
+					for (let j = 0; j < schemes[i].teams.length; j++) {
 						schemes[i].teams[j].enterEndTime = new Date(schemes[i].teams[j].enterEndTime).getTime();
 						schemes[i].teams[j].enterStartTime = new Date(schemes[i].teams[j].enterStartTime).getTime();
 						schemes[i].teams[j].restEndTime = new Date(schemes[i].teams[j].restEndTime).getTime();
 						schemes[i].teams[j].restStartTime = new Date(schemes[i].teams[j].restStartTime).getTime();
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
-						for(let k = 0 ; k < schemes[i].teams[j].teamTypes.length;k++){
-								schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k].enterStartTime).getTime();
-								schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k].enterEndTime).getTime();
+						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
+							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
+								.enterStartTime).getTime();
+							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
+								.enterEndTime).getTime();
 						}
 					}
 				}
@@ -1347,10 +1348,10 @@
 				this.getBriefDetail(this.briefId);
 
 			},
-			deepClone(obj){
-			    let _obj = JSON.stringify(obj),
-			        objClone = JSON.parse(_obj);
-			    return objClone
+			deepClone(obj) {
+				let _obj = JSON.stringify(obj),
+					objClone = JSON.parse(_obj);
+				return objClone
 			},
 			/** 确认添加项目地址 */
 			handleAddress() {
