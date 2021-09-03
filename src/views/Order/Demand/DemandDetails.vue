@@ -95,7 +95,7 @@
 										action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
 										name="multipartFile" :on-remove="handleRemoveImg"
 										:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
-										:on-success="handleSuccessImg" :limit="4" :before-upload="beforeAvatarUpload">
+										:on-success="handleSuccessImg" :limit="4" :headers="myHeaders" :before-upload="beforeAvatarUpload">
 										<i class="el-icon-plus avatar-uploader-icon"></i>
 									</el-upload>
 
@@ -609,6 +609,7 @@
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
 	import editService from '../components/edit-service.vue'
+	import uuid from 'node-uuid'
 	import {
 		AddOrder,
 		getBriefDetail,
@@ -620,6 +621,7 @@
 	export default {
 		data() {
 			return {
+				myHeaders:{requestId:uuid.v4().replaceAll('-', '')},
 				info: {},
 				loading: false, // 是否显示正在加载
 				briefId: 0,
