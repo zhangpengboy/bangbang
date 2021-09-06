@@ -50,7 +50,7 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="id" label="ID" width="60" />
+        <el-table-column prop="id" label="ID" width="120" />
         <el-table-column prop="realName" label="名称" width="150"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
         <el-table-column label="实名状态">

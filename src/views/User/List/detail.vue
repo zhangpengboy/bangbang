@@ -198,7 +198,8 @@
                 </div>
                 <div class="item flex">
                   <p class="backgroud tit">自我介绍</p>
-                  <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p>
+                  <!-- <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p> -->
+                  <input  class="desc flex1 col666" type="" name="" :disabled="isEditUserInfo==false" v-model="bizCardInfo.selfIntroduction" />
                   <el-select  v-if="isEditUserInfo" v-model="bizCardInfo.selfIntroduction" placeholder="请选择"  @change="chosebiref">
                      <el-option
                         v-for="item in productQuestions"
@@ -306,6 +307,7 @@
               name="multipartFile"
               class="avatar-uploader"
               :action="adminUrl"
+              :disabled="isEditUserInfo==false"
               list-type="picture-card"
               :file-list="workPhotoList"
               :on-success="workPhotoSuccess"
@@ -327,6 +329,7 @@
               class="avatar-uploader"
               :action="adminUrl"
               :file-list="zhenshuPhotoList"
+              :disabled="isEditUserInfo==false"
               list-type="picture-card"
               :on-success="handleAvatarSuccess4"
               :on-remove="handleRemove4"
