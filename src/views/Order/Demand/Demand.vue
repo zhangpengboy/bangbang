@@ -21,7 +21,9 @@
 						</el-select>
 					</div>
 				</div>
+						
 				<div class="top-content-btn">
+					<el-button type="primary" @click="handelSecurity">打开安全帽</el-button>
 						<el-button type="primary" @click="handelSearch"> 查询</el-button>
 						<el-button @click="handleReset">重置</el-button>
 				</div>
@@ -140,6 +142,12 @@
 			this.getBriel();
 		},
 		methods: {
+			/** 打开安全帽 */
+			handelSecurity(){
+				this.$router.push({
+					path: '/order/security'
+				})
+			},
 			/** 重置 */
 			handleReset(){
 				this.creator = '';

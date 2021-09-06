@@ -205,6 +205,14 @@ export const constantRoutes = [
 				affix: false
 			}
 		}, {
+			path: 'security',
+			component: () => import('@/views/Order/Demand/Security'),
+			name: 'OrderSecurity',
+			hidden: true,
+			meta: {
+				title: '安全帽',
+			}
+		}, {
 			path: 'member-details',
 			component: () => import('@/views/Order/Service/MemberDetails'),
 			name: 'OrderMemberDetails',
