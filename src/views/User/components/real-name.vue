@@ -99,6 +99,13 @@
 </template>
 
 <script>
+  import {
+      realNameAuth,
+      uploadIdCardByAli,
+      getPreSignFile,
+      uploadpublic
+  } from '../../../api/user.js'
+
  export default {
     props: {
        realNamePop: {
@@ -189,9 +196,6 @@
        },
        // 添加实名
        realNameTrue(){
-         
-         
-         
          console.log(this.rnName);
          console.log(this.rnGender);
          console.log(this.rnNation);
@@ -212,9 +216,9 @@
             userId:this.rnUserId,
             userType:this.rnUserType
           }
-          
+
           this.$emit('')
-          
+
           realNameAuth(params).then(res => {
             console.log(res)
             if(res.code==200){

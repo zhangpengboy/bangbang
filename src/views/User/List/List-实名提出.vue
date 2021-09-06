@@ -343,7 +343,7 @@ export default {
     
 
     getUser() {
-      this.loading = true;
+       this.loading = true;
        var query = {
         id:this.serach,
         enterpriseAuthStatus: this.authvalue,
