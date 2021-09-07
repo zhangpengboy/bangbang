@@ -106,9 +106,9 @@
             {{scope.row.enterpriseAuthStatus == 0 ?'未提交':scope.row.enterpriseAuthStatus == 1 ?'审核中':scope.row.enterpriseAuthStatus == 2 ?'已通过':scope.row.enterpriseAuthStatus == 3 ?'已驳回':''}}
           </template>
         </el-table-column>
-        <el-table-column prop="grade" label="工人等级">
+        <el-table-column prop="workerGrade" label="工人等级">
           <template slot-scope="scope">
-            {{scope.row.grade == 0 ?'普通工人':scope.row.grade == 1 ?'铜牌工人':scope.row.grade == 2 ?'银牌工人':scope.row.grade == 3 ?'金牌工人':''}}
+            {{scope.row.workerGrade == 0 ?'普通工人':scope.row.workerGrade == 1 ?'铜牌工人':scope.row.workerGrade == 2 ?'银牌工人':scope.row.workerGrade == 3 ?'金牌工人':''}}
           </template>
         </el-table-column>
 

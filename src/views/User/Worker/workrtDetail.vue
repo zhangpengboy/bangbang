@@ -50,7 +50,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/>
+                <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderoptions"
+                    :key="item.id"
+                    :label="item.labelName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/> -->
               </div>
               <div class="item flex">
                 <p class="backgroud tit">工人等级</p>
@@ -77,7 +85,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.gender" />
+                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.gender" /> -->
+                <el-select class="desc flex1 col666" :disabled="isEditShM" v-model="realNameInfo.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderoptions"
+                    :key="item.id"
+                    :label="item.labelName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">年龄</p>
@@ -450,7 +466,16 @@ export default {
       gongZhvalue: '',
       productQuestions:[],
       adminUrl: '/api/commons/file/admin/v1/upload/public',
-
+      genderoptions:[
+        {
+          labelName:'男',
+          id:0
+        },
+        {
+          labelName:'女',
+          id:1
+        },
+      ]
 
     }
   },
@@ -501,7 +526,7 @@ export default {
         labelType:1,
         userBusinessCardId:this.bizCardInfo.id
       }
-      workCardAdd(params).then(res => {
+      workCardAddGongRen(params).then(res => {
         console.log(res)
         if(res.code==200){
           this.loadDate()
@@ -519,7 +544,7 @@ export default {
       var params = {
         id:userInfo.id
       }
-      queryById(params).then(res => {
+      gongrenQueryById(params).then(res => {
         var data = res.data
         console.log('res', data)
         this.userInfo = data
@@ -530,7 +555,7 @@ export default {
           phone:data.phone,
           adr:data.address ,
           userType:userInfo.userType==0?'企业端':userInfo.userType==1?'工人端':userInfo.userType==2?'管理端':'',
-          gender:data.gender==0?'男':'女',
+          gender:data.gender,
           grade:data.workerGrade==0?'普通工人':data.workerGrade==1?'铜牌':data.workerGrade==2?'银牌':data.workerGrade==3?'金牌工人':'',
           updateTime :data.updateTime
         }
@@ -539,7 +564,8 @@ export default {
         }
         if(data.realNameAuthDTO){
         this.realNameInfo = {
-          gender:data.realNameAuthDTO.gender==0?'男':'女',
+          // gender:data.realNameAuthDTO.gender==0?'男':'女',
+          gender:data.realNameAuthDTO.gender,
           age:data.realNameAuthDTO.age,
           nativePlace:data.realNameAuthDTO.nativePlace,
           realName:data.realNameAuthDTO.realName,
@@ -600,11 +626,11 @@ export default {
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
-          gender:this.basicInfo.gender=='男'?'0':'1',
+          gender:this.basicInfo.gender,
           phone :this.basicInfo.phone,
           realName :this.basicInfo.realName
         }
-        updateInfo(params).then(res => {
+        gongrenupdateInfo(params).then(res => {
           var data = res.data
           console.log(res)
           this.$message({
@@ -624,16 +650,10 @@ export default {
     editShM() {
       if(this.isEditShM==false){
         console.log(this.realNameInfo.gender)
-        var gender = 0;
-        if(this.realNameInfo.gender=='男'){
-          gender = 0
-        }else{
-          gender = 1
-        }
         console.log('保存')
        var params = {
          age:this.realNameInfo.age,
-         gender:gender,
+         gender:this.realNameInfo.gender,
          householdRegister:this.realNameInfo.householdRegister,
          idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
          idCardUri:this.realNameInfo.idCardUriUp,
@@ -645,7 +665,7 @@ export default {
          validityEndTime:this.realNameInfo.validityEndTime,
          validityStartTime:this.realNameInfo.validityEndTime
        }
-       realNameAuth(params).then(res => {
+       gongRenRealNameAuth(params).then(res => {
          var data = res.data
          console.log(res)
          this.isEditShM = true
@@ -795,7 +815,7 @@ export default {
           workResultUrl:workPhotoList.join(','),
           workStatus:this.bizCardInfo.workStatus
         }
-        bizCard(params).then(res => {
+        workerBizCard(params).then(res => {
           console.log(res)
           if(res.code==200){
             this.loadDate()
@@ -830,7 +850,7 @@ export default {
         labelType:0,
         userBusinessCardId:this.bizCardInfo.id
       }
-      workCardAdd(params).then(res => {
+      workCardAddGongRen(params).then(res => {
         console.log(res)
         if(res.code==200){
           this.loadDate()
@@ -844,7 +864,7 @@ export default {
       var params = {
         id:item.id
       }
-      workCardRemove(params).then(res => {
+      workCardRemoveGongRen(params).then(res => {
         console.log(res)
         if(res.code==200){
           this.loadDate()
@@ -858,7 +878,7 @@ export default {
       var params = {
         id:item.id
       }
-      workCardRemove(params).then(res => {
+      workCardRemoveGongRen(params).then(res => {
         console.log(res)
         if(res.code==200){
           this.loadDate()

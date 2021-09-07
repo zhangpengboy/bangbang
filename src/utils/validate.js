@@ -103,3 +103,10 @@ export function formatDate(time){
   }
   return   year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
 }
+
+// 时间格式转时间戳
+export function timestamp(strtime){
+  var date = new Date(strtime.replace(/-/g, '/'));
+  var time1 = date.getTime();//精确到毫秒:1398250549123
+  return time1;
+}

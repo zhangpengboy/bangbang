@@ -36,7 +36,6 @@
               </div> -->
               <div class="item flex">
                 <p class="backgroud tit">生日</p>
-                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="userInfo.birthday" /> -->
                 <el-date-picker
                   :disabled="isEdit"
                   v-model="userInfo.birthday"
@@ -172,7 +171,7 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">企业认证</p>
-                <input  class="desc flex1 col666" type="" name="" disabled v-model="userInfo.enterpriseAuthStatusName" />
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.enterpriseAuth==0?'未提交':userInfo.enterpriseAuth==1?'审核中':userInfo.enterpriseAuth==2?'已认证':userInfo.enterpriseAuth==3?'已驳回':''" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">统一社会信用代码</p>
@@ -290,7 +289,7 @@
       getPreSignFile
   } from '../../../api/user.js'
   import { parseTime } from '@/utils/index.js'
-
+  import { timestamp } from '@/utils/validate'
 export default {
   data() {
     return {
@@ -323,61 +322,10 @@ export default {
     var userInfo = this.$route.query;
     console.log(userInfo)
     this.userIdOrType = userInfo
-    // 这里用户列表进来是1,企业列表进来是2
-    if(userInfo.joinType==1){
-
-    }else{
-
-    }
     this.loadDate(userInfo)
-
   },
   methods: {
     async loadDate(userInfo){
-      console.log(userInfo);
-      if(this.userIdOrType.joinType==1){ //用户列表进来
-        var params = {
-          id:userInfo.id,
-          userType: userInfo.userType
-        }
-        await queryById(params).then(res => {
-          var data = res.data
-          console.log('res', data)
-          data.genderTxt = data.gender==0?'男':'女'
-          data.gradeTxt = data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':''
-          data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
-          if(data.realNameAuthDTO){
-            this.realNameInfo = {
-               genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
-               age:data.realNameAuthDTO.age,
-               nativePlace:data.realNameAuthDTO.nativePlace,
-               realName:data.realNameAuthDTO.realName,
-               nation:data.realNameAuthDTO.nation,
-               idNo:data.realNameAuthDTO.idNo,
-               householdRegister:data.realNameAuthDTO.householdRegister,
-               idCardUri:data.realNameAuthDTO.idCardUri,
-               idCardUriUp:data.realNameAuthDTO.idCardUri,
-               idCardReverseUri:data.realNameAuthDTO.idCardReverseUri,
-            }
-            this.getIdUrl(data.realNameAuthDTO.idCardUri)
-          }       
-          if(data.enterpriseCertApplyDTO){
-            this.renZhengInfo = data.enterpriseCertApplyDTO
-            var imgdata = data.enterpriseCertApplyDTO.fileUris.split(',')
-            for(var i=0;i<imgdata.length;i++){
-               var obj = {};
-              obj.url = imgdata[i]
-              obj.name = 'img'+ i
-              imgdata[i] = obj
-            }
-
-            this.renZhengInfo.fileUris = imgdata
-            this.renZhengInfo.userId = data.id
-          }
-          console.log(this.renZhengInfo.fileUris)
-          this.userInfo = data
-        })
-      }else{  //企业列表进来
         var params = {
           id:userInfo.id
         }
@@ -385,7 +333,7 @@ export default {
           var data = res.data
           console.log('res', data)
           data.genderTxt = data.gender==0?'男':'女'
-          data.gradeTxt = data.grade==0?'普通工人':data.grade==1?'铜牌':data.grade==2?'银牌':data.grade==3?'金牌工人':''
+          data.gradeTxt = data.workerGrade==0?'普通工人':data.workerGrade==1?'铜牌':data.workerGrade==2?'银牌':data.workerGrade==3?'金牌工人':''
           data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
           if(data.realNameAuthDTO){
             this.realNameInfo = {
@@ -396,11 +344,13 @@ export default {
                nation:data.realNameAuthDTO.nation,
                idNo:data.realNameAuthDTO.idNo,
                householdRegister:data.realNameAuthDTO.householdRegister,
-               idCardUri:data.realNameAuthDTO.idCardUri,
                idCardUriUp:data.realNameAuthDTO.idCardUri,
-               idCardReverseUri:data.realNameAuthDTO.idCardReverseUri,
+               idCardReverseUriUp:data.realNameAuthDTO.idCardReverseUri,
+               validityEndTime:data.realNameAuthDTO.validityEndTime,
+               validityStartTime:data.realNameAuthDTO.validityStartTime
             }
-            this.getIdUrl(data.realNameAuthDTO.idCardUri)
+            this.getIdUrl(1,data.realNameAuthDTO.idCardUri)
+            this.getIdUrl(2,data.realNameAuthDTO.idCardReverseUri)
           }
           if(data.enterpriseCertApplyDTO){
             this.renZhengInfo = data.enterpriseCertApplyDTO
@@ -417,11 +367,11 @@ export default {
           }
           this.userInfo = data
         })
-      }
+
 
 
     },
-    // 基本信息编辑--区分用户还是企业
+    // 基本信息编辑
     edit() {
       if(this.isEdit==false){
         var gender = 0;
@@ -439,40 +389,107 @@ export default {
           phone:this.userInfo.phone,
           realName:this.userInfo.realName,
         }
-        if(this.userIdOrType.joinType==1){
-          userupdateInfo(params).then(res => {
-            var data = res.data
-            console.log(res)
-            this.isEdit = true
-             this.$message({
-               type: 'success',
-               message: '操作成功!'
-             })
-             this.loadDate(this.userIdOrType)
-          })
-        }else{
-          qiYeupdateInfo(params).then(res => {
-            var data = res.data
-            console.log(res)
-            this.isEdit = true
-             this.$message({
-               type: 'success',
-               message: '操作成功!'
-             })
-             this.loadDate(this.userIdOrType)
-          })
-        }
-
-
-
+        qiYeupdateInfo(params).then(res => {
+          var data = res.data
+          console.log(res)
+          this.isEdit = true
+           this.$message({
+             type: 'success',
+             message: '操作成功!'
+           })
+           this.loadDate(this.userIdOrType)
+        })
       }else{
         this.isEdit = false
       }
     },
+
+    // 企业认证
+    editQiY() {
+      if(this.isEditQiY==false){
+        var fileUris = [];
+        this.renZhengInfo.fileUris.forEach((item)=>{
+          fileUris.push(item.url)
+        })
+        var params = {
+          businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
+          enterpriseName:this.renZhengInfo.enterpriseName,
+          fileUris:fileUris.join(','),
+          legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
+          operatorIdNo:this.renZhengInfo.operatorIdNo,
+          operatorMobileNo:this.renZhengInfo.operatorMobileNo,
+          operatorName:this.renZhengInfo.operatorName,
+          userId:this.userInfo.id
+        }
+        enterQiYeApply(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.isEditQiY = true
+             this.$message({
+               type: 'success',
+               message: '操作成功!'
+             })
+             this.loadDate(this.userIdOrType)
+          }
+        })
+
+      }else{
+        this.isEditQiY = false
+      }
+    },
+
+    // 身份证正反面
+    beforeUpload (file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       data.append('side', 'face')
+       uploadIdCardByAli(data).then(res => {
+         console.log(res)
+        this.realNameInfo.realName = res.data.realName
+        this.realNameInfo.genderTxt = res.data.gender
+        this.realNameInfo.nation = res.data.nation
+        this.realNameInfo.age = res.data.age
+        this.realNameInfo.idNo = res.data.idNo
+        this.realNameInfo.idCardUriUp = res.data.idCardUri
+        this.getIdUrl(1,res.data.idCardUri)
+       })
+       return false
+    },
+    // 解析身份证照片
+    getIdUrl(type,url){
+    	var query = {
+    		uri:url
+    	}
+    	 getPreSignFile(query).then(res => {
+    	   console.log(res)
+         if(type==1){
+           this.realNameInfo.idCardUri = res.data
+           this.realNameInfo = Object.assign({}, this.realNameInfo)
+         }else{
+           this.realNameInfo.idCardReverseUri = res.data
+           this.realNameInfo = Object.assign({}, this.realNameInfo)
+         }
+
+    	 })
+    },
+    beforeUpload2(file) {
+       console.log(file)
+       let data = new FormData()
+       data.append('multipartFile', file)
+       data.append('side', 'back')
+       uploadIdCardByAli(data).then(res => {
+         console.log(res)
+         this.realNameInfo.validityEndTime = timestamp(res.data.startDate)
+         this.realNameInfo.validityEndTime = timestamp(res.data.endDate)
+         this.realNameInfo.idCardReverseUriUp = res.data.idCardUri
+         this.getIdUrl(2,res.data.idCardUri)
+       })
+       return false
+    },
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
-        console.log(this.realNameInfo.genderTxt)
         var gender = 0;
         if(this.realNameInfo.genderTxt=='男'){
           gender = 0
@@ -485,148 +502,38 @@ export default {
          age:this.realNameInfo.age,
          gender:gender,
          householdRegister:this.realNameInfo.householdRegister,
-         idCardReverseUri:this.realNameInfo.idCardReverseUri,
+         idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
          idCardUri:this.realNameInfo.idCardUriUp,
-         // idCardReverseUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
-         // idCardUri:'http://183.60.156.101:9001/test/20210817/a966352ef9764a0e81e983e801ebbcfa.png',
          idNo:this.realNameInfo.idNo,
          nation:this.realNameInfo.nation,
          nativePlace:this.realNameInfo.nativePlace,
          realName:this.realNameInfo.realName,
          userId:this.userIdOrType.id,
-         userType:this.userIdOrType.userType
-       }
-       // console.log(params)
-       // return;
-       if(this.userIdOrType.joinType==1){
-         realNameAuth(params).then(res => {
-           var data = res.data
-           console.log(res)
-           this.isEditShM = true
-           this.$message({
-             type: 'success',
-             message: '操作成功!'
-           })
-           this.loadDate(this.userIdOrType)
-
+         validityEndTime:this.realNameInfo.validityEndTime,
+         validityStartTime:this.realNameInfo.validityEndTime
+       }    
+       qiYeRealNameAuth(params).then(res => {
+         var data = res.data
+         console.log(res)
+         this.isEditShM = true
+         this.$message({
+           type: 'success',
+           message: '操作成功!'
          })
-       }else{
-         qiYeRealNameAuth(params).then(res => {
-           var data = res.data
-           console.log(res)
-           this.isEditShM = true
-           this.$message({
-             type: 'success',
-             message: '操作成功!'
-           })
-           this.loadDate(this.userIdOrType)
+         this.loadDate(this.userIdOrType)
 
-         })
-       }
+       })
 
       }else{
         this.isEditShM = false
       }
-    },
-    // 企业认证
-    editQiY() {
-      if(this.isEditQiY==false){
-        var fileUris = [];
-        this.renZhengInfo.fileUris.forEach((item)=>{
-          fileUris.push(item.url)
-        })
-        // console.log(fileUris)
-        var params = {
-          businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
-          enterpriseName:this.renZhengInfo.enterpriseName,
-          fileUris:fileUris.join(','),
-          legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
-          operatorIdNo:this.renZhengInfo.operatorIdNo,
-          operatorMobileNo:this.renZhengInfo.operatorMobileNo,
-          operatorName:this.renZhengInfo.operatorName,
-          userId:this.userInfo.id
-        }
-        // console.log(params)
-        // return
-        if(this.userIdOrType.joinType==1){  //用户
-          qiYeApply(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              this.isEditQiY = true
-               this.$message({
-                 type: 'success',
-                 message: '操作成功!'
-               })
-               this.loadDate(this.userIdOrType)
-            }
-          })
-        }else{   //企业
-        console.log('企业')
-          enterQiYeApply(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              this.isEditQiY = true
-               this.$message({
-                 type: 'success',
-                 message: '操作成功!'
-               })
-               this.loadDate(this.userIdOrType)
-            }
-          })
-        }
-
-      }else{
-        this.isEditQiY = false
-      }
-    },
-
-    // 身份证正反面
-    beforeUpload (file) {
-       console.log(file)
-       let data = new FormData()
-       data.append('multipartFile', file)
-       uploadIdCardByAli(data).then(res => {
-         console.log(res)
-        this.realNameInfo.realName = res.data.realName
-        this.realNameInfo.gender = res.data.gender
-        this.realNameInfo.nation = res.data.nation
-        this.realNameInfo.age = res.data.age
-        this.realNameInfo.idNo = res.data.idNo
-        this.realNameInfo.idCardUriUp = res.data.idCardUri
-        this.getIdUrl(res.data.idCardUri)
-       })
-       return false
-    },
-    // 解析身份证照片
-    getIdUrl(url){
-    	var query = {
-    		uri:url
-    	}
-    	 getPreSignFile(query).then(res => {
-    	   console.log(res)
-         this.realNameInfo.idCardUri = res.data
-         this.realNameInfo = Object.assign({}, this.realNameInfo)
-    	 })
-    },
-    beforeUpload2(file) {
-       console.log(file)
-       let data = new FormData()
-       data.append('multipartFile', file)
-       uploadpublic(data).then(res => {
-         console.log(res)
-          this.realNameInfo.idCardReverseUri = res.data
-          this.realNameInfo = Object.assign({}, this.realNameInfo)
-       })
-       return false
     },
     upIdCard(res, file) {
       console.log(res)
     },
     upIdCardBack(res, file) {
       console.log(res)
-      console.log(file)
     },
-
 
     qiyeUpsuccess(res,file) {
       var obj = {};

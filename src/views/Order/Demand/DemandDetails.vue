@@ -1600,9 +1600,10 @@
 			},
 			// 图片上传成功
 			handleSuccessImg(response, file, fileList) {
-				let arr = [];
-				arr.push(file.response.data);
-				this.basicForm.images = arr;
+				console.log('上传成功！！')
+				// let arr = [];
+				// arr.push(file.response.data);
+				this.basicForm.images.push(file.response.data);
 			},
 		}
 	}
