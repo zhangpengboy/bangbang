@@ -104,6 +104,15 @@ export const constantRoutes = [
 			},
 			hidden: true
 		}, {
+			path: 'workrtDetail',
+			component: () => import('@/views/User/Worker/workrtDetail'),
+			name: 'workrtDetail',
+			meta: {
+				title: '工人详情',
+				activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
+		}, {
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),
 			name: 'RealName',
