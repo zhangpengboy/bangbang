@@ -8,7 +8,7 @@
 				<el-button type="primary" v-if="isShowEdit" @click="handleUpdate">修改</el-button>
 				<el-button type="danger" v-else @click="handleCloseEdit">取消</el-button>
 			</template>
-			
+
 		</div>
 		<!-- 项目信息 -->
 		<div class="demand-service-info">
@@ -43,17 +43,19 @@
 							@mouseover="handleMouseoverImg(item,index)" @mouseout="handleMouseoutImg(item,index)">
 							<el-image :src="item">
 							</el-image>
-							<div class="demand-service-upload-img-mask flex fvertical fcenter" v-show="!isShowEdit &&current == index">
+							<div class="demand-service-upload-img-mask flex fvertical fcenter"
+								v-show="!isShowEdit &&current == index">
 								<i class="el-icon-zoom-in" @click="handleLookImg(item,index)"></i>
 								<i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i>
 							</div>
 
 						</div>
-						<el-upload v-if="!isShowEdit" class="avatar-uploader flex"
+						<el-upload v-if="!isShowEdit && editFrom.images.length < 4" class="avatar-uploader flex"
 							action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
 							name="multipartFile" :show-file-list="false" :on-remove="handleRemoveImg"
 							:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
-							:on-success="handleSuccessImg" :limit="4" :before-upload="beforeAvatarUpload">
+							:on-success="handleSuccessImg" :limit="limit"
+							:before-upload="beforeAvatarUpload">
 							<i class="el-icon-plus avatar-uploader-icon"></i>
 						</el-upload>
 
@@ -275,11 +277,9 @@
 										<el-form-item label="工种进场时间">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-date-picker :disabled="isShowEdit" v-model="teamTypes.enterStartTime"
-												type="date"
-												value-format="yyyy-MM-dd" 
+												type="date" value-format="yyyy-MM-dd"
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
-												:clearable="false"
-												placeholder="请设置进场时间">
+												:clearable="false" placeholder="请设置进场时间">
 											</el-date-picker>
 										</el-form-item>
 									</div>
@@ -578,7 +578,7 @@
 	export default {
 		data() {
 			return {
-				current:null,
+				current: null,
 				scheme: 0,
 				rules: {},
 				isAddress: false,
@@ -588,6 +588,7 @@
 				scopeList: [], // 打卡范围
 				options: [], // 工种模式
 				editFrom: {},
+				limit: 4,  //上传图片的长度
 				companyList: [{ // 工程列表
 					label: '㎡',
 					value: 1,
@@ -649,12 +650,12 @@
 		methods: {
 			// 午休时间
 			handleRestTime(index, inx, val) {
-				console.log('午休：：',val);
+				console.log('午休：：', val);
 				if (!val.restTimeList || val.restTimeList.length == 0) {
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
 					return;
-				};			
+				};
 				val.restStartTime = this.formatDateTime(val.restTimeList[0]);
 				val.restEndTime = this.formatDateTime(val.restTimeList[1]);
 				let stratTime = Date.parse(val.restTimeList[0]);
@@ -662,11 +663,11 @@
 				val.restTimelen = this.timeFn(stratTime, endTime);
 				this.handleWorkTime(index, inx, val);
 				this.$forceUpdate();
-				
+
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
-				console.log('上班时间',val);
+				console.log('上班时间', val);
 				this.editFrom.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.editFrom.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratTime = Date.parse(val.workTimeList[0]);
@@ -701,20 +702,20 @@
 				return ((hours * 100) + minutes) / 100
 			},
 			// 删除图片
-			handleDeteleImg(item,index){
-				this.editFrom.images.splice(index,1)
+			handleDeteleImg(item, index) {
+				this.editFrom.images.splice(index, 1)
 			},
 			// 查看图片
-			handleLookImg(item,index){
+			handleLookImg(item, index) {
 				this.isImges = true;
 				this.dialogImageUrl = item;
 			},
 			// 鼠标经过
-			handleMouseoverImg(item,index){
+			handleMouseoverImg(item, index) {
 				this.current = index;
 			},
 			// 鼠标移出
-			handleMouseoutImg(item,index){
+			handleMouseoutImg(item, index) {
 				this.current = null;
 			},
 			// 显示编辑
@@ -1060,7 +1061,7 @@
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
 				let num = val.enterDay;
 				if (val.enterStartTime && num >= 1) {
-					let date = this.dateChange((num-1), this.formatDate(val.enterStartTime));
+					let date = this.dateChange((num - 1), this.formatDate(val.enterStartTime));
 					val.enterEndTime = date;
 					this.editFrom.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes)
 					this.editFrom.schemes[index].teams[inx].enterDay = this.getDateDiff(this.editFrom.schemes[index].teams[
@@ -1385,6 +1386,7 @@
 			},
 			// 上传限制
 			beforeAvatarUpload(file) {
+				// this.limit = this.limit - this.
 				const isJPG = file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/jpg';
 				const isLt2M = file.size / 1024 / 1024 < 10;
 				if (!isJPG) {
@@ -1398,7 +1400,7 @@
 
 			// 提示用户上传的图片数量
 			handleExceed(files, fileList) {
-				this.$message.warning(`当前限制选择 4 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+				this.$message.warning(`当前限制选择 4 个文件`);
 			},
 			// 图片上传中
 			handlePictureCardPreview(file) {

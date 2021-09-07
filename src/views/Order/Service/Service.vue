@@ -1,7 +1,7 @@
 <template>
 	<div class="main" v-loading="loading">
 		<!-- 头部  -->
-		<div class="top">
+		<div class="top" id="top">
 			<div class="top-title ">数据筛选</div>
 			<div class="top-content flex fvertical fbetween">
 				<div class="top-content-item flex fvertical">
@@ -37,7 +37,7 @@
 
 		<div class="box">
 			<!-- 表格  -->
-			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border>
+			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border :height="clientHeight+'px'">
 				<el-table-column type="index" width="50">
 				</el-table-column>
 				<el-table-column prop="orderNum" label="ID" width="200">
@@ -143,15 +143,31 @@
 				status: "", // 选中状态
 				value: "", // 选中
 				tableData: [{}], // 表格列表
-				loading: ""
+				loading: "",
+				clientHeight:0
 			}
 		},
 		created() {
-			this.getorder()
+			this.getorder();
+			this.getWebHeing();
 		},
 		methods: {
 			formatDate(value) {
 				return moment(value).format('YYYY-MM-DD')
+			},
+			/** 计算页面高度 */
+			getWebHeing() {
+				this.$nextTick(() => {
+					this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+						.offsetHeight - document.getElementById('page')
+						.offsetHeight  - 180;
+				})
+				window.addEventListener('resize', () => {
+					this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+						.offsetHeight - document.getElementById('page')
+						.offsetHeight  - 180;
+					this.$forceUpdate();
+				})
 			},
 			/** 重置 */
 			handleReset(){
