@@ -1,7 +1,7 @@
 <template>
 	<div class="examine" v-loading="loading">
 		<!-- 头部  -->
-		<div class="top">
+		<div class="top" id="top">
 			<div class="top-title ">数据筛选</div>
 			<div class="top-content flex fvertical fbetween">
 				<div class="top-content-item flex fvertical">
@@ -35,12 +35,12 @@
 		</div>
 		<!-- 头部end  -->
 		<div class="box">
-			<div class="examine-box flex fvertical fbetween">
+			<div class="examine-box flex fvertical fbetween" id="boxTop">
 				<div class="examine-box-title bold ">数据筛选</div>
 				<el-button type="primary" size="small" @click='getExport'>导出</el-button>
 			</div>
 
-			<el-table :data="tableData" border style="width: 100%">
+			<el-table :data="tableData" border style="width: 100%" :height="clientHeight+'px'">
 				<el-table-column prop="creatorId" label="ID" width="100">
 				</el-table-column>
 				<el-table-column prop="title" label="项目名称" width="180">
@@ -120,15 +120,32 @@
 				PageCount: 0, // 总条数
 				tableData: [],
 				loading: false,
-
+				clientHeight:0
 			}
 		},
 		mounted() {
 			this.getDataList();
+			this.getWebHeing();
 		},
 		methods: {
 			formatDate(value) {
 				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			/** 计算页面高度 */
+			getWebHeing() {
+				this.$nextTick(() => {
+					this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+						.offsetHeight - document.getElementById('page')
+						.offsetHeight - document.getElementById('boxTop')
+						.offsetHeight - 180;
+				})
+				window.addEventListener('resize', () => {
+					this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+						.offsetHeight - document.getElementById('page')
+						.offsetHeight - document.getElementById('boxTop')
+						.offsetHeight - 180;
+					this.$forceUpdate();
+				})
 			},
 			/** 导出 */
 			getExport() {},

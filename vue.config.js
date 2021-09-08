@@ -30,7 +30,9 @@ module.exports = {
 				// target:'http://192.9.200.208:8070/',
 				// target:'http://183.60.156.101:22880/',
 				// target: 'http://183.60.156.101:22778/', //开发环境
-				target:'http://183.60.156.101:22880',
+				// target:'http://183.60.156.101:22880',  //测试环境
+				target: process.env.VUE_APP_BASE_API, 
+				// target:'http://183.60.156.101:22880',
 				// target:"http://183.60.156.101:22780/",
 				// ws: true,
 				changeOrigin: true, //允许跨域
