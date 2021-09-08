@@ -48,15 +48,16 @@
 								<i class="el-icon-zoom-in" @click="handleLookImg(item,index)"></i>
 								<i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i>
 							</div>
-
 						</div>
 						<el-upload v-if="!isShowEdit && editFrom.images.length < 4" class="avatar-uploader flex"
 							action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
-							name="multipartFile" :show-file-list="false" :on-remove="handleRemoveImg"
-							:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
-							:on-success="handleSuccessImg" :limit="limit"
-							:before-upload="beforeAvatarUpload">
-							<i class="el-icon-plus avatar-uploader-icon"></i>
+							name="multipartFile" :show-file-list="false" :on-progress="handleProgress"
+							:on-remove="handleRemoveImg" :on-preview="handlePictureCardPreview"
+							:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="limit"
+							:before-upload="beforeAvatarUpload" :on-error="handleUploadError">
+							<i class="el-icon-plus avatar-uploader-icon" v-if="videoFlag == false"></i>
+							<el-progress :stroke-width="5" v-if="videoFlag == true" type="circle"
+								:percentage="videoUploadPercent" style="margin-top:12px;"></el-progress>
 						</el-upload>
 
 						<el-dialog :visible.sync="isImges">
@@ -588,7 +589,9 @@
 				scopeList: [], // 打卡范围
 				options: [], // 工种模式
 				editFrom: {},
-				limit: 4,  //上传图片的长度
+				videoFlag: false,
+				videoUploadPercent: 0,
+				limit: 4, //上传图片的长度
 				companyList: [{ // 工程列表
 					label: '㎡',
 					value: 1,
@@ -648,9 +651,19 @@
 			}
 		},
 		methods: {
+			/** 上传中 */
+			handleProgress(event, file, fileList) {
+				this.videoFlag = true;
+				this.videoUploadPercent = Number(file.percentage);
+			},
+			/** 上传失败 */
+			handleUploadError(){
+				this.videoUploadPercent = 0;
+				this.videoFlag = false;
+				this.$message.error('上传失败');
+			},
 			// 午休时间
 			handleRestTime(index, inx, val) {
-				console.log('午休：：', val);
 				if (!val.restTimeList || val.restTimeList.length == 0) {
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
@@ -1310,7 +1323,6 @@
 			},
 			/** 获取地址 */
 			getDetailsAdderss(form) {
-				console.log('获取地址1::', form);
 				this.editFrom.address = this.form.address ? this.form.address : this.editFrom.address;
 				let lng = '';
 				let lat = '';
@@ -1413,6 +1425,8 @@
 			},
 			// 图片上传成功
 			handleSuccessImg(response, file, fileList) {
+				this.videoFlag = false;
+				this.videoUploadPercent = 0;
 				this.editFrom.images.push(file.response.data);
 			},
 			// 提交方案
