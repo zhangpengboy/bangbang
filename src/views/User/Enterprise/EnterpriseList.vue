@@ -547,7 +547,7 @@ export default {
          age:this.rnAge,
          gender:gender,
          householdRegister:this.rnHouse,
-         idCardReverseUri:this.idCardBack,
+         idCardReverseUri:this.idCardBackUp,
          idCardUri:this.idCardUp,
          idNo:this.rnIdnum,
          nation:this.rnNation,
