@@ -478,7 +478,10 @@ export default {
         {
           labelName:'女',
           id:1
-        },
+        },{
+          labelName:'未知',
+          id:2
+        }
       ]
 
     }
