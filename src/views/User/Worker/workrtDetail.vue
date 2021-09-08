@@ -328,6 +328,8 @@
               :file-list="workPhotoList"
               :on-success="workPhotoSuccess"
               :on-remove="handleRemove3"
+              :limit='6'
+              :on-exceed="handleExceed"
             >
               <i class="el-icon-plus" />
             </el-upload>
@@ -349,6 +351,8 @@
               list-type="picture-card"
               :on-success="handleAvatarSuccess4"
               :on-remove="handleRemove4"
+              :limit='6'
+              :on-exceed="handleExceed"
             >
               <i class="el-icon-plus" />
             </el-upload>
@@ -774,6 +778,10 @@ export default {
             }
       }
       console.log(this.zhenshuPhotoList);
+    },
+    // 提示用户上传的图片数量
+    handleExceed(files, fileList) {
+    	this.$message.warning('最多上传6张');
     },
     // 添加项目经验
     addWork() {

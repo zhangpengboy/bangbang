@@ -218,6 +218,7 @@
             :file-list="renZhengInfo.fileUris"
             :on-success="qiyeUpsuccess"
             :on-remove="qiyeRemove"
+            :on-exceed="handleExceed"
             :limit='3'>
             <i class="el-icon-plus"></i>
           </el-upload>
@@ -530,6 +531,10 @@ export default {
     },
     upIdCard(res, file) {
       console.log(res)
+    },
+    // 提示用户上传的图片数量
+    handleExceed(files, fileList) {
+    	this.$message.warning('最多上传3张');
     },
     upIdCardBack(res, file) {
       console.log(res)
