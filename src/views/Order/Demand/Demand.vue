@@ -144,6 +144,14 @@
 			this.getWebHeing();
 		},
 		methods: {
+			// 鼠标经过
+			handleMouseoverImg(item, index) {
+				this.current = index;
+			},
+			// 鼠标移出
+			handleMouseoutImg(item, index) {
+				this.current = null;
+			},
 			/** 计算页面高度 */
 			getWebHeing() {
 				this.$nextTick(() => {

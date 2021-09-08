@@ -90,13 +90,29 @@
 
 							<el-form-item label="项目介绍">
 								<el-input type="textarea" v-model="basicForm.description" :rows="4"></el-input>
-								<div class="demand-service-upload">
-									<el-upload class="avatar-uploader flex"
+								<div class="demand-service-upload flex fvertical">
+
+									<div v-for="(item,index) in basicForm.images" class="demand-service-upload-img"
+										@mouseover="handleMouseoverImg(item,index)"
+										@mouseout="handleMouseoutImg(item,index)">
+										<el-image :src="item">
+										</el-image>
+										<div class="demand-service-upload-img-mask flex fvertical fcenter"
+											v-show="current == index">
+											<i class="el-icon-zoom-in" @click="handleLookImg(item,index)"></i>
+											<i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i>
+										</div>
+									</div>
+
+									<el-upload class="avatar-uploader flex" v-if="basicForm.images.length < 4"
 										action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
-										name="multipartFile" :on-remove="handleRemoveImg"
-										:on-preview="handlePictureCardPreview" :on-exceed="handleExceed"
-										:on-success="handleSuccessImg" :limit="4" :headers="myHeaders" :before-upload="beforeAvatarUpload">
-										<i class="el-icon-plus avatar-uploader-icon"></i>
+										name="multipartFile" :on-remove="handleRemoveImg" :on-progress="handleProgress"
+										:on-preview="handlePictureCardPreview" :on-error="handleUploadError"
+										:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="4"
+										:headers="myHeaders" :show-file-list="false" :before-upload="beforeAvatarUpload">
+										<i class="el-icon-plus avatar-uploader-icon" v-if="videoFlag == false"></i>
+										<el-progress :stroke-width="5" v-if="videoFlag == true" type="circle"
+											:percentage="videoUploadPercent" style="margin-top:12px;"></el-progress>
 									</el-upload>
 
 									<el-dialog :visible.sync="isImges">
@@ -621,13 +637,18 @@
 	export default {
 		data() {
 			return {
-				myHeaders:{requestId:uuid.v4().replaceAll('-', '')},
+				myHeaders: {
+					requestId: uuid.v4().replaceAll('-', '')
+				},
 				info: {},
 				loading: false, // 是否显示正在加载
 				briefId: 0,
 				dialogImageUrl: "",
 				isImges: false, // 是否显示大图
 				isAddress: false, //显示添加地址
+				current: null,
+				videoFlag:false, // 是否显示进度条
+				videoUploadPercent:0,  // 进度条百分比
 				schemeList: [{
 					name: "方案一",
 					label: '0'
@@ -799,6 +820,34 @@
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 		},
 		methods: {
+			// 删除图片
+			handleDeteleImg(item, index) {
+				this.basicForm.images.splice(index, 1)
+			},
+			// 查看图片
+			handleLookImg(item, index) {
+				this.isImges = true;
+				this.dialogImageUrl = item;
+			},
+			// 鼠标经过
+			handleMouseoverImg(item, index) {
+				this.current = index;
+			},
+			// 鼠标移出
+			handleMouseoutImg(item, index) {
+				this.current = null;
+			},
+			/** 上传中 */
+			handleProgress(event, file, fileList) {
+				this.videoFlag = true;
+				this.videoUploadPercent = Number(file.percentage);
+			},
+			/** 上传失败 */
+			handleUploadError() {
+				this.videoUploadPercent = 0;
+				this.videoFlag = false;
+				this.$message.error('上传失败');
+			},
 			// 打卡范围
 			async getAttendanceClass() {
 				let param = {
@@ -1550,7 +1599,7 @@
 						totalFee: 0, // 班组总费用
 						teamTypes: [ // 工种列表
 							{
-								name:  this.options[0].labelName ? this.options[0].labelName : '', // 工种名称
+								name: this.options[0].labelName ? this.options[0].labelName : '', // 工种名称
 								tag: "", // 标签
 								workTypeVal: "", // 工种模式名称
 								workType: 0, // 工种模式
@@ -1590,6 +1639,7 @@
 			},
 			// 图片上传中
 			handlePictureCardPreview(file) {
+				console.log('上传中')
 				this.dialogImageUrl = file.response.data;
 				this.isImges = true;
 			},
@@ -1600,6 +1650,8 @@
 			},
 			// 图片上传成功
 			handleSuccessImg(response, file, fileList) {
+				this.videoFlag = false;
+				this.videoUploadPercent = 0;
 				console.log('上传成功！！')
 				// let arr = [];
 				// arr.push(file.response.data);
