@@ -8,11 +8,11 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" />
+            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" clearable/>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>工人等级：</span>
-            <el-select v-model="gradevalue" multiple placeholder="全部">
+            <el-select v-model="gradevalue" multiple placeholder="全部" clearable>
               <el-option
                 v-for="item in gradeOptions"
                 :key="item.value"
@@ -23,7 +23,7 @@
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>状态：</span>
-            <el-select v-model="statusvalue" placeholder="全部">
+            <el-select v-model="statusvalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in allStatus"
                 :key="item.value"
@@ -50,7 +50,7 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="id" label="ID" width="120" />
+        <el-table-column prop="id" label="ID" width="100" />
         <el-table-column prop="realName" label="名称" width="150"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
         <el-table-column label="实名状态">
@@ -63,7 +63,7 @@
           	{{scope.row.gender == 0 ?'男':scope.row.gender == 1 ?'女':'未知'}}
           </template>
         </el-table-column>
-        <el-table-column prop="grade" label="工人等级" :formatter="gradeFormat"/>
+        <el-table-column prop="workerGrade" label="工人等级" :formatter="gradeFormat"/>
         <el-table-column prop="workYears" label="工龄"/>
         <el-table-column prop="workDays" label="工作时长"/>
         <el-table-column prop="behavioralScore" label="行为分"/>
@@ -78,17 +78,17 @@
             />
          </template>
         </el-table-column>
-        <el-table-column prop="userStatus" label="状态">
+        <el-table-column prop="workerStatus" label="状态">
           <template slot-scope="scope">
-          	{{scope.row.userStatus == 1 ?'冻结':'正常'}}
+          	{{scope.row.workerStatus == 1 ?'冻结':'正常'}}
           </template>
          </el-table-column>
-        <el-table-column prop="updater" label="操作人" />
+        <el-table-column prop="updaterName" label="操作人" />
         <el-table-column prop="updateTime" label="操作时间" />
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.userStatus==1?'激活':'冻结' }}</el-button>
+            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.workerStatus==1?'激活':'冻结' }}</el-button>
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
           </template>
         </el-table-column>
@@ -183,6 +183,24 @@
             <p class="tit">户籍地：</p>
             <input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
           </div>
+          <div class="item">
+            <p class="tit">身份证有效期起始时间：</p>
+             <el-date-picker
+                v-model="rnvalidityStartTime"
+                class="ipt"
+                type="date"
+                placeholder="选择起始日期">
+              </el-date-picker>
+          </div>
+          <div class="item">
+            <p class="tit">身份证有效期截止时间：</p>
+            <el-date-picker
+               v-model="rnvalidityEndTime"
+               class="ipt"
+               type="date"
+               placeholder="选择截止日期">
+             </el-date-picker>
+          </div>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="realNamePop = false">取 消</el-button>
@@ -252,6 +270,7 @@ export default {
       idCard: '',
       idCardUp: '', //上传用的
       idCardBack: '',
+      idCardBackUp:'',
       // 实名认证
       rnName:'',
       rnGender:'',
@@ -261,7 +280,8 @@ export default {
       rnNativePlace:'',
       rnHouse:'',
       rnUserId :'',
-      rnUserType:'',
+      rnvalidityStartTime:'',
+      rnvalidityEndTime:'',
 
 
 
@@ -272,13 +292,13 @@ export default {
   },
   methods: {
      gradeFormat(row){
-       if (row.grade == 0) {
+       if (row.workerGrade == 0) {
          return "普通工人";
-       }else if (row.grade == 1) {
+       }else if (row.workerGrade == 1) {
          return "铜牌工人";
-       }else if (row.grade == 2) {
+       }else if (row.workerGrade == 2) {
          return "银牌工人";
-       }else if (row.grade == 3) {
+       }else if (row.workerGrade == 3) {
          return "金牌工人";
        }
      },
@@ -288,7 +308,7 @@ export default {
         pageNum: this.PageIndex,
         pageSize: this.PageSize,
         grades: this.gradevalue.join(','),
-        userStatue: this.statusvalue
+        userStatus: this.statusvalue
       }
       gongRenQueryPage(params).then(res => {
         var data = res.data
@@ -339,7 +359,7 @@ export default {
     /** 查看工人 */
     handleLook(row) {
      // this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id,joinType:2 }})
-     this.$router.push({ path: '/User/userdetail', query: { id: row.id ,joinType:2 }})
+     this.$router.push({ path: '/User/workrtDetail', query: { id: row.id ,joinType:2 }})
 
     },
     /** 选择分页 */
@@ -358,7 +378,7 @@ export default {
     changeSte(row) {
       var that = this;
       console.log(row)
-      if (row.userStatus == 1) { // 冻结去激活
+      if (row.workerStatus == 1) { // 冻结去激活
         this.$confirm('是否确定激活用户', '确认提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -366,8 +386,7 @@ export default {
         }).then(() => {
           var params = {
             userId:row.id,
-            userStatus: 0,
-            userType: 1
+            userStatus: 0
           }
           console.log(params)
           gongrenupdateUserStatus(params).then(res => {
@@ -390,8 +409,7 @@ export default {
         }).then(() => {
           var params = {
             userId:row.id,
-            userStatus: 1,
-            userType: 1
+            userStatus: 1
           }
           gongrenupdateUserStatus(params).then(res => {
             console.log(res)
@@ -411,13 +429,13 @@ export default {
     reanName(row) {
       console.log(row)
       this.rnUserId = row.id
-      this.rnUserType = row.userType
       this.realNamePop = true
     },
     beforeUpload (file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
+       data.append('side', 'face')
        uploadIdCardByAli(data).then(res => {
          console.log(res)
          this.rnName = res.data.realName
@@ -426,27 +444,35 @@ export default {
          this.rnAge = res.data.age
          this.rnIdnum = res.data.idNo
          this.idCardUp = res.data.idCardUri
-         this.getIdUrl(res.data.idCardUri)
+         this.getIdUrl(1,res.data.idCardUri)
        })
        return false
     },
     // 解析身份证照片
-    getIdUrl(url){
+    getIdUrl(type,url){
     	var query = {
     		uri:url
     	}
     	 getPreSignFile(query).then(res => {
     	   console.log(res)
-         this.idCard = res.data
+         if(type==1){
+           this.idCard = res.data
+         }else{
+           this.idCardBack = res.data
+         }
     	 })
     },
     beforeUpload2(file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadpublic(data).then(res => {
+       data.append('side', 'back')
+       uploadIdCardByAli(data).then(res => {
          console.log(res)
-         this.idCardBack = res.data
+         this.rnvalidityStartTime = res.data.startDate
+         this.rnvalidityEndTime = res.data.endDate
+         this.idCardBackUp = res.data.idCardUri
+         this.getIdUrl(2,res.data.idCardUri)
        })
        return false
     },
@@ -459,16 +485,15 @@ export default {
     },
     // 添加实名
     realNameTrue(){
-      console.log(this.rnName);
-      console.log(this.rnGender);
-      console.log(this.rnNation);
-      console.log(this.rnAge);
-      console.log(this.rnIdnum);
-      console.log(this.rnNativePlace);
-      console.log(this.rnHouse);
+      var gender = 0;
+      if(this.rnGender=='男'){
+        gender = 0
+      }else{
+        gender = 1
+      }
        var params = {
          age:this.rnAge,
-         gender:this.rnGender,
+         gender:gender,
          householdRegister:this.rnHouse,
          idCardReverseUri:this.idCardBack,
          idCardUri:this.idCardUp,
@@ -477,7 +502,8 @@ export default {
          nativePlace:this.rnNativePlace,
          realName:this.rnName,
          userId:this.rnUserId,
-         userType:this.rnUserType
+         validityEndTime:this.rnvalidityEndTime,
+         validityStartTime:this.rnvalidityStartTime
        }
        gongRenRealNameAuth(params).then(res => {
          console.log(res)
@@ -487,7 +513,7 @@ export default {
              message: '提交成功!'
            })
             this.realNamePop = false
-
+            this.getList()
          }
        })
 

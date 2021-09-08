@@ -8,22 +8,22 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" />
+            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" clearable/>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>需求单数量：</span>
             <div class="flex alCen flex1">
-              <el-input v-model="xqMinNum" type="number" class="numIpt" placeholder="请输入"></el-input>
+              <el-input v-model="xqMinNum" type="number" class="numIpt" placeholder="请输入" clearable></el-input>
               <div style="margin: 0 10px;">-</div>
-              <el-input v-model="xqMaxNum" type="number" class="numIpt" placeholder="请输入"></el-input>
+              <el-input v-model="xqMaxNum" type="number" class="numIpt" placeholder="请输入" clearable></el-input>
             </div>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>服务单数量：</span>
             <div class="flex alCen flex1">
-              <el-input v-model="fwMinNum" type="number" class="numIpt" placeholder="请输入"></el-input>
+              <el-input v-model="fwMinNum" type="number" class="numIpt" placeholder="请输入" clearable></el-input>
               <div style="margin: 0 10px;">-</div>
-              <el-input v-model="fwMaxNum" type="number" class="numIpt" placeholder="请输入"></el-input>
+              <el-input v-model="fwMaxNum" type="number" class="numIpt" placeholder="请输入" clearable></el-input>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>状态：</span>
-            <el-select v-model="statusvalue" placeholder="全部">
+            <el-select v-model="statusvalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in allStatus"
                 :key="item.value"
@@ -76,24 +76,24 @@
         </el-table-column>
         <el-table-column prop="enterpriseAuthStatus" label="企业认证">
           <template slot-scope="scope">
-            {{scope.row.enterpriseAuthStatus == 0 ?'未提交':scope.row.enterpriseAuthStatus == 1 ?'审核中':scope.row.enterpriseAuthStatus == 2 ?'已通过':scope.row.enterpriseAuthStatus == 3 ?'已驳回':''}}
+            {{scope.row.enterpriseAuth == 0 ?'未提交':scope.row.enterpriseAuth == 1 ?'审核中':scope.row.enterpriseAuth == 2 ?'已通过':scope.row.enterpriseAuth == 3 ?'已驳回':''}}
           </template>
         </el-table-column>
         <el-table-column prop="userStatus" label="需求单数量"/>
         <el-table-column prop="userStatus" label="服务单数量"/>
-        <el-table-column prop="userStatus" label="状态">
+        <el-table-column prop="enterpriseStatus" label="状态">
           <template slot-scope="scope">
-            {{scope.row.userStatus == 0 ?'正常':scope.row.userStatus == 1 ?'冻结':''}}
+            {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}
           </template>
         </el-table-column>
-        <el-table-column prop="updater" label="操作人" />
+        <el-table-column prop="updaterName" label="操作人" />
         <el-table-column prop="updateTime" label="操作时间" />
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.userStatus==1?'激活':'冻结' }}</el-button>
+            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.enterpriseStatus==1?'激活':'冻结' }}</el-button>
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
-            <el-button v-if="scope.row.enterpriseAuthStatus==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
+            <el-button v-if="scope.row.enterpriseAuth==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -187,6 +187,24 @@
             <p class="tit">户籍地：</p>
             <input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
           </div>
+          <div class="item">
+            <p class="tit">身份证有效期起始时间：</p>
+             <el-date-picker
+                v-model="rnvalidityStartTime"
+                class="ipt"
+                type="date"
+                placeholder="选择起始日期">
+              </el-date-picker>
+          </div>
+          <div class="item">
+            <p class="tit">身份证有效期截止时间：</p>
+            <el-date-picker
+               v-model="rnvalidityEndTime"
+               class="ipt"
+               type="date"
+               placeholder="选择截止日期">
+             </el-date-picker>
+          </div>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button @click="realNamePop = false">取 消</el-button>
@@ -268,7 +286,8 @@ import {
     uploadIdCard,
     uploadIdCardByAli,
     getPreSignFile,
-    uploadpublic
+    uploadpublic,
+    qiYeRealNameAuth
 } from '../../../api/user.js'
 
 export default {
@@ -304,6 +323,7 @@ export default {
       idCard: '',
       idCardUp: '', //上传用的
       idCardBack: '',
+      idCardBackUp:'',
       qiyeRZPop: false,
       // 实名认证
       rnName:'',
@@ -314,7 +334,10 @@ export default {
       rnNativePlace:'',
       rnHouse:'',
       rnUserId :'',
-      rnUserType:'',
+      rnvalidityStartTime:'',
+      rnvalidityEndTime:'',
+
+
       // 企业认证
       enterpriseName:'',
       businessLicenseRegistrationNo:'',
@@ -407,7 +430,7 @@ export default {
     changeSte(row) {
       var that = this;
       console.log(row)
-      if (row.userStatus == 1) { // 冻结去激活
+      if (row.enterpriseStatus == 1) { // 冻结去激活
         this.$confirm('是否确定激活用户', '确认提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -415,8 +438,7 @@ export default {
         }).then(() => {
           var params = {
             userId:row.id,
-            userStatus: 0,
-            userType: 0
+            userStatus: 0
           }
           console.log(params)
           qiyeupdateUserStatus(params).then(res => {
@@ -439,8 +461,7 @@ export default {
         }).then(() => {
           var params = {
             userId:row.id,
-            userStatus: 1,
-            userType: 0
+            userStatus: 1
           }
           qiyeupdateUserStatus(params).then(res => {
             console.log(res)
@@ -460,7 +481,6 @@ export default {
     reanName(row) {
       console.log(row)
       this.rnUserId = row.id
-      this.rnUserType = row.userType
       this.realNamePop = true
     },
     upIdCard(res, file) {
@@ -474,6 +494,7 @@ export default {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
+       data.append('side', 'face')
        uploadIdCardByAli(data).then(res => {
          console.log(res)
          this.rnName = res.data.realName
@@ -482,42 +503,49 @@ export default {
          this.rnAge = res.data.age
          this.rnIdnum = res.data.idNo
          this.idCardUp = res.data.idCardUri
-         this.getIdUrl(res.data.idCardUri)
+         this.getIdUrl(1,res.data.idCardUri)
        })
        return false
     },
     // 解析身份证照片
-    getIdUrl(url){
+    getIdUrl(type,url){
     	var query = {
     		uri:url
     	}
     	 getPreSignFile(query).then(res => {
     	   console.log(res)
-         this.idCard = res.data
+         if(type==1){
+           this.idCard = res.data
+         }else{
+           this.idCardBack = res.data
+         }
     	 })
     },
     beforeUpload2(file) {
        console.log(file)
        let data = new FormData()
        data.append('multipartFile', file)
-       uploadpublic(data).then(res => {
+       data.append('side', 'back')
+       uploadIdCardByAli(data).then(res => {
          console.log(res)
-         this.idCardBack = res.data
+         this.rnvalidityStartTime = res.data.startDate
+         this.rnvalidityEndTime = res.data.endDate
+         this.idCardBackUp = res.data.idCardUri
+         this.getIdUrl(2,res.data.idCardUri)
        })
        return false
     },
     // 添加实名
     realNameTrue(){
-      console.log(this.rnName);
-      console.log(this.rnGender);
-      console.log(this.rnNation);
-      console.log(this.rnAge);
-      console.log(this.rnIdnum);
-      console.log(this.rnNativePlace);
-      console.log(this.rnHouse);
+      var gender = 0;
+      if(this.rnGender=='男'){
+        gender = 0
+      }else{
+        gender = 1
+      }
        var params = {
          age:this.rnAge,
-         gender:this.rnGender,
+         gender:gender,
          householdRegister:this.rnHouse,
          idCardReverseUri:this.idCardBack,
          idCardUri:this.idCardUp,
@@ -526,9 +554,10 @@ export default {
          nativePlace:this.rnNativePlace,
          realName:this.rnName,
          userId:this.rnUserId,
-         userType:this.rnUserType
+         validityEndTime:this.rnvalidityEndTime,
+         validityStartTime:this.rnvalidityStartTime
        }
-       realNameAuth(params).then(res => {
+       qiYeRealNameAuth(params).then(res => {
          console.log(res)
          if(res.code==200){
            this.$message({
@@ -536,12 +565,11 @@ export default {
              message: '提交成功!'
            })
             this.realNamePop = false
-
+            this.getList()
          }
        })
 
     },
-
 
     // 企业认证
     authen(row) {
@@ -588,7 +616,12 @@ export default {
         enterQiYeApply(params).then(res => {
           console.log(res)
           if(res.code==200){
-
+            this.qiyeRZPop = false
+             this.$message({
+               type: 'success',
+               message: '提交成功!'
+             })
+            this.getList()
 
           }
         })
