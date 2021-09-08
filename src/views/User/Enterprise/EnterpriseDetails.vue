@@ -58,7 +58,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="userInfo.genderTxt"/>
+                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="userInfo.genderTxt"/> -->
+                <el-select class="desc flex1 col666" :disabled="isEdit" v-model="userInfo.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderoptions"
+                    :key="item.id"
+                    :label="item.labelName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">公司</p>
@@ -87,7 +95,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-               <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo&&realNameInfo.genderTxt" />
+               <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo&&realNameInfo.genderTxt" /> -->
+               <el-select class="desc flex1 col666" :disabled="isEditShM" v-model="realNameInfo.gender" placeholder="请选择">
+                 <el-option
+                   v-for="item in genderoptions"
+                   :key="item.id"
+                   :label="item.labelName"
+                   :value="item.id">
+                 </el-option>
+               </el-select>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">年龄</p>
@@ -316,6 +332,19 @@ export default {
       },
       qiyeDiaLog:false,
       adminUrl: '/api/commons/file/admin/v1/upload/public',
+      genderoptions:[
+        {
+          labelName:'男',
+          id:0
+        },
+        {
+          labelName:'女',
+          id:1
+        },{
+          labelName:'未知',
+          id:2
+        }
+      ]
 
     }
   },
@@ -333,12 +362,12 @@ export default {
         enterQueryById(params).then(res => {
           var data = res.data
           console.log('res', data)
-          data.genderTxt = data.gender==0?'男':'女'
+          // data.genderTxt = data.gender==0?'男':'女'
           data.gradeTxt = data.workerGrade==0?'普通工人':data.workerGrade==1?'铜牌':data.workerGrade==2?'银牌':data.workerGrade==3?'金牌工人':''
           data.enterpriseAuthStatusName = data.enterpriseAuthStatus ==0?'未提交':data.enterpriseAuthStatus ==1?'审核中':data.enterpriseAuthStatus ==2?'已通过':data.enterpriseAuthStatus ==3?'已驳回':''
           if(data.realNameAuthDTO){
             this.realNameInfo = {
-               genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
+               // genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
                age:data.realNameAuthDTO.age,
                nativePlace:data.realNameAuthDTO.nativePlace,
                realName:data.realNameAuthDTO.realName,
@@ -375,15 +404,9 @@ export default {
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var gender = 0;
-        if(this.userInfo.genderTxt=='男'){
-          gender = 0
-        }else{
-          gender = 1
-        }
         var params = {
           birthday:this.userInfo.birthday,
-          gender:gender,
+          gender:this.userInfo.gender,
           headPortrait:this.userInfo.headPortrait,
           id:this.userIdOrType.id,
           occupation:this.userInfo.occupation,
@@ -491,17 +514,9 @@ export default {
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
-        var gender = 0;
-        if(this.realNameInfo.genderTxt=='男'){
-          gender = 0
-        }else if(this.realNameInfo.genderTxt=='女'){
-          gender = 1
-        }else{
-          gender = 2
-        }
        var params = {
          age:this.realNameInfo.age,
-         gender:gender,
+         gender:this.realNameInfo.gender,
          householdRegister:this.realNameInfo.householdRegister,
          idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
          idCardUri:this.realNameInfo.idCardUriUp,
@@ -512,7 +527,7 @@ export default {
          userId:this.userIdOrType.id,
          validityEndTime:this.realNameInfo.validityEndTime,
          validityStartTime:this.realNameInfo.validityEndTime
-       }    
+       }
        qiYeRealNameAuth(params).then(res => {
          var data = res.data
          console.log(res)
