@@ -311,7 +311,7 @@
 									<!-- <div class="plan-box-btn"></div> -->
 									<el-form-item label="每日工时">
 										<div class="flex">
-											<el-input style="width: 200px;" :value="teams.dailyHours" :disabled="true">
+											<el-input style="width: 200px;" :value="teamTypes.dailyHours" :disabled="true">
 											</el-input>
 											<span style="padding-left: 20px;">小时</span>
 										</div>
@@ -414,7 +414,7 @@
 									<!-- <div class="plan-box-btn"></div> -->
 									<el-form-item label="每日工时">
 										<div class="flex">
-											<el-input style="width: 200px;" :value="teams.dailyHours" :disabled="true">
+											<el-input style="width: 200px;" :value="teamTypes.dailyHours" :disabled="true">
 											</el-input>
 											<span style="padding-left: 20px;">小时</span>
 										</div>
@@ -651,6 +651,18 @@
 			}
 		},
 		methods: {
+			// 计算工时单价
+			handleUnitPrice(index, inx, type_index, val) {
+				let dailyFee = (this.editFrom.schemes[index].teams[inx].workTimelen - this.editFrom.schemes[index].teams[inx].restTimelen) *
+					val.unitPrice
+				val.dailyFee = dailyFee;
+				this.getGroupTotal({
+					index,
+					inx,
+					type_index,
+					val
+				});
+			},
 			/** 上传中 */
 			handleProgress(event, file, fileList) {
 				this.videoFlag = true;
@@ -784,7 +796,8 @@
 						}
 					]
 				}
-				this.editFrom.schemes[index].teams.push(param)
+				// this.editFrom.schemes[index].teams.push(param)
+				this.$set(this.editFrom.schemes[index].teams,this.editFrom.schemes[index].teams.length,param)
 			},
 			/** 关闭对话框 */
 			handleClose() {
@@ -922,7 +935,7 @@
 
 			// 工种模式
 			handleTypeModel(index, inx, type_index, val) {
-				let newWork = this.patternList.filter(item => item.label == val.workTypeVal)
+				let newWork = this.patternList.filter(item => item.value == val.workType);
 				val.workType = newWork[0].value
 				val.personalQuantity = '';
 				val.number = '';
@@ -1211,6 +1224,7 @@
 				this.editFrom.schemes[index].totalFee = total + Number(this.editFrom.schemes[index].taxRateNum) + Number(
 					this.editFrom
 					.schemes[index].serviceFeeRateNum)
+					this.$forceUpdate()
 			},
 			// 删除方案
 			handleDeleteProject(index) {
@@ -1435,6 +1449,7 @@
 				let schemes = param.schemes;
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
+						schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i].teams[j].restTimelen
 						schemes[i].teams[j].enterEndTime = new Date(schemes[i].teams[j].enterEndTime).getTime();
 						schemes[i].teams[j].enterStartTime = new Date(schemes[i].teams[j].enterStartTime).getTime();
 						schemes[i].teams[j].restEndTime = new Date(schemes[i].teams[j].restEndTime).getTime();

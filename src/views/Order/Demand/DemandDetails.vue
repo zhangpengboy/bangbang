@@ -1385,11 +1385,14 @@
 						schemes[i].teams[j].restStartTime = new Date(schemes[i].teams[j].restStartTime).getTime();
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
+						
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
+							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i].teams[j].restTimelen
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterEndTime).getTime();
+							// schemes[i].teams[j].teamTypes[k]
 						}
 					}
 				}
