@@ -238,7 +238,7 @@ export function getOrderTeamType(params) {
 
 /**
  * 修改服务单
- * @param {Object}  
+ * @param {Object}
  * */
 export function getUpdateOrder(data) {
 	return request({
@@ -717,5 +717,14 @@ export function uploadpublic(data) {
 		url: `/api/commons/file/admin/v1/upload/public`,
 		method: 'post',
 		data
+	})
+}
+
+// 访问统计列表
+export function visitList(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/page`,
+		method: 'get',
+		params
 	})
 }
