@@ -229,14 +229,14 @@
 								<!-- 固定基本工种  -->
 								<div class="flex fbetween">
 									<div class="demand-service-plan-box-list-item-box flex fvertical">
-										<div class="plan-box-btn" v-if="!teamTypes.id">
-											<el-button 
+										<div class="plan-box-btn">
+											<el-button :disabled="isShowEdit"
 												@click="handleDeleteWork(index,inx,types_index,teamTypes)"
 												type="primary" size="mini">删除</el-button>
 										</div>
 										<el-form-item label="工种">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="teamTypes.id" v-model="teamTypes.name" filterable
+											<el-select :disabled="isShowEdit" v-model="teamTypes.name" filterable
 												placeholder="请选择">
 												<el-option v-for="item in options" :key="item.labelName"
 													:label="item.labelName" :value="item.labelName">
@@ -247,7 +247,7 @@
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种标签">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="teamTypes.id" v-model="teamTypes.tag" placeholder="请选择"
+											<el-select :disabled="isShowEdit" v-model="teamTypes.tag" placeholder="请选择"
 												@change="handleTag(index,inx,types_index,teamTypes)">
 												<el-option v-for="item in tagList" :key="item.value" :label="item.label"
 													:value="item.label">
@@ -258,7 +258,7 @@
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种模式">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="teamTypes.id" v-model="teamTypes.workType"
+											<el-select :disabled="isShowEdit" v-model="teamTypes.workType"
 												placeholder="请选择"
 												@change="handleTypeModel(index,inx,types_index,teamTypes)">
 												<template v-if="teamTypes.tag == '班组长'">
@@ -284,7 +284,7 @@
 										<div class="plan-box-btn"></div>
 										<el-form-item label="工种进场时间">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-date-picker :disabled="teamTypes.id" v-model="teamTypes.enterStartTime"
+											<el-date-picker :disabled="isShowEdit" v-model="teamTypes.enterStartTime"
 												type="date" value-format="yyyy-MM-dd"
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
 												:clearable="false" placeholder="请设置进场时间">
@@ -294,7 +294,7 @@
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种工期">
 											<div class="flex">
-												<el-input :disabled="teamTypes.id" style="width: 200px;"
+												<el-input :disabled="isShowEdit" style="width: 200px;"
 													v-model="teamTypes.enterDay"
 													@input="handleDuration(index,inx,types_index,teamTypes)">
 												</el-input>
@@ -326,7 +326,7 @@
 									</el-form-item>
 									<el-form-item label="带班管理费">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.leaderFee">
 											</el-input>
 											<span style="padding-left: 20px;">元</span>
@@ -334,7 +334,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -350,7 +350,7 @@
 									<!-- <div class="plan-box-btn"></div> -->
 									<el-form-item label="个人工程量">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -366,7 +366,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -381,7 +381,7 @@
 									v-if="teamTypes.tag == '班组长' && teamTypes.workType  == 1  ">
 									<el-form-item label="个人工程量">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="teamTypes.id"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -397,7 +397,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="teamTypes.id"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -406,7 +406,7 @@
 									</el-form-item>
 									<el-form-item label="带班管理费">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="teamTypes.id"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.leaderFee">
 											</el-input>
 											<span style="padding-left: 20px;">元/天</span>
@@ -430,7 +430,7 @@
 									</el-form-item>
 									<el-form-item label="工时单价">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.unitPrice"
 												@input="handleUnitPrice(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -447,7 +447,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -456,7 +456,7 @@
 									</el-form-item>
 									<el-form-item label="加班费">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="teamTypes.id"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.overtimeFee">
 											</el-input>
 											<span style="padding-left: 20px;">元/小时</span>
@@ -464,7 +464,7 @@
 									</el-form-item>
 									<el-form-item label="带班管理费" v-if="teamTypes.tag == '班组长'">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="teamTypes.id"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.leaderFee">
 											</el-input>
 											<span style="padding-left: 20px;">元/天</span>
@@ -477,7 +477,7 @@
 								<!--  工作描述 -->
 								<div class="demand-service-plan-box-list-item-text">
 									<el-form-item label="工作描述">
-										<el-input :disabled="!teamTypes.id" type="textarea" placeholder="请输入"
+										<el-input :disabled="isShowEdit" type="textarea" placeholder="请输入"
 											:autosize="{ minRows: 2, maxRows: 4}" v-model="teamTypes.description">
 										</el-input>
 									</el-form-item>
@@ -487,10 +487,10 @@
 							</el-form>
 						</div>
 
-						<div class="demand-service-plan-box-list-btn flex fvertical fcenter" >
+						<div class="demand-service-plan-box-list-btn flex fvertical fcenter" v-if="!isShowEdit">
 							<div class="demand-service-plan-box-list-btn-add" @click="handleAddWork(index,inx)">
 								添加工种</div>
-							<div class="demand-service-plan-box-list-btn-del" v-if="!teams.id"  @click="hanldeRemoveGroup(index,inx)">删除班组
+							<div class="demand-service-plan-box-list-btn-del" @click="hanldeRemoveGroup(index,inx)">删除班组
 							</div>
 						</div>
 					</div>
@@ -498,7 +498,7 @@
 					<!-- 工种列表数据end -->
 				</div>
 
-				<div class="demand-service-plan-add-main flex fcenter" 
+				<div class="demand-service-plan-add-main flex fcenter" v-if="!isShowEdit"
 					@click="handleAddGroup(index)">添加班组
 				</div>
 

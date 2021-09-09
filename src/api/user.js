@@ -49,6 +49,8 @@ export function gongRenQueryPage(params) {
  * @param {String} updator 跟进人ID/账号
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
+ * @param {Number} type   劳务派遣 -> 1 劳务分包 -> 2 
+ * @param {String} address 地区 
  */
 export function getBriel(params) {
 	return request({

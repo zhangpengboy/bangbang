@@ -13,9 +13,28 @@
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
+						<span>类型：</span>
+						<el-select v-model="type_name" placeholder="选择类型">
+							<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+					</div>
+					<div class="flex fvertical top-content-item-status">
 						<span>跟进人：</span>
-						<el-select v-model="updator" placeholder="选择跟进人">
+						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch"
+							placeholder="请输入跟进人">
+						</el-input>
+					<!-- 	<el-select v-model="updator" placeholder="选择跟进人">
 							<el-option v-for="item in options" :key="item.value" :label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select> -->
+					</div>
+					<div class="flex fvertical top-content-item-status">
+						<span>地区：</span>
+						<el-select v-model="address" filterable placeholder="选择地区">
+							<el-option v-for="item in addressList" :key="item.value" :label="item.label"
 								:value="item.value">
 							</el-option>
 						</el-select>
@@ -50,6 +69,11 @@
 				</el-table-column>
 				<el-table-column prop="phone" label="手机号码">
 				</el-table-column>
+				<el-table-column  label="类型">
+					<template slot-scope="scope">
+						{{scope.row.type == 1?'劳务派遣':'劳务分包'}}
+					</template>
+				</el-table-column>
 				<el-table-column label="语音" width="140">
 					<template slot-scope="scope">
 						<template v-for="(item,index) in scope.row.voices">
@@ -61,21 +85,23 @@
 				</el-table-column>
 				<el-table-column prop="content" label="需求" width="300">
 				</el-table-column>
+				<el-table-column prop="city" label="地区">
+				</el-table-column>
 				<el-table-column prop="address" label="服务单">
 				</el-table-column>
-				<el-table-column prop="updateName" label="操作人">
+				<el-table-column prop="updateName" label="跟进人">
 				</el-table-column>
-				<el-table-column label="创建时间">
+				<el-table-column label="创建时间" width="120">
 					<template slot-scope="scope">
 						<span>{{formatDate(scope.row.createTime)}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="updateTime" label="操作时间">
+				<el-table-column prop="updateTime" label="操作时间" width="120">
 					<template slot-scope="scope">
 						<span>{{formatDate(scope.row.updateTime)}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="状态">
+				<el-table-column label="状态" width="100">
 					<template slot-scope="scope">
 						<div v-if="scope.row.status == 0">未发报价单</div>
 						<div v-else-if="scope.row.status == 1">已发报价单</div>
@@ -123,6 +149,22 @@
 	export default {
 		data() {
 			return {
+				address:"", // 选中地区
+				addressList:[{
+					value: "",
+					label: "全部"
+				}], // 地区列表
+				type_name:"", // 选中类型
+				typeList:[{
+					value: "",
+					label: "全部"
+				},{
+					value: 1,
+					label: "劳务派遣"
+				},{
+					value: 2,
+					label: "劳务分包"
+				}], // 类型列表
 				tableData: [], // 表单列表
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
@@ -139,7 +181,7 @@
 				clientHeight:0
 			}
 		},
-		mounted() {
+		async mounted() {
 			this.getBriel();
 			this.getWebHeing();
 		},
@@ -179,6 +221,8 @@
 				this.creator = '';
 				this.value = '';
 				this.pageIndex = 1;
+				this.type_name = '';
+				this.address = '';
 				this.getBriel();
 			},
 
@@ -281,6 +325,8 @@
 				param.pageSize = this.pageSize;
 				param.creator = this.creator;
 				param.updator = this.updator;
+				param.type = this.type_name;
+				param.city = this.address;
 				this.loading = true;
 				try {
 					let res = await getBriel(param);

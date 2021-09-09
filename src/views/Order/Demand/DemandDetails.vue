@@ -8,58 +8,11 @@
 		<!-- tab按钮切换end -->
 		<div class="box">
 			<!-- 需求详情 -->
-			<div class="demand-deltails" v-if="tabPosition == 'top'">
-				<div class="box-demand-title">需求单信息</div>
-
-				<div class="demand-deltails-box">
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">状态</div>
-						<div class="demand-deltails-box-item-conter" v-if="info.status == 0">未发报价单</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 1">已发报价单</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 2">已取消</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 3">已转至服务单</div>
-
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">姓名</div>
-						<div class="demand-deltails-box-item-conter">{{info.createName }}</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">联系方式</div>
-						<div class="demand-deltails-box-item-conter">{{info.phone}}</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">语音</div>
-						<div class="demand-deltails-box-item-conter">
-							<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点这里播放"
-								v-for="(item,index) in info.voices ">
-							</m-audio>
-						</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">文字</div>
-						<div class="demand-deltails-box-item-conter f1">
-							{{info.content}}
-						</div>
-					</div>
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">是否创建报价单</div>
-						<div class="demand-deltails-box-item-conter">
-							<span :class="info.orderId > 0?'':'color-error'">{{info.orderId >0?'已创建':'未创建'}}</span>
-						</div>
-					</div>
-				</div>
-
-			</div>
+			<demanInfo :info="info"  v-if="tabPosition == 'top'" />
 			<!-- 需求详情end -->
 			<template v-else>
 				<!-- 编辑服务单  -->
-				<editService v-if="editFrom.id" :editFrom="editFrom" ref="editFrom" />
+				<editDeman v-if="editFrom.id"  ref="editFrom" />
 				<!-- 编辑服务单end  -->
 				<!-- 服务单 -->
 				<div class="demand-service" v-else>
@@ -71,6 +24,14 @@
 							<el-form-item label="项目名称">
 								<el-input v-model="basicForm.title"></el-input>
 							</el-form-item>
+							<el-form-item label=" 类型">
+								<el-select v-model="basicForm.type" placeholder="选择类型">
+									<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+										:value="item.value">
+									</el-option>
+								</el-select>
+							</el-form-item>
+						
 
 							<!-- 	<el-form-item label="项目简称" >
 								<el-input v-model="ruleForm.name"></el-input>
@@ -624,7 +585,8 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
-	import editService from '../components/edit-service.vue'
+	import editDeman from '../components/edit-demand.vue'
+	import demanInfo from '../components/demand-info.vue'
 	import uuid from 'node-uuid'
 	import {
 		AddOrder,
@@ -640,6 +602,13 @@
 				myHeaders: {
 					requestId: uuid.v4().replaceAll('-', '')
 				},
+				typeList:[{
+					value: 1,
+					label: "劳务派遣"
+				},{
+					value: 2,
+					label: "劳务分包"
+				}], // 类型列表
 				info: {},
 				loading: false, // 是否显示正在加载
 				briefId: 0,
@@ -706,7 +675,8 @@
 					duration: "", // 项目工期
 					description: "", // 项目介绍
 					scope: "100", // 打卡范围
-					images: [] // 图片地址
+					images: [] ,// 图片地址
+					type:null,
 				},
 				schemes: [{ // 方案
 					tag: "", // 标签
@@ -787,7 +757,8 @@
 			}
 		},
 		components: {
-			editService
+			editDeman,
+			demanInfo
 		},
 		watch: {
 			isAddress(val) {
@@ -907,6 +878,7 @@
 					let res = await getBriefDetail(id);
 					this.loading = false;
 					this.info = res.data;
+					this.basicForm.type = res.data.type
 					if (res.data.orderId > 0) {
 						this.getOrderDetail(res.data.orderId);
 					}
@@ -1393,7 +1365,6 @@
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterEndTime).getTime();
-							// schemes[i].teams[j].teamTypes[k]
 						}
 					}
 				}
@@ -1666,36 +1637,7 @@
 </script>
 
 <style lang="scss">
-	.demand-deltails-box {
-		margin-top: 20px;
-		border: 1px solid #E9E9E9;
-
-		.demand-deltails-box-item {
-			border-bottom: 1px solid #E9E9E9;
-
-			&:nth-last-child(1) {
-				border-bottom: none;
-			}
-
-			.demand-deltails-box-item-title {
-				width: 160px;
-				background-color: #f2f2f2;
-				padding: 20px;
-				text-align: right;
-				font-size: 14px;
-			}
-
-			.demand-deltails-box-item-conter {
-				padding: 20px;
-				border-left: 1px solid #E9E9E9;
-				font-size: 14px;
-
-				.demand-deltails-box-item-mp3 {
-					margin-right: 15px;
-				}
-			}
-		}
-	}
+	
 
 
 	.demand-service {

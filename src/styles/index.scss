@@ -212,6 +212,7 @@ aside {
 .column{
   flex-direction: column;
 }
+.fright{ justify-content: flex-end;}
 
 /* 溢出...显示 当前节点生效 */
 .ellipsis{ overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
