@@ -728,3 +728,19 @@ export function visitList(params) {
 		params
 	})
 }
+// 导出访问统计列表
+export function visitListexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/exportCsv`,
+		method: 'get',
+		params
+	})
+}
+// 访问统计列表折线图
+export function visitListcount(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/count`,
+		method: 'get',
+		params
+	})
+}

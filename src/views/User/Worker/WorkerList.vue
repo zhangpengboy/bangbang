@@ -345,7 +345,7 @@ export default {
       console.log(query);
       exportCsvGongren(query).then(res => {
         console.log(res)
-        var responseURL = res.responseURL;
+        var responseURL = res.request.responseURL;
         window.open(responseURL,'_blank')
       }).catch(res=>{
         console.log(res)

@@ -449,10 +449,11 @@ export default {
   methods: {
     getUser() {
       this.loading = true;
+      // console.log(this.gradevalue.join(','))
        var query = {
         id:this.serach,
         enterpriseAuth: this.authvalue,
-        grades: this.gradevalue.join(',') ,
+        grades: this.gradevalue.join(','),
         pageNum: this.PageIndex,
         pageSize: this.PageSize,
         realNameAuth: this.reamNamevalue,
@@ -498,7 +499,7 @@ export default {
       console.log(query);
       exportCsvUser(query).then(res => {
         console.log(res)
-        var responseURL = res.responseURL;
+        var responseURL = res.request.responseURL;
         window.open(responseURL,'_blank')
       }).catch(res=>{
         console.log(res)

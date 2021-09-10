@@ -91,9 +91,9 @@
     <div class="box box2">
       <div id="myChart"></div>
       <div class="nav flex alCen">
-        <div :class="['navItem',navIndex==0?'navItemHov':'']" @click="tabChose(0)">近7日</div>
-        <div :class="['navItem',navIndex==1?'navItemHov':'']" @click="tabChose(1)">近30日</div>
-        <div :class="['navItem',navIndex==2?'navItemHov':'']" @click="tabChose(2)">近180日</div>
+        <!-- <div :class="['navItem',navIndex==0?'navItemHov':'']" @click="tabChose(0)">近7日</div>
+        <div :class="['navItem',navIndex==1?'navItemHov':'']" @click="tabChose(1)">近30日</div> -->
+        <div :class="['navItem',navIndex==index?'navItemHov':'']" @click="tabChose(item,index)" v-for="(item,index) in datas" :key="index">{{item.name}}</div>
       </div>
     </div>
 
@@ -103,7 +103,9 @@
 
 <script>
   import {
-    visitList
+    visitList,
+    visitListexportCsv,
+    visitListcount
   } from '../../../api/user.js'
   import { formatDate,timestamp } from '@/utils/validate'
   export default {
@@ -137,20 +139,38 @@
          ],
          loading:false,
          navIndex:0,
+         datas:[
+           {
+             name:'近7日',
+             count:7
+           },
+           {
+             name:'近30日',
+             count:30
+           },
+           {
+             name:'近180日',
+             count:180
+           }
+         ]
 
       }
     },
     created() {
-      this.loadDate('');
+      this.loadDate();
+      this.$nextTick(function() {
+       this.drawLine();
+      })
     },
     mounted() {
-      this.drawLine();
+
     },
     methods: {
-      tabChose(e){
-        this.navIndex = e
+      tabChose(item,index){
+        this.navIndex = index
+        this.drawLine();
       },
-      loadDate(status){
+      loadDate(){
         this.loading = true;
         var createTimeBegin=''
         if(this.startDate){
@@ -160,11 +180,9 @@
         if(this.endDate){
           createTimeEnd = timestamp(formatDate(this.endDate))
         }
-
         var params = {
           pageSize:this.PageSize,
           pageNum:this.PageIndex,
-          status:status,
           createTimeBegin:createTimeBegin,
           createTimeEnd:createTimeEnd,
           phone:this.serach,
@@ -178,6 +196,8 @@
               data[i].createTime = formatDate(data[i].createTime)
           }
           this.tableData = data
+          this.PageCount = res.data.total
+
 
         })
       },
@@ -185,12 +205,12 @@
       handleSizeChange(e) {
         this.PageSize = e
         this.PageIndex = 1
-        // this.getUser()
+        this.loadDate();
       },
       /** 点击分页 */
       handleCurrentChange(e) {
         this.PageIndex = e
-        // this.getUser()
+        this.loadDate();
       },
       search() {
         console.log('查询')
@@ -200,15 +220,44 @@
       raLoad(){
         this.statusvalue = '';
         this.PageIndex = 1;
+        this.startDate = '';
+        this.endDate = '';
         this.loadDate(this.statusvalue);
       },
       // 导出
       exportTable(){
-
+        var createTimeBegin=''
+        if(this.startDate){
+          createTimeBegin = timestamp(formatDate(this.startDate))
+        }
+        var createTimeEnd=''
+        if(this.endDate){
+          createTimeEnd = timestamp(formatDate(this.endDate))
+        }
+        console.log('导出');
+        var query = {
+          pageSize:this.PageSize,
+          pageNum:this.PageIndex,
+          createTimeBegin:createTimeBegin,
+          createTimeEnd:createTimeEnd,
+          phone:this.serach,
+          userType:this.statusvalue
+        }
+        visitListexportCsv(query).then(res => {
+          console.log(res)
+          var responseURL = res.request.responseURL;
+          window.open(responseURL,'_blank')
+        }).catch(res=>{
+          console.log(res)
+          this.$message({
+              message:'下载失败！',
+              type:'error',
+              showClose:true
+          })
+        })
       },
 
-      drawLine(){
-        // 基于准备好的dom，初始化echarts实例
+      async drawLine(){
         let myChart = this.$echarts.init(document.getElementById('myChart'))
         // 绘制图表
         let option = {
@@ -230,7 +279,7 @@
            yAxis: {
                type: 'value',
                axisLabel: {
-                   formatter: '{value} °C'
+                   formatter: '{value} '
                }
            },
            series: [
@@ -246,7 +295,19 @@
                }
            ]
         };
-         myChart.setOption(option)
+
+        var query = {
+          days:this.datas[this.navIndex].count
+        }
+        let resolve = await visitListcount(query).then(response => {
+          var data = response.data;
+          return Promise.resolve(data)
+        })
+        option.xAxis.data = resolve.dates
+        option.series[0].data = resolve.enterpriseCount
+        option.series[1].data = resolve.workerCount
+        console.log(resolve)
+        myChart.setOption(option)
       }
 
 
