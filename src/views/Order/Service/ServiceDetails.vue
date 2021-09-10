@@ -16,7 +16,7 @@
 		<!-- 需求单详情end -->
 
 		<!-- 服务单 -->
-		<editService ref="editFrom" v-show="tabPosition == 'order'" />
+		<editService ref="editFrom" v-show="tabPosition == 'order'" @handleEditSuccess="handleEditSuccess" />
 		
 		<!-- 服务单end -->
 
@@ -703,6 +703,9 @@
 			
 		},
 		methods: {
+			handleEditSuccess(){
+				this.getOrderdetail(this.orderId);
+			},
 			// 查看需求单详情
 			async getBriefDetail(id) {
 				this.loading = true;

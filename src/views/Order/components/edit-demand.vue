@@ -1473,8 +1473,7 @@
 				let schemes = param.schemes;
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
-						schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
-							.teams[j].restTimelen
+						
 						schemes[i].teams[j].enterEndTime = new Date(schemes[i].teams[j].enterEndTime).getTime();
 						schemes[i].teams[j].enterStartTime = new Date(schemes[i].teams[j].enterStartTime).getTime();
 						schemes[i].teams[j].restEndTime = new Date(schemes[i].teams[j].restEndTime).getTime();
@@ -1482,6 +1481,8 @@
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
+							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
+								.teams[j].restTimelen
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
