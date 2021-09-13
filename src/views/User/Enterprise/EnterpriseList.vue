@@ -378,7 +378,7 @@ export default {
     // 重置
     raLoad(){
         this.serach='';
-        this.reamNamevalue = '';
+        this.statusvalue = '';
         this.xqMinNum = '';
         this.xqMaxNum = '';
         this.fwMinNum = '';
@@ -398,7 +398,7 @@ export default {
       console.log(query);
       exportCsvQiye(query).then(res => {
         console.log(res)
-        var responseURL = res.responseURL;
+        var responseURL = res.request.responseURL;
         window.open(responseURL,'_blank')
       }).catch(res=>{
         console.log(res)
@@ -547,7 +547,7 @@ export default {
          age:this.rnAge,
          gender:gender,
          householdRegister:this.rnHouse,
-         idCardReverseUri:this.idCardBack,
+         idCardReverseUri:this.idCardBackUp,
          idCardUri:this.idCardUp,
          idNo:this.rnIdnum,
          nation:this.rnNation,

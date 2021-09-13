@@ -201,7 +201,9 @@
                       <img v-if="isEditUserInfo" @click="detGongZhong(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
                     </div>
                    <!-- <el-button type="text" size="small" v-if="isEditUserInfo" >添加工种</el-button> -->
-                      <el-select size="small" v-if="isEditUserInfo" v-model="gongZhvalue" placeholder="添加工种" @change="choseGongZhong">
+                    <template v-if="bizCardInfo.workType.length<3">
+                      <el-select size="small" v-if="isEditUserInfo"
+                       placeholder="添加工种" @change="choseGongZhong">
                         <el-option
                           v-for="item in gongZhoptions"
                           :key="item.id"
@@ -209,14 +211,14 @@
                           :value="item.id">
                         </el-option>
                       </el-select>
-
+                      </template>
                   </div>
                 </div>
-                <div class="item flex">
+                <div class="item flex" style="position: relative;">
                   <p class="backgroud tit">自我介绍</p>
                   <!-- <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p> -->
                   <input  class="desc flex1 col666" type="" name="" :disabled="isEditUserInfo==false" v-model="bizCardInfo.selfIntroduction" />
-                  <el-select  v-if="isEditUserInfo" v-model="bizCardInfo.selfIntroduction" placeholder="请选择"  @change="chosebiref">
+                  <el-select style="position: absolute;right: -200px;"  v-if="isEditUserInfo"  placeholder="选择通用介绍模板"  @change="chosebiref">
                      <el-option
                         v-for="item in productQuestions"
                         :key="item.id"
@@ -260,6 +262,7 @@
                       <p class="gongzhong">{{item.labelName}}</p>
                       <img v-if="isEditUserInfo" @click="detAdr(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
                     </div>
+                    <template  v-if="bizCardInfo.expectedPlace.length<3">
                     <el-cascader
                       v-if="isEditUserInfo"
                       size="small"
@@ -269,7 +272,7 @@
                       @change="handleChange"
                     >
                     </el-cascader>
-
+                    </template>
                   </div>
                 </div>
               </div>
@@ -658,30 +661,43 @@ export default {
       if(this.isEditShM==false){
         console.log(this.realNameInfo.gender)
         console.log('保存')
-       var params = {
-         age:this.realNameInfo.age,
-         gender:this.realNameInfo.gender,
-         householdRegister:this.realNameInfo.householdRegister,
-         idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
-         idCardUri:this.realNameInfo.idCardUriUp,
-         idNo:this.realNameInfo.idNo,
-         nation:this.realNameInfo.nation,
-         nativePlace:this.realNameInfo.nativePlace,
-         realName:this.realNameInfo.realName,
-         userId:this.userIdOrType.id,
-         validityEndTime:this.realNameInfo.validityEndTime,
-         validityStartTime:this.realNameInfo.validityEndTime
-       }
-       gongRenRealNameAuth(params).then(res => {
-         var data = res.data
-         console.log(res)
-         this.isEditShM = true
-         this.$message({
-           type: 'success',
-           message: '操作成功!'
-         })
-         this.loadDate(this.userIdOrType)
-       })
+        if(this.realNameInfo.gender>1){
+          this.$message({
+            message: '请选择正常性别',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age>100){
+          this.$message({
+            message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            age:this.realNameInfo.age,
+            gender:this.realNameInfo.gender,
+            householdRegister:this.realNameInfo.householdRegister,
+            idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
+            idCardUri:this.realNameInfo.idCardUriUp,
+            idNo:this.realNameInfo.idNo,
+            nation:this.realNameInfo.nation,
+            nativePlace:this.realNameInfo.nativePlace,
+            realName:this.realNameInfo.realName,
+            userId:this.userIdOrType.id,
+            validityEndTime:this.realNameInfo.validityEndTime,
+            validityStartTime:this.realNameInfo.validityEndTime
+          }
+          gongRenRealNameAuth(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.isEditShM = true
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.loadDate(this.userIdOrType)
+          })
+        }
+
 
       }else{
         this.isEditShM = false

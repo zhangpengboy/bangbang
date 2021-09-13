@@ -196,16 +196,15 @@
        },
        // 添加实名
        realNameTrue(){
-         console.log(this.rnName);
-         console.log(this.rnGender);
-         console.log(this.rnNation);
-         console.log(this.rnAge);
-         console.log(this.rnIdnum);
-         console.log(this.rnNativePlace);
-         console.log(this.rnHouse);
+         var gender = 0;
+         if(this.rnGender=='男'){
+           gender = 0
+         }else{
+           gender = 1
+         }
           var params = {
             age:this.rnAge,
-            gender:this.rnGender,
+            gender:gender,
             householdRegister:this.rnHouse,
             idCardReverseUri:this.idCardBackUp,
             idCardUri:this.idCardUp,
@@ -213,24 +212,11 @@
             nation:this.rnNation,
             nativePlace:this.rnNativePlace,
             realName:this.rnName,
-            userId:this.rnUserId,
-            userType:this.rnUserType
+            validityEndTime:this.rnvalidityEndTime,
+            validityStartTime:this.rnvalidityStartTime
           }
 
-          this.$emit('')
-
-          realNameAuth(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              this.$message({
-                type: 'success',
-                message: '提交成功!'
-              })
-               this.realNamePop = false
-
-            }
-          })
-
+          this.$emit('addRealname',params)
        }
     }
 

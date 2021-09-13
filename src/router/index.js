@@ -113,6 +113,11 @@ export const constantRoutes = [
 			},
 			hidden: true
 		}, {
+			path: 'access-statistics',
+			component: () => import('@/views/User/accessStatistics/accessStatistics'),
+			name: 'accessStatistics',
+			meta: {title: '访问统计'}
+		},{
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),
 			name: 'RealName',
@@ -426,7 +431,12 @@ export const asyncRoutes = [{
 			name: 'UserIndex',
 			meta: {
 				title: '用户列表'
-			}
+			},
+    }, {
+     	path: 'access-statistics',
+     	component: () => import('@/views/User/accessStatistics/accessStatistics'),
+     	name: 'accessStatistics',
+     	meta: {title: '访问统计'}
 		}, {
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),

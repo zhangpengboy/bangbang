@@ -51,7 +51,7 @@ service.interceptors.response.use(
 	response => {
     // console.log(response)
 		const res = response.data;
-		console.log(res.code)
+		// console.log(res.code)
 		if (res.code == 200) {
 			return res;
 		} else if (res.code == 401) {
@@ -61,7 +61,9 @@ service.interceptors.response.use(
 			// store.dispatch('user/resetToken').then(() => {
 			// 	location.reload()
 			// })
-		}else {
+		}else if(res.type=='text/xml'){
+      return response;
+    }else {
 			  Message({
 			    message: res.msg || 'Error',
 			    type: 'error',
