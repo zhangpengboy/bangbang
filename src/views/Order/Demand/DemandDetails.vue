@@ -68,8 +68,10 @@
 					<div class="demand-service-info">
 						<el-form :model="basicForm" :rules="rules" ref="ruleForm" label-width="100px"
 							class="demo-ruleForm">
-							<el-form-item label="项目名称">
-								<el-input v-model="basicForm.title"></el-input>
+							<el-form-item label="项目名称" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.title" placeholder="请输入项目名称" minlength="2" maxlength="30">
+								</el-input>
+								<span>已输入{{basicForm.title.length}}/30</span>
 							</el-form-item>
 
 							<!-- 	<el-form-item label="项目简称" >
@@ -89,7 +91,12 @@
 							</el-form-item> -->
 
 							<el-form-item label="项目介绍">
-								<el-input type="textarea" v-model="basicForm.description" :rows="4"></el-input>
+								<div class="demand-service-info-item">
+									<el-input type="textarea" v-model="basicForm.description" :rows="4"
+										placeholder="请输入项目介绍（选填）" maxlength="200"></el-input>
+										<span style="top: 60px;">已输入{{basicForm.description.length}}/200</span>
+								</div>
+							
 								<div class="demand-service-upload flex fvertical">
 
 									<div v-for="(item,index) in basicForm.images" class="demand-service-upload-img"
@@ -109,7 +116,8 @@
 										name="multipartFile" :on-remove="handleRemoveImg" :on-progress="handleProgress"
 										:on-preview="handlePictureCardPreview" :on-error="handleUploadError"
 										:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="4"
-										:headers="myHeaders" :show-file-list="false" :before-upload="beforeAvatarUpload">
+										:headers="myHeaders" :show-file-list="false"
+										:before-upload="beforeAvatarUpload">
 										<i class="el-icon-plus avatar-uploader-icon" v-if="videoFlag == false"></i>
 										<el-progress :stroke-width="5" v-if="videoFlag == true" type="circle"
 											:percentage="videoUploadPercent" style="margin-top:12px;"></el-progress>
@@ -164,7 +172,7 @@
 							</div>
 						</div>
 
-						<div class="demand-service-plan-box" v-if="scheme==index" v-for="(item,index) in schemes"
+						<div class="demand-service-plan-box" v-show="scheme==index" v-for="(item,index) in schemes"
 							:key="index">
 							<!-- 方案标题  -->
 							<div class="demand-service-plan-box-title flex fbetween">
@@ -178,21 +186,22 @@
 							<!-- 方案标题end  -->
 
 							<!-- 方案基本信息  -->
-							<el-form :model="item" ref="ruleForm" label-width="100px">
+							<el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px">
 
 								<div class="flex demand-service-plan-box-item">
-									<el-form-item label="方案标签">
+									<el-form-item label="方案标签" prop="tag">
 										<el-input v-model="item.tag"></el-input>
 									</el-form-item>
-									<el-form-item label="简介">
+									<el-form-item label="简介" prop="description">
 										<el-input v-model="item.description"></el-input>
 									</el-form-item>
 								</div>
 
 								<div class="flex demand-service-plan-box-item">
-									<el-form-item class="" label="换人次数">
+									<el-form-item class="" label="换人次数" prop="replaceTimes">
 										<div class="flex">
-											<el-input class="f1" v-model="item.replaceTimes"></el-input>
+											<el-input class="f1" v-model="item.replaceTimes"
+												oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
 											<el-input class="demand-service-plan-box-item-second" :disabled="true"
 												value="次"></el-input>
 										</div>
@@ -209,17 +218,17 @@
 
 								<!-- 班组信息 -->
 								<div class="demand-service-plan-box-info">
-									<el-form :model="teams" label-width="120px">
+									<el-form :model="teams" :rules="teamRules" ref="teamsFrom" label-width="120px">
 
 										<div class="flex demand-service-plan-box-info-data">
-											<el-form-item label="班组名称">
+											<el-form-item label="班组名称"  :prop="'item.' + inx + '.name'">
 												<el-input v-model="teams.name"></el-input>
 											</el-form-item>
-											<el-form-item label="进场时间">
+											<el-form-item label="进场时间" prop="enterStartTime">
 												<el-input v-model="teams.enterStartTime" :disabled="true"></el-input>
 
 											</el-form-item>
-											<el-form-item label="班组工期">
+											<el-form-item label="班组工期" prop="enterDay">
 												<el-input v-model="teams.enterDay" :disabled="true"></el-input>
 											</el-form-item>
 										</div>
@@ -229,7 +238,8 @@
 											</el-form-item>
 											<el-form-item label="班组工程量">
 												<div class="flex">
-													<el-input class="f1" v-model="teams.totalUnit" :disabled="true">
+													<el-input class="f1" onkeyup="value=this.value.replace(//D+/g,'')"
+														v-model="teams.totalUnit" :disabled="true">
 													</el-input>
 													<el-select style="width: 120px;margin-left: 10px;"
 														v-model="teams.unit" placeholder="请选择">
@@ -239,7 +249,7 @@
 													</el-select>
 												</div>
 											</el-form-item>
-											<el-form-item label="计件单价">
+											<el-form-item label="计件单价" prop="unitPrice">
 												<div class="flex">
 													<el-input class="f1" v-model="teams.unitPrice"
 														@input="handleTeamsUniprice(index,inx,teams)"></el-input>
@@ -249,7 +259,7 @@
 										</div>
 
 										<div class="flex  demand-service-plan-box-info-data">
-											<el-form-item label="上班时间">
+											<el-form-item label="上班时间" prop="workTimeList">
 												<el-time-picker is-range v-model="teams.workTimeList"
 													range-separator="至" start-placeholder="开始时间" format='HH:mm'
 													@change="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
@@ -274,7 +284,8 @@
 									<div class="demand-service-plan-box-list-item"
 										v-for="(teamTypes,types_index) in teams.teamTypes">
 
-										<el-form :model="teamTypes" ref="ruleForm" label-width="100px">
+										<el-form :model="teamTypes" :rules="teamTypesRules" ref="typeRuleForm"
+											label-width="110px">
 											<!-- 固定基本工种  -->
 											<div class="flex fbetween">
 												<div class="demand-service-plan-box-list-item-box flex fvertical">
@@ -293,7 +304,7 @@
 													</el-form-item>
 												</div>
 												<div class="demand-service-plan-box-list-item-box">
-													<el-form-item label="工种标签">
+													<el-form-item label="工种标签" prop="tag">
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-select v-model="teamTypes.tag" placeholder="请选择"
 															@change="handleTag(index,inx,types_index,teamTypes)">
@@ -304,7 +315,7 @@
 													</el-form-item>
 												</div>
 												<div class="demand-service-plan-box-list-item-box">
-													<el-form-item label="工种模式">
+													<el-form-item label="工种模式" prop="workTypeVal">
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-select v-model="teamTypes.workTypeVal" placeholder="请选择"
 															@change="handleTypeModel(index,inx,types_index,teamTypes)">
@@ -330,7 +341,7 @@
 											<div class="flex fbetween">
 												<div class="demand-service-plan-box-list-item-box flex fvertical">
 													<div class="plan-box-btn"></div>
-													<el-form-item label="工种进场时间">
+													<el-form-item label="工种进场时间" prop="enterStartTime">
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-date-picker v-model="teamTypes.enterStartTime"
 															value-format="yyyy-MM-dd "
@@ -340,7 +351,7 @@
 													</el-form-item>
 												</div>
 												<div class="demand-service-plan-box-list-item-box">
-													<el-form-item label="工种工期">
+													<el-form-item label="工种工期" prop="enterDay">
 														<div class="flex">
 															<el-input style="width: 200px;" v-model="teamTypes.enterDay"
 																@input="handleDuration(index,inx,types_index,teamTypes)">
@@ -373,14 +384,14 @@
 														<span style="padding-left: 20px;">小时</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费">
+												<el-form-item label="带班管理费" prop="leaderFee">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.leaderFee">
 														</el-input>
 														<span style="padding-left: 20px;">元</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="人数">
+												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
@@ -395,7 +406,7 @@
 											<div class="demand-service-plan-box-list-item-type flex"
 												v-if="teamTypes.tag != '班组长'  && teamTypes.workTypeVal == '计件'">
 												<!-- <div class="plan-box-btn"></div> -->
-												<el-form-item label="个人工程量">
+												<el-form-item label="个人工程量" prop="personalQuantity">
 													<div class="flex">
 														<el-input style="width: 200px;"
 															v-model="teamTypes.personalQuantity"
@@ -404,7 +415,7 @@
 														<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="计件单价">
+												<el-form-item label="计件单价" prop="unitPrice">
 													<div class="flex">
 														<el-input :disabled="true" style="width: 200px;"
 															v-model="teams.unitPrice"></el-input>
@@ -412,7 +423,7 @@
 															style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="人数">
+												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
@@ -426,7 +437,7 @@
 											<!-- 计件/班组长 -->
 											<div class="demand-service-plan-box-list-item-group flex fbetween"
 												v-if="teamTypes.tag == '班组长' && teamTypes.workTypeVal == '计件'  ">
-												<el-form-item label="个人工程量">
+												<el-form-item label="个人工程量" prop="personalQuantity">
 													<div class="flex">
 														<el-input style="width: 150px;"
 															v-model="teamTypes.personalQuantity"
@@ -435,7 +446,7 @@
 														<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="计件单价">
+												<el-form-item label="计件单价" prop="unitPrice">
 													<div class="flex">
 														<el-input :disabled="true" style="width: 150px;"
 															v-model="teams.unitPrice"></el-input>
@@ -443,7 +454,7 @@
 															style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="人数">
+												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 150px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
@@ -451,7 +462,7 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费">
+												<el-form-item label="带班管理费" prop="leaderFee">
 													<div class="flex">
 														<el-input style="width: 150px;" v-model="teamTypes.leaderFee">
 														</el-input>
@@ -475,7 +486,7 @@
 														<span style="padding-left: 20px;">小时</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="工时单价">
+												<el-form-item label="工时单价" prop="unitPrice">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.unitPrice"
 															@input="handleUnitPrice(index,inx,types_index,teamTypes)">
@@ -490,7 +501,7 @@
 														<!-- <span style="padding-left: 20px;">人</span> -->
 													</div>
 												</el-form-item>
-												<el-form-item label="人数">
+												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
@@ -498,14 +509,16 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="加班费">
+												<el-form-item label="加班费" prop="overtimeFee">
 													<div class="flex">
-														<el-input style="width: 200px;" v-model="teamTypes.overtimeFee">
+														<el-input style="width: 200px;" v-model="teamTypes.overtimeFee"
+															oninput="value=value.replace(/^\.+|[^\d.]/g,'')">
 														</el-input>
 														<span style="padding-left: 20px;">元/小时</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费" v-if="teamTypes.tag == '班组长'">
+												<el-form-item label="带班管理费" prop="leaderFee"
+													v-if="teamTypes.tag == '班组长'">
 													<div class="flex">
 														<el-input style="width: 150px;" v-model="teamTypes.leaderFee">
 														</el-input>
@@ -555,7 +568,7 @@
 									<span> 信息服务费</span>
 									<div class="flex">
 										<el-input class="f1 demand-service-plan-box-foot-item-server"
-											@input="handleInputToals(index)" v-model="item.serviceFeeRate"
+											@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
 											placeholder="请输入信息服务费比例">
 										</el-input>
 										<el-input value="%" :disabled="true"
@@ -572,8 +585,8 @@
 								<div class="demand-service-plan-box-foot-item flex fvertical">
 									<span> 税费</span>
 									<div class="flex">
-										<el-input class="f1" v-model="item.taxRate" @input="handleInputToals(index)"
-											placeholder="请输入信息服务费比例"></el-input>
+										<el-input class="f1" v-model="item.taxRate"
+											@input="handleInputToals(index,item)" placeholder="请输入信息服务费比例"></el-input>
 										<el-input value="%" :disabled="true"
 											class="f1 demand-service-plan-box-foot-item-company"></el-input>
 										<el-input :value="item.taxRateNum" :disabled="true"
@@ -647,8 +660,8 @@
 				isImges: false, // 是否显示大图
 				isAddress: false, //显示添加地址
 				current: null,
-				videoFlag:false, // 是否显示进度条
-				videoUploadPercent:0,  // 进度条百分比
+				videoFlag: false, // 是否显示进度条
+				videoUploadPercent: 0, // 进度条百分比
 				schemeList: [{
 					name: "方案一",
 					label: '0'
@@ -656,7 +669,103 @@
 				scheme: 0,
 				tabPosition: 'top',
 				ruleForm: {},
-				rules: {},
+				teamTypesRules: {
+					tag: [{
+						required: true,
+						message: '请选择工种标签',
+						trigger: 'change'
+					}],
+					workTypeVal: [{
+						required: true,
+						message: '请选择工种模式',
+						trigger: 'change'
+					}],
+					number: [{
+						required: true,
+						message: '请输入入人数',
+						trigger: 'blur'
+					}],
+					leaderFee: [{
+						required: true,
+						message: '请输入带班管理费',
+						trigger: 'blur'
+					}],
+					enterStartTime: [{
+						required: true,
+						message: '请选择工种进场时间',
+						trigger: 'change'
+					}],
+					enterDay: [{
+						required: true,
+						message: '请输入工种工期',
+						trigger: 'blur'
+					}],
+					// unitPrice:[{
+					// 	required: true,
+					// 	message: '请输入工时单价',
+					// 	trigger: 'blur'
+					// }],
+					overtimeFee:[{
+						required: true,
+						message: '请输入加班费',
+						trigger: 'blur'
+					}],
+					personalQuantity:[{
+						required: true,
+						message: '请输入个人工程量',
+						trigger: 'blur'
+					}]
+				},
+				teamRules: {
+					name: [{
+						required: true,
+						message: '请输入班组名称',
+						trigger: 'blur'
+					}],
+					unitPrice: [{
+						required: true,
+						message: '请输入计件单价',
+						trigger: 'blur'
+					}],
+					workTimeList: [{
+						required: true,
+						message: '请选择上班时间',
+						trigger: 'change'
+					}],
+
+				},
+				programmeRules: { // 方案
+					tag: [{
+						required: true,
+						message: '请输入方案标签',
+						trigger: 'blur'
+					}],
+					description: [{
+						required: true,
+						message: '请输入简介',
+						trigger: 'blur'
+					}],
+					replaceTimes: [{
+						required: true,
+						message: '请输入换人次数',
+						trigger: 'blur'
+					}],
+
+				},
+				rules: {
+					title: [{
+							required: true,
+							message: '请输入项目名称',
+							trigger: 'blur'
+						},
+						{
+							min: 2,
+							max: 30,
+							message: '长度在 2 到 30 个字符',
+							trigger: 'blur'
+						}
+					],
+				},
 				scopeList: [], // 距离列表
 				distance: "", // 距离
 				imageUrl: "", //上传图片
@@ -803,7 +912,7 @@
 				if (val == 'right') {
 					if (this.info.orderId > 0) {
 						this.$nextTick(() => {
-							this.$refs.editFrom.getDataInfo(this.editFrom)
+							this.$refs.editFrom.getDataInfo(this.editFrom);
 						})
 					}
 
@@ -954,6 +1063,7 @@
 			},
 			// 计算工时单价
 			handleUnitPrice(index, inx, type_index, val) {
+				val.unitPrice = val.unitPrice.replace(/^\.+|[^\d.]/g, '')
 				let dailyFee = (this.schemes[index].teams[inx].workTimelen - this.schemes[index].teams[inx].restTimelen) *
 					val.unitPrice
 				val.dailyFee = dailyFee;
@@ -1005,7 +1115,9 @@
 				this.getTotal(data.index);
 			},
 			// 计算总费用
-			handleInputToals(index) {
+			handleInputToals(index, val) {
+				val.taxRate = val.taxRate.replace(/[^0-9.]/g, '');
+				val.serviceFeeRate = val.serviceFeeRate.replace(/[^0-9.]/g, '');
 				this.getTotal(index)
 			},
 			// 计算总的社工服务费
@@ -1177,6 +1289,7 @@
 				if (val.tag == '班组长') {
 					val.workTypeVal = '';
 				}
+				// this.$refs.typeRuleForm.clearValidate();
 				this.handleQuantity(index, inx, types_index, val)
 			},
 			// 获取工程量单位
@@ -1254,7 +1367,6 @@
 								arr[j + 1] = temp;
 							}
 						}
-
 					}
 				}
 				return arr[0];
@@ -1289,7 +1401,6 @@
 					this.schemes[index].teams[inx].enterEndTime = this.getExitLenTime(teamTypes);
 					this.schemes[index].teams[inx].enterDay = this.getDateDiff(val.enterStartTime, val.enterEndTime);
 				} else {
-					console.log('退出')
 					this.schemes[index].teams[inx].enterEndTime = "";
 					this.schemes[index].teams[inx].enterDay = 0
 					val.enterEndTime = "";
@@ -1298,6 +1409,7 @@
 			},
 			// 计算班组工程量
 			handleQuantity(index, inx, types_index, val) {
+				val.number = val.number.replace(/^(0+)|[^\d]+/g, '')
 				let teamTypes = this.schemes[index].teams[inx].teamTypes;
 				let total = 0;
 				let allToal = 0;
@@ -1321,7 +1433,7 @@
 			/** 当用户工种工期输入时 */
 			handleDuration(index, inx, types_index, val) {
 				let teamTypes = this.schemes[index].teams[inx].teamTypes
-				val.enterDay = val.enterDay.replace(/[^0-9.]/g, '')
+				val.enterDay = val.enterDay.replace(/^(0+)|[^\d]+/g, '')
 				let num = val.enterDay;
 				if (val.enterStartTime && num >= 1) {
 					let date = this.dateChange((num - 1), val.enterStartTime);
@@ -1358,11 +1470,38 @@
 				return newDate.getFullYear() + '-' + month + '-' + day;
 			},
 			/** 提交服务单 */
-			async handleAddSerice() {
-				let param = {};
+			 handleAddSerice() {
+				
 				if (!this.allAddress.point) {
 					return this.$message.error('请选择地址');
 				}
+			
+				this.$refs.ruleForm.validate((vaild)=>{
+					if(vaild){
+						this.$refs.programmeForm[0].validate((vailds)=>{
+							if(vailds){
+								this.$refs.typeRuleForm[0].validate((type_vailds)=>{
+									if(type_vailds){
+										// console.log('成功',this.$refs.typeRuleForm);
+										this.getSbmitServer();
+									}else{
+										this.$message.error('请完善方案信息')
+									}
+								})
+							}else{
+								this.$message.error('请完善方案信息')
+							}
+						})
+					}else{
+						this.$message.error('请完善方案信息')
+					}
+					
+				})
+				
+			},
+			// 提交服务单信息
+			async getSbmitServer(){
+				let param = {};
 				// 地区
 				param.address = this.allAddress.address ? this.allAddress.address : this.allAddress.city + this
 					.allAddress
@@ -1385,10 +1524,11 @@
 						schemes[i].teams[j].restStartTime = new Date(schemes[i].teams[j].restStartTime).getTime();
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
-						
+				
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
 							schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
-							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i].teams[j].restTimelen
+							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
+								.teams[j].restTimelen
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
@@ -1401,7 +1541,6 @@
 				let res = await AddOrder(param);
 				this.$message.success('添加成功');
 				this.getBriefDetail(this.briefId);
-
 			},
 			deepClone(obj) {
 				let _obj = JSON.stringify(obj),
@@ -1666,6 +1805,17 @@
 </script>
 
 <style lang="scss">
+	.demand-service-info-item {
+		position: relative;
+
+		span {
+			position: absolute;
+			right: 10px;
+			top: 0;
+			color: #ccc;
+		}
+	}
+
 	.demand-deltails-box {
 		margin-top: 20px;
 		border: 1px solid #E9E9E9;

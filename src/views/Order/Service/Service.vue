@@ -173,7 +173,7 @@
 			handleReset(){
 				this.status = '';
 				this.serach = '';
-				this.pageSize = 1;
+				this.pageSize = 10;
 				this.getorder();
 			},
 			/** 搜索 */
