@@ -636,7 +636,7 @@ export default {
     editShM() {
       if(this.isEditShM==false){
         console.log('保存')
-        if(gender>1){
+        if(this.realNameInfo.gender>1){
           this.$message({
             message: '请选择正常性别',
             type: 'warning'
