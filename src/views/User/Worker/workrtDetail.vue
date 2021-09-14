@@ -13,7 +13,10 @@
       <div v-if="tabPosition == 'detail'" class="demand-deltails">
         <div class="alCen js-sb flex">
           <div class="box-demand-title">基本信息</div>
-          <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEdit==false" @click="editCancel">取消</el-button>
+          </div>
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="4">
@@ -74,7 +77,10 @@
 
         <div class="alCen js-sb flex">
           <div class="box-demand-title">实名认证</div>
-          <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEditShM==false" @click="canceleditShM">取消</el-button>
+          </div>
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="12">
@@ -176,7 +182,11 @@
         <el-row class="demand-deltails-box2 user">
           <div class="alCen js-sb flex">
             <div class="box-demand-title">工人信息</div>
-            <el-button type="primary" @click="editUserInfo">{{ isEditUserInfo?'保存':'编辑' }}</el-button>
+            <!-- <el-button type="primary" @click="editUserInfo">{{ isEditUserInfo?'保存':'编辑' }}</el-button> -->
+            <div class="flex alCen">
+              <el-button type="primary" @click="editUserInfo">{{ isEditUserInfo?'保存':'编辑' }}</el-button>
+              <el-button type="primary" v-if="isEditUserInfo" @click="canceleditUserInfo">取消</el-button>
+            </div>
           </div>
           <div class="demand-deltails-box user el-row">
             <el-col :span="12">
@@ -202,7 +212,7 @@
                     </div>
                    <!-- <el-button type="text" size="small" v-if="isEditUserInfo" >添加工种</el-button> -->
                     <template v-if="bizCardInfo.workType.length<3">
-                      <el-select size="small" v-if="isEditUserInfo"
+                      <el-select size="small" v-if="isEditUserInfo" v-model="gongZhvalue"
                        placeholder="添加工种" @change="choseGongZhong">
                         <el-option
                           v-for="item in gongZhoptions"
@@ -218,7 +228,7 @@
                   <p class="backgroud tit">自我介绍</p>
                   <!-- <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p> -->
                   <input  class="desc flex1 col666" type="" name="" :disabled="isEditUserInfo==false" v-model="bizCardInfo.selfIntroduction" />
-                  <el-select style="position: absolute;right: -200px;"  v-if="isEditUserInfo"  placeholder="选择通用介绍模板"  @change="chosebiref">
+                  <el-select style="position: absolute;right: -200px;" v-model="productQuestionsVal" v-if="isEditUserInfo"  placeholder="选择通用介绍模板"  @change="chosebiref">
                      <el-option
                         v-for="item in productQuestions"
                         :key="item.id"
@@ -472,6 +482,7 @@ export default {
       gongZhoptions: [],
       gongZhvalue: '',
       productQuestions:[],
+      productQuestionsVal:'',
       adminUrl: '/api/commons/file/admin/v1/upload/public',
       genderoptions:[
         {
@@ -656,6 +667,12 @@ export default {
       }
 
     },
+    // 取消编辑
+    editCancel(){
+      this.isEdit = true
+      this.loadDate(this.userIdOrType)
+    },
+
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
@@ -704,7 +721,11 @@ export default {
       }
 
     },
-
+    // 取消实名
+    canceleditShM(){
+       this.isEditShM = true
+       this.loadDate(this.userIdOrType)
+    },
 
     // 身份证正反面
     beforeUpload (file) {
@@ -853,6 +874,11 @@ export default {
           this.isEditUserInfo = true
       }
 
+    },
+    // 取消编辑
+    canceleditUserInfo(){
+      this.loadDate()
+      this.isEditUserInfo = false
     },
     // 修改工作状态
     changeStatus(){

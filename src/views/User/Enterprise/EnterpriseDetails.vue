@@ -11,7 +11,10 @@
       <div v-if="tabPosition == 'detail'" class="demand-deltails">
         <div class="alCen js-sb flex">
           <div class="box-demand-title">基本信息</div>
-          <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEdit==false" @click="canceledit">取消</el-button>
+          </div>
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="4">
@@ -84,7 +87,10 @@
         <!-- <div class="box-demand-title">实名认证</div> -->
         <div class="alCen js-sb flex">
           <div class="box-demand-title">实名认证</div>
-          <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEditShM==false" @click="canceleditShM">取消</el-button>
+          </div>
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="12">
@@ -180,7 +186,10 @@
         <!-- <div class="box-demand-title mt15">企业认证</div> -->
         <div class="alCen js-sb flex mt30">
           <div class="box-demand-title">企业认证</div>
-          <el-button type="primary" @click="editQiY">{{ isEditQiY?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="editQiY">{{ isEditQiY?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEditQiY==false" @click="canceleditQiY">取消</el-button>
+          </div>
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="12">
@@ -427,7 +436,10 @@ export default {
         this.isEdit = false
       }
     },
-
+    canceledit(){
+      this.isEdit = true
+      this.loadDate(this.userIdOrType)
+    },
     // 企业认证
     editQiY() {
       if(this.isEditQiY==false){
@@ -460,6 +472,10 @@ export default {
       }else{
         this.isEditQiY = false
       }
+    },
+    canceleditQiY(){
+      this.isEditQiY = true
+      this.loadDate(this.userIdOrType)
     },
 
     // 身份证正反面
@@ -543,6 +559,10 @@ export default {
       }else{
         this.isEditShM = false
       }
+    },
+    canceleditShM(){
+      this.isEditShM = true
+      this.loadDate(this.userIdOrType)
     },
     upIdCard(res, file) {
       console.log(res)

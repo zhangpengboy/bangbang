@@ -744,3 +744,11 @@ export function visitListcount(params) {
 		params
 	})
 }
+// 根据需求单总数和服务单总数查找企业信息
+export function getByOrderAndBrief(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/getByOrderAndBrief`,
+		method: 'get',
+		params
+	})
+}
