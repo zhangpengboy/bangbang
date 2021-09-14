@@ -179,14 +179,14 @@
 
 								<div class="flex  demand-service-plan-box-info-data">
 									<el-form-item label="上班时间">
-										<el-time-picker :disabled="true" is-range v-model="teams.workTimeList"
+										<el-time-picker :disabled="true" is-range :value="getArrayList(teams.workStartTime,teams.workEndTime)" 
 											range-separator="至" start-placeholder="开始时间" format='HH:mm'
 											@change="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
 											placeholder="选择时间范围" :clearable="false">
 										</el-time-picker>
 									</el-form-item>
 									<el-form-item label="午休时间">
-										<el-time-picker is-range :disabled="true" v-model="teams.restTimeList"
+										<el-time-picker is-range :disabled="true" :value="getArrayList(teams.restStartTime,teams.restEndTime)" 
 											format='HH:mm' range-separator="至" start-placeholder="开始时间"
 											@change="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
 											placeholder="选择时间范围">
@@ -234,12 +234,12 @@
 										<div class="demand-service-plan-box-list-item-box">
 											<el-form-item label="工种模式">
 												<!-- <el-input v-model="ruleForm.name"></el-input> -->
-												<el-select :disabled="true" v-model="teamTypes.workTypeVal"
+												<el-select :disabled="true" v-model="teamTypes.workType"
 													placeholder="请选择"
 													@change="handleTypeModel(index,inx,types_index,teamTypes)">
 													<template v-if="teamTypes.tag == '班组长'">
 														<el-option v-for="item in patternList" :key="item.value"
-															:label="item.label" :value="item.label">
+															:label="item.label" :value="item.value">
 														</el-option>
 													</template>
 
@@ -247,7 +247,7 @@
 														<template v-for="(item,index) in patternList">
 															<el-option v-if="index != patternList.length -1"
 																:key="item.value" :label="item.label"
-																:value="item.label">
+																:value="item.value">
 															</el-option>
 														</template>
 													</template>
@@ -1317,6 +1317,13 @@
 					this.loading = false;
 					//TODO handle the exception
 				}
+			},
+			/** 转成数组格式时间转换 */
+			getArrayList(start,end){
+				let arr = [];
+				arr[0] = start;
+				arr[1] = end;
+				return arr;
 			},
 			/** 重置充值 */
 			handleReset() {

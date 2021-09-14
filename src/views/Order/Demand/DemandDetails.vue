@@ -751,14 +751,14 @@
 					}, {
 						min: 2,
 						max: 6,
-						message: '长度在 2 到 30 个字符',
+						message: '长度在 2 到 6 个字符',
 						trigger: 'blur'
 					}],
-					description: [{
-						required: true,
-						message: '请输入简介',
-						trigger: 'blur'
-					}],
+					// description: [{
+					// 	required: true,
+					// 	message: '请输入简介',
+					// 	trigger: 'blur'
+					// }],
 					replaceTimes: [{
 						required: true,
 						message: '请输入换人次数',

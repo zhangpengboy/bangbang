@@ -279,7 +279,7 @@
 				let param = {};
 				param.pageIndex = this.pageIndex;
 				param.pageSize = this.pageSize;
-				param.creator = this.creator;
+				param.creator = this.creator.trim();
 				param.updator = this.updator;
 				this.loading = true;
 				try {
