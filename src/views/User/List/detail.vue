@@ -6,6 +6,7 @@
       <el-radio-button label="card">名片</el-radio-button>
       <el-radio-button label="joinPro">参加项目</el-radio-button>
       <el-radio-button label="withdrawal">提现</el-radio-button>
+      <el-radio-button label="evaluate">评价记录</el-radio-button>
     </el-radio-group>
     <!-- tab按钮切换end -->
     <div class="box">
@@ -13,7 +14,11 @@
       <div v-if="tabPosition == 'detail'" class="demand-deltails">
         <div class="alCen js-sb flex">
           <div class="box-demand-title">基本信息</div>
-          <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="edit">{{ isEdit?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEdit==false" @click="editCancel">取消</el-button>
+          </div>
+
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="4">
@@ -74,7 +79,11 @@
 
         <div class="alCen js-sb flex">
           <div class="box-demand-title">实名认证</div>
-          <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+          <div class="flex alCen">
+            <el-button type="primary" @click="editShM">{{ isEditShM?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEditShM==false" @click="canceleditShM">取消</el-button>
+          </div>
+
         </div>
         <el-row class="demand-deltails-box user">
           <el-col :span="12">
@@ -176,7 +185,11 @@
         <el-row class="demand-deltails-box2 user">
           <div class="alCen js-sb flex">
             <div class="box-demand-title">工人信息</div>
-            <el-button type="primary" @click="editUserInfo">{{ isEditUserInfo?'保存':'编辑' }}</el-button>
+            <div class="flex alCen">
+              <el-button type="primary" @click="editUserInfo">{{ isEditUserInfo?'保存':'编辑' }}</el-button>
+              <el-button type="primary" v-if="isEditUserInfo" @click="canceleditUserInfo">取消</el-button>
+            </div>
+
           </div>
           <div class="demand-deltails-box user el-row">
             <el-col :span="12">
@@ -274,7 +287,7 @@
                       >
                       </el-cascader>
                     </template>
-                    
+
 
                   </div>
                 </div>
@@ -408,11 +421,17 @@
       </div>
       <!-- 参加项目end -->
       <!-- 提现 -->
-      <div v-if="tabPosition == 'withdrawal'" class="demand-service">
+      <div v-if="tabPosition == 'withdrawal'" class="demand-service withdrawal">
         <div class="box-demand-title">提现</div>
 
       </div>
       <!-- 提现end -->
+      <!-- 评价记录 -->
+      <div v-if="tabPosition == 'evaluate'" class="demand-service evaluate">
+        <div class="box-demand-title">评价记录</div>
+
+      </div>
+      <!-- 评价记录end -->
     </div>
 
   </div>
@@ -632,6 +651,11 @@ export default {
       }
 
     },
+    // 取消编辑
+    editCancel(){
+      this.isEdit = true
+      this.loadDate(this.userIdOrType)
+    },
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
@@ -679,8 +703,11 @@ export default {
       }
 
     },
-
-
+    // 取消实名
+    canceleditShM(){
+       this.isEditShM = true
+       this.loadDate(this.userIdOrType)
+    },
     // 身份证正反面
     beforeUpload (file) {
        console.log(file)
@@ -824,6 +851,11 @@ export default {
           this.isEditUserInfo = true
       }
 
+    },
+    // 取消编辑
+    canceleditUserInfo(){
+      this.loadDate()
+      this.isEditUserInfo = false
     },
     // 修改工作状态
     changeStatus(){
@@ -1085,5 +1117,9 @@ export default {
       }
 
     }
+    // 提现
+    
+    
+    // 评价记录
 
 </style>
