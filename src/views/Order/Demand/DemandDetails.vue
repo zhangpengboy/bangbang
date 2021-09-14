@@ -94,9 +94,9 @@
 								<div class="demand-service-info-item">
 									<el-input type="textarea" v-model="basicForm.description" :rows="4"
 										placeholder="请输入项目介绍（选填）" maxlength="200"></el-input>
-										<span style="top: 60px;">已输入{{basicForm.description.length}}/200</span>
+									<span style="top: 60px;">已输入{{basicForm.description.length}}/200</span>
 								</div>
-							
+
 								<div class="demand-service-upload flex fvertical">
 
 									<div v-for="(item,index) in basicForm.images" class="demand-service-upload-img"
@@ -172,7 +172,7 @@
 							</div>
 						</div>
 
-						<div class="demand-service-plan-box" v-show="scheme==index" v-for="(item,index) in schemes"
+						<el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px" class="demand-service-plan-box" v-show="scheme==index" v-for="(item,index) in schemes"
 							:key="index">
 							<!-- 方案标题  -->
 							<div class="demand-service-plan-box-title flex fbetween">
@@ -186,11 +186,11 @@
 							<!-- 方案标题end  -->
 
 							<!-- 方案基本信息  -->
-							<el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px">
+							<!-- <el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px"> -->
 
 								<div class="flex demand-service-plan-box-item">
 									<el-form-item label="方案标签" prop="tag">
-										<el-input v-model="item.tag"></el-input>
+										<el-input v-model="item.tag" maxlength="6"></el-input>
 									</el-form-item>
 									<el-form-item label="简介" prop="description">
 										<el-input v-model="item.description"></el-input>
@@ -211,7 +211,7 @@
 									</el-form-item>
 								</div>
 
-							</el-form>
+							<!-- </el-form> -->
 							<!-- 方案基本信息end  -->
 
 							<div class="demand-service-plan-main" v-for="(teams,inx) in item.teams" :key="inx">
@@ -221,7 +221,7 @@
 									<el-form :model="teams" :rules="teamRules" ref="teamsFrom" label-width="120px">
 
 										<div class="flex demand-service-plan-box-info-data">
-											<el-form-item label="班组名称"  :prop="'item.' + inx + '.name'">
+											<el-form-item label="班组名称" prop="name">
 												<el-input v-model="teams.name"></el-input>
 											</el-form-item>
 											<el-form-item label="进场时间" prop="enterStartTime">
@@ -531,7 +531,7 @@
 
 											<!--  工作描述 -->
 											<div class="demand-service-plan-box-list-item-text">
-												<el-form-item label="工作描述">
+												<el-form-item label="工作描述" prop="description">
 													<el-input type="textarea" placeholder="请输入"
 														:autosize="{ minRows: 2, maxRows: 4}"
 														v-model="teamTypes.description">
@@ -552,6 +552,7 @@
 									</div>
 								</div>
 								<!-- 工种列表数据end -->
+								
 							</div>
 
 							<div class="demand-service-plan-add-main flex fcenter" @click="handleAddGroup(index)">添加班组
@@ -560,12 +561,12 @@
 
 							<!-- 总费用 -->
 							<div class="demand-service-plan-box-foot flex fcenter ">
-								<div class="demand-service-plan-box-foot-item flex fvertical">
-									<span> 施工服务费</span>
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="施工服务费">
+									<!-- <span> 施工服务费</span> -->
 									<el-input class="f1" :value="item.serverTotal" :disabled="true"></el-input>
-								</div>
-								<div class="demand-service-plan-box-foot-item flex fvertical">
-									<span> 信息服务费</span>
+								</el-form-item>
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="信息服务费" prop="serviceFeeRate">
+									<!-- <span>信息服务费</span> -->
 									<div class="flex">
 										<el-input class="f1 demand-service-plan-box-foot-item-server"
 											@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
@@ -581,9 +582,9 @@
 											<span style="padding-left: 10px;">元</span>
 										</div>
 									</div>
-								</div>
-								<div class="demand-service-plan-box-foot-item flex fvertical">
-									<span> 税费</span>
+								</el-form-item>
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="税费" prop="taxRate">
+									<!-- <span>税费</span> -->
 									<div class="flex">
 										<el-input class="f1" v-model="item.taxRate"
 											@input="handleInputToals(index,item)" placeholder="请输入信息服务费比例"></el-input>
@@ -592,15 +593,15 @@
 										<el-input :value="item.taxRateNum" :disabled="true"
 											class="f1 demand-service-plan-box-foot-item-company"></el-input>
 									</div>
-								</div>
-								<div class="demand-service-plan-box-foot-item flex fvertical">
-									<span> 总费用</span>
+								</el-form-item>
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="总费用">
+									<!-- <span>总费用</span> -->
 									<el-input class="f1" v-model="item.totalFee" :disabled="true" placeholder="元">
 									</el-input>
-								</div>
+								</el-form-item>
 							</div>
 							<!-- 总费用end -->
-						</div>
+						</el-form>
 						<!-- 方案信息end -->
 						<div class="demand-service-plan-box-foot-server-order flex fvertical fcenter "
 							@click="handleAddSerice">提交服务单</div>
@@ -700,17 +701,22 @@
 						message: '请输入工种工期',
 						trigger: 'blur'
 					}],
+					description: [{
+						required: true,
+						message: '请输入工作描述',
+						trigger: 'blur'
+					}],
 					// unitPrice:[{
 					// 	required: true,
 					// 	message: '请输入工时单价',
 					// 	trigger: 'blur'
 					// }],
-					overtimeFee:[{
+					overtimeFee: [{
 						required: true,
 						message: '请输入加班费',
 						trigger: 'blur'
 					}],
-					personalQuantity:[{
+					personalQuantity: [{
 						required: true,
 						message: '请输入个人工程量',
 						trigger: 'blur'
@@ -739,6 +745,11 @@
 						required: true,
 						message: '请输入方案标签',
 						trigger: 'blur'
+					}, {
+						min: 2,
+						max: 6,
+						message: '长度在 2 到 30 个字符',
+						trigger: 'blur'
 					}],
 					description: [{
 						required: true,
@@ -750,6 +761,16 @@
 						message: '请输入换人次数',
 						trigger: 'blur'
 					}],
+					serviceFeeRate:[{
+						required: true,
+						message: '请输入信息服务费',
+						trigger: 'blur'
+					}],
+					taxRate:[{
+						required: true,
+						message: '请输入税费',
+						trigger: 'blur'
+					}]
 
 				},
 				rules: {
@@ -1110,8 +1131,8 @@
 					totalNumber += Number(teamTypes[i].number);
 				}
 
-				this.schemes[data.index].teams[data.inx].totalNum = totalNumber;
-				this.schemes[data.index].teams[data.inx].totalFee = total;
+				this.schemes[data.index].teams[data.inx].totalNum = totalNumber.toFixed(2);
+				this.schemes[data.index].teams[data.inx].totalFee = total.toFixed(2);
 				this.getTotal(data.index);
 			},
 			// 计算总费用
@@ -1146,15 +1167,15 @@
 						}
 					})
 				})
-				this.schemes[index].serverTotal = total;
-				this.schemes[index].serviceFeeRateNum = (Number(this.schemes[index].serverTotal) * Number(this
-					.schemes[index].serviceFeeRate) / 100);
+				this.schemes[index].serverTotal = total.toFixed(2);
+				this.schemes[index].serviceFeeRateNum = ((Number(this.schemes[index].serverTotal) * Number(this
+					.schemes[index].serviceFeeRate) / 100)).toFixed(2);
 				let taxRate = Number(this.schemes[index].taxRate);
 				let totals = Number(this.schemes[index].serverTotal) + Number(this.schemes[index]
 					.serviceFeeRateNum);
-				this.schemes[index].taxRateNum = (totals * taxRate) / 100;
-				this.schemes[index].totalFee = total + Number(this.schemes[index].taxRateNum) + Number(this
-					.schemes[index].serviceFeeRateNum)
+				this.schemes[index].taxRateNum = ((totals * taxRate) / 100).toFixed(2);
+				this.schemes[index].totalFee = (total + Number(this.schemes[index].taxRateNum) + Number(this
+					.schemes[index].serviceFeeRateNum)).toFixed(2)
 
 			},
 			// 删除组
@@ -1469,38 +1490,78 @@
 				let day = newDate.getDate() < 10 ? '0' + newDate.getDate() : newDate.getDate();
 				return newDate.getFullYear() + '-' + month + '-' + day;
 			},
+			/** 计算方案信息 */
+			getprogrammeForm(len) {
+				let programeList = []
+				for (let i = 0; i < len; i++) {
+					this.$refs.programmeForm[i].validate((vailds) => {
+						programeList[i] = vailds;
+					})
+				}
+				return programeList;
+			},
+			/** 计算工种信息 */
+			typeRuleForm(len) {
+				let typeList = [];
+				for (let i = 0; i < len; i++) {
+					this.$refs.typeRuleForm[i].validate((vailds) => {
+						typeList[i] = vailds;
+					})
+				}
+				return typeList;
+			},
 			/** 提交服务单 */
-			 handleAddSerice() {
-				
+			handleAddSerice() {
 				if (!this.allAddress.point) {
 					return this.$message.error('请选择地址');
 				}
-			
-				this.$refs.ruleForm.validate((vaild)=>{
-					if(vaild){
-						this.$refs.programmeForm[0].validate((vailds)=>{
-							if(vailds){
-								this.$refs.typeRuleForm[0].validate((type_vailds)=>{
-									if(type_vailds){
-										// console.log('成功',this.$refs.typeRuleForm);
-										this.getSbmitServer();
-									}else{
-										this.$message.error('请完善方案信息')
-									}
-								})
-							}else{
-								this.$message.error('请完善方案信息')
-							}
-						})
-					}else{
+				let programeLen = this.$refs.programmeForm.length;
+				let programeList = [];
+				let typeLen = this.$refs.typeRuleForm.length;
+				let typeList = [];
+
+				this.$refs.ruleForm.validate((vaild) => {
+					if (vaild) {
+						programeList = this.getprogrammeForm(programeLen);
+					} else {
 						this.$message.error('请完善方案信息')
 					}
-					
 				})
-				
+
+				// 判断方案信息
+				let isPrograme = true;
+				for (let i = 0; i < programeList.length; i++) {
+					if (!programeList[i]) {
+						isPrograme = programeList[i];
+						return this.$message.error('请完善方案信息')
+					}
+				}
+				// 判断有方案信息
+				let isType = true;
+				if (programeList.length > 0 && isPrograme) {
+					typeList = this.typeRuleForm(typeLen);
+					if (typeList.length > 0) {
+						for (let i = 0; i < typeList.length; i++) {
+							if (!typeList[i]) {
+								isType = typeList[i]
+							}
+						}
+					} else {
+						return this.$message.error('请完善方案信息');
+					}
+
+				} else {
+					return this.$message.error('请完善方案信息');
+				}
+
+				if (isType) {
+					// this.getSbmitServer();
+					console.log('通过............')
+				}
+
 			},
 			// 提交服务单信息
-			async getSbmitServer(){
+			async getSbmitServer() {
 				let param = {};
 				// 地区
 				param.address = this.allAddress.address ? this.allAddress.address : this.allAddress.city + this
@@ -1524,7 +1585,7 @@
 						schemes[i].teams[j].restStartTime = new Date(schemes[i].teams[j].restStartTime).getTime();
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
-				
+
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
 							schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
 							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
@@ -1714,38 +1775,43 @@
 					label: len
 				};
 				this.$set(this.schemeList, len, param)
-
 				let data = { // 方案
 					tag: "", // 标签
 					description: "", // 简介
 					replaceTimes: "", // 换人次数
 					totalUnit: "", // 总工程量
+					serviceFeeRate: "", // 信息服务率
+					serviceFeeRateNum: "", //  信息服务费
+					taxRate: "", // 税率
+					taxRateNum: "", // 税费
+					serverTotal: "", // 施工服务费
+					totalFee: "", // 总费用
+					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
 						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
 							0)], // 上班/下班 时间数组
-						workStartTime: "", // 上班时间
-						workEndTime: "", // 下班时间
+						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
+						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
 						workTimelen: 10, // 上班时长
 						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
 							0)], // 午休时间数组
-						restStartTime: "", // 午休开始时间
-						restEndTime: "", // 午休结束时间
+						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
+						restEndTime: this.formatDateTime(new Date(2016, 9, 10, 13, 0)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
 						enterStartTime: "", //进场时间
 						enterEndTime: "", // 退场时间
 						enterDay: "", // 班组工期
-						totalUnit: "", // 班组工程量 
+						totalUnit: "", // 班组工程量
 						totalNum: 0, // 总人数
 						totalFee: 0, // 班组总费用
 						teamTypes: [ // 工种列表
 							{
 								name: this.options[0].labelName ? this.options[0].labelName : '', // 工种名称
 								tag: "", // 标签
-								workTypeVal: "", // 工种模式名称
-								workType: 0, // 工种模式
+								workTypeVal: "", // 工种模式
 								enterStartTime: "", // 工种进场时间
 								enterEndTime: "", // 工种退场时间
 								enterDay: "", //工种工期
@@ -1760,7 +1826,8 @@
 							}
 						],
 					}],
-				};
+				}
+				
 				this.schemes.push(data);
 			},
 			// 上传限制
@@ -2026,7 +2093,9 @@
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
-
+				.el-form-item__content{
+					margin-left: 0 !important;
+				}
 				.demand-service-plan-box-foot-item-server {
 					input {
 						width: 200px;
