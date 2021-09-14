@@ -660,7 +660,7 @@
 								</el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
-								<span>上班时间</span>
+								<!-- <span>上班时间：{{formatDate(item.workStartTime)}}</span> -->
 								<el-input placeholder="请输入内容" :value="formatDate(item.workStartTime)" :disabled="true"
 									class="f1"></el-input>
 							</div>

@@ -190,11 +190,11 @@
 							<!-- <el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px"> -->
 
 							<div class="flex demand-service-plan-box-item">
-								<el-form-item label="方案标签" prop="tag">
+								<el-form-item label="方案标签">
 									<el-input v-model="item.tag" maxlength="6"></el-input>
 								</el-form-item>
 								<el-form-item label="简介" prop="description">
-									<el-input v-model="item.description"></el-input>
+									<el-input v-model="item.description" maxlength="16"></el-input>
 								</el-form-item>
 							</div>
 
@@ -705,10 +705,10 @@
 						trigger: 'blur'
 					}],
 					description: [{
-						required: true,
-						message: '请输入工作描述',
-						trigger: 'blur'
-					}],
+							required: true,
+							message: '请输入工作描述',
+							trigger: 'blur'
+						}],
 					// unitPrice:[{
 					// 	required: true,
 					// 	message: '请输入工时单价',
@@ -754,11 +754,16 @@
 						message: '长度在 2 到 6 个字符',
 						trigger: 'blur'
 					}],
-					// description: [{
-					// 	required: true,
-					// 	message: '请输入简介',
-					// 	trigger: 'blur'
-					// }],
+					description: [{
+						required: true,
+						message: '请输入简介',
+						trigger: 'blur'
+					},{
+						min: 4,
+						max: 16,
+						message: '长度在 4 到 16 个字符',
+						trigger: 'blur'
+					}],
 					replaceTimes: [{
 						required: true,
 						message: '请输入换人次数',
