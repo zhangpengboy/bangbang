@@ -1880,7 +1880,16 @@
 
 <style lang="scss">
 	
-
+	.demand-service-info-item {
+		position: relative;
+	
+		span {
+			position: absolute;
+			right: 10px;
+			top: 0;
+			color: #ccc;
+		}
+	}
 
 	.demand-service {
 		.box-demand-title {
