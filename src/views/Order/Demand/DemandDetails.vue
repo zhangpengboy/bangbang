@@ -172,7 +172,8 @@
 							</div>
 						</div>
 
-						<el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px" class="demand-service-plan-box" v-show="scheme==index" v-for="(item,index) in schemes"
+						<el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px"
+							class="demand-service-plan-box" v-show="scheme==index" v-for="(item,index) in schemes"
 							:key="index">
 							<!-- 方案标题  -->
 							<div class="demand-service-plan-box-title flex fbetween">
@@ -188,28 +189,28 @@
 							<!-- 方案基本信息  -->
 							<!-- <el-form :model="item" :rules="programmeRules" ref="programmeForm" label-width="100px"> -->
 
-								<div class="flex demand-service-plan-box-item">
-									<el-form-item label="方案标签" prop="tag">
-										<el-input v-model="item.tag" maxlength="6"></el-input>
-									</el-form-item>
-									<el-form-item label="简介" prop="description">
-										<el-input v-model="item.description"></el-input>
-									</el-form-item>
-								</div>
+							<div class="flex demand-service-plan-box-item">
+								<el-form-item label="方案标签" prop="tag">
+									<el-input v-model="item.tag" maxlength="6"></el-input>
+								</el-form-item>
+								<el-form-item label="简介" prop="description">
+									<el-input v-model="item.description"></el-input>
+								</el-form-item>
+							</div>
 
-								<div class="flex demand-service-plan-box-item">
-									<el-form-item class="" label="换人次数" prop="replaceTimes">
-										<div class="flex">
-											<el-input class="f1" v-model="item.replaceTimes"
-												oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
-											<el-input class="demand-service-plan-box-item-second" :disabled="true"
-												value="次"></el-input>
-										</div>
-									</el-form-item>
-									<el-form-item label="方案总工程量">
-										<el-input v-model="item.totalUnit" :disabled="true"></el-input>
-									</el-form-item>
-								</div>
+							<div class="flex demand-service-plan-box-item">
+								<el-form-item class="" label="换人次数" prop="replaceTimes">
+									<div class="flex">
+										<el-input class="f1" v-model="item.replaceTimes"
+											oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
+										<el-input class="demand-service-plan-box-item-second" :disabled="true"
+											value="次"></el-input>
+									</div>
+								</el-form-item>
+								<el-form-item label="方案总工程量">
+									<el-input v-model="item.totalUnit" :disabled="true"></el-input>
+								</el-form-item>
+							</div>
 
 							<!-- </el-form> -->
 							<!-- 方案基本信息end  -->
@@ -552,7 +553,7 @@
 									</div>
 								</div>
 								<!-- 工种列表数据end -->
-								
+
 							</div>
 
 							<div class="demand-service-plan-add-main flex fcenter" @click="handleAddGroup(index)">添加班组
@@ -565,7 +566,8 @@
 									<!-- <span> 施工服务费</span> -->
 									<el-input class="f1" :value="item.serverTotal" :disabled="true"></el-input>
 								</el-form-item>
-								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="信息服务费" prop="serviceFeeRate">
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="信息服务费"
+									prop="serviceFeeRate">
 									<!-- <span>信息服务费</span> -->
 									<div class="flex">
 										<el-input class="f1 demand-service-plan-box-foot-item-server"
@@ -583,7 +585,8 @@
 										</div>
 									</div>
 								</el-form-item>
-								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="税费" prop="taxRate">
+								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="税费"
+									prop="taxRate">
 									<!-- <span>税费</span> -->
 									<div class="flex">
 										<el-input class="f1" v-model="item.taxRate"
@@ -761,12 +764,12 @@
 						message: '请输入换人次数',
 						trigger: 'blur'
 					}],
-					serviceFeeRate:[{
+					serviceFeeRate: [{
 						required: true,
 						message: '请输入信息服务费',
 						trigger: 'blur'
 					}],
-					taxRate:[{
+					taxRate: [{
 						required: true,
 						message: '请输入税费',
 						trigger: 'blur'
@@ -1131,8 +1134,8 @@
 					totalNumber += Number(teamTypes[i].number);
 				}
 
-				this.schemes[data.index].teams[data.inx].totalNum = totalNumber.toFixed(2);
-				this.schemes[data.index].teams[data.inx].totalFee = total.toFixed(2);
+				this.schemes[data.index].teams[data.inx].totalNum = totalNumber;
+				this.schemes[data.index].teams[data.inx].totalFee = total;
 				this.getTotal(data.index);
 			},
 			// 计算总费用
@@ -1167,15 +1170,15 @@
 						}
 					})
 				})
-				this.schemes[index].serverTotal = total.toFixed(2);
+				this.schemes[index].serverTotal = total;
 				this.schemes[index].serviceFeeRateNum = ((Number(this.schemes[index].serverTotal) * Number(this
-					.schemes[index].serviceFeeRate) / 100)).toFixed(2);
+					.schemes[index].serviceFeeRate) / 100));
 				let taxRate = Number(this.schemes[index].taxRate);
 				let totals = Number(this.schemes[index].serverTotal) + Number(this.schemes[index]
 					.serviceFeeRateNum);
-				this.schemes[index].taxRateNum = ((totals * taxRate) / 100).toFixed(2);
+				this.schemes[index].taxRateNum = ((totals * taxRate) / 100);
 				this.schemes[index].totalFee = (total + Number(this.schemes[index].taxRateNum) + Number(this
-					.schemes[index].serviceFeeRateNum)).toFixed(2)
+					.schemes[index].serviceFeeRateNum))
 
 			},
 			// 删除组
@@ -1490,8 +1493,8 @@
 				let day = newDate.getDate() < 10 ? '0' + newDate.getDate() : newDate.getDate();
 				return newDate.getFullYear() + '-' + month + '-' + day;
 			},
-			/** 计算方案信息 */
-			getprogrammeForm(len) {
+			/** 校验方案信息 */
+			getProgrammeForm(len) {
 				let programeList = []
 				for (let i = 0; i < len; i++) {
 					this.$refs.programmeForm[i].validate((vailds) => {
@@ -1500,8 +1503,8 @@
 				}
 				return programeList;
 			},
-			/** 计算工种信息 */
-			typeRuleForm(len) {
+			/** 校验工种信息 */
+			getTypeRuleForm(len) {
 				let typeList = [];
 				for (let i = 0; i < len; i++) {
 					this.$refs.typeRuleForm[i].validate((vailds) => {
@@ -1510,19 +1513,32 @@
 				}
 				return typeList;
 			},
+			/** 校验班组信息 */
+			getTeamsFrom(len) {
+				let list = [];
+				for (let i = 0; i < len; i++) {
+					this.$refs.teamsFrom[i].validate((vailds) => {
+						list[i] = vailds;
+					})
+				}
+				return list;
+
+			},
 			/** 提交服务单 */
 			handleAddSerice() {
 				if (!this.allAddress.point) {
 					return this.$message.error('请选择地址');
 				}
 				let programeLen = this.$refs.programmeForm.length;
-				let programeList = [];
 				let typeLen = this.$refs.typeRuleForm.length;
+				let teamLen = this.$refs.teamsFrom.length;
+				let programeList = [];
 				let typeList = [];
+				let teamList = [];
 
 				this.$refs.ruleForm.validate((vaild) => {
 					if (vaild) {
-						programeList = this.getprogrammeForm(programeLen);
+						programeList = this.getProgrammeForm(programeLen);
 					} else {
 						this.$message.error('请完善方案信息')
 					}
@@ -1536,14 +1552,16 @@
 						return this.$message.error('请完善方案信息')
 					}
 				}
-				// 判断有方案信息
-				let isType = true;
+
+
+				// 判断班组信息
+				let isTeam = true;
 				if (programeList.length > 0 && isPrograme) {
-					typeList = this.typeRuleForm(typeLen);
-					if (typeList.length > 0) {
-						for (let i = 0; i < typeList.length; i++) {
-							if (!typeList[i]) {
-								isType = typeList[i]
+					teamList = this.getTeamsFrom(teamLen)
+					if (teamList.length > 0) {
+						for (let i = 0; i < teamList.length; i++) {
+							if (!teamList[i]) {
+								isTeam = teamList[i]
 							}
 						}
 					} else {
@@ -1554,9 +1572,27 @@
 					return this.$message.error('请完善方案信息');
 				}
 
+				// 判断有工种信息
+				let isType = true;
+				if (isTeam) {
+					typeList = this.getTypeRuleForm(typeLen);
+					if (typeList.length > 0) {
+						for (let i = 0; i < typeList.length; i++) {
+							if (!typeList[i]) {
+								isType = typeList[i]
+							}
+						}
+					} else {
+						return this.$message.error('请完善方案信息');
+					}
+				} else {
+					return this.$message.error('请完善方案信息');
+				}
+
 				if (isType) {
 					this.getSbmitServer();
-					// console.log('通过............')
+				} else {
+					return this.$message.error('请完善方案信息');
 				}
 
 			},
@@ -1827,7 +1863,7 @@
 						],
 					}],
 				}
-				
+
 				this.schemes.push(data);
 			},
 			// 上传限制
@@ -2093,9 +2129,11 @@
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
-				.el-form-item__content{
+
+				.el-form-item__content {
 					margin-left: 0 !important;
 				}
+
 				.demand-service-plan-box-foot-item-server {
 					input {
 						width: 200px;
