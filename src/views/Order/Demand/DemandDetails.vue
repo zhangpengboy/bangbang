@@ -1555,8 +1555,8 @@
 				}
 
 				if (isType) {
-					// this.getSbmitServer();
-					console.log('通过............')
+					this.getSbmitServer();
+					// console.log('通过............')
 				}
 
 			},
