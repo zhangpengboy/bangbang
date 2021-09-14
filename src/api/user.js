@@ -240,7 +240,7 @@ export function getOrderTeamType(params) {
 
 /**
  * 修改服务单
- * @param {Object}  
+ * @param {Object}
  * */
 export function getUpdateOrder(data) {
 	return request({
@@ -719,5 +719,30 @@ export function uploadpublic(data) {
 		url: `/api/commons/file/admin/v1/upload/public`,
 		method: 'post',
 		data
+	})
+}
+
+// 访问统计列表
+export function visitList(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/page`,
+		method: 'get',
+		params
+	})
+}
+// 导出访问统计列表
+export function visitListexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/exportCsv`,
+		method: 'get',
+		params
+	})
+}
+// 访问统计列表折线图
+export function visitListcount(params) {
+	return request({
+		url: `/api/user/admin/userLoginLog/v1.0/count`,
+		method: 'get',
+		params
 	})
 }

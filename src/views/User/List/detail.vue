@@ -50,7 +50,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/>
+                <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderoptions"
+                    :key="item.id"
+                    :label="item.labelName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/> -->
               </div>
               <div class="item flex">
                 <p class="backgroud tit">工人等级</p>
@@ -77,7 +85,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.gender" />
+                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.gender" /> -->
+                <el-select class="desc flex1 col666" :disabled="isEditShM" v-model="realNameInfo.gender" placeholder="请选择">
+                  <el-option
+                    v-for="item in genderoptions"
+                    :key="item.id"
+                    :label="item.labelName"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">年龄</p>
@@ -185,6 +201,7 @@
                       <img v-if="isEditUserInfo" @click="detGongZhong(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
                     </div>
                    <!-- <el-button type="text" size="small" v-if="isEditUserInfo" >添加工种</el-button> -->
+                    <template v-if="bizCardInfo.workType.length<3">
                       <el-select size="small" v-if="isEditUserInfo" v-model="gongZhvalue" placeholder="添加工种" @change="choseGongZhong">
                         <el-option
                           v-for="item in gongZhoptions"
@@ -193,14 +210,16 @@
                           :value="item.id">
                         </el-option>
                       </el-select>
+                    </template>
+
 
                   </div>
                 </div>
-                <div class="item flex">
+                <div class="item flex" style="position: relative;">
                   <p class="backgroud tit">自我介绍</p>
                   <!-- <p class="desc flex1 col666">{{bizCardInfo.selfIntroduction}}</p> -->
                   <input  class="desc flex1 col666" type="" name="" :disabled="isEditUserInfo==false" v-model="bizCardInfo.selfIntroduction" />
-                  <el-select  v-if="isEditUserInfo" v-model="bizCardInfo.selfIntroduction" placeholder="请选择"  @change="chosebiref">
+                  <el-select style="position: absolute;right: -200px;" v-model="productQuestionsVal" v-if="isEditUserInfo"  placeholder="选择通用介绍模板"  @change="chosebiref">
                      <el-option
                         v-for="item in productQuestions"
                         :key="item.id"
@@ -244,15 +263,18 @@
                       <p class="gongzhong">{{item.labelName}}</p>
                       <img v-if="isEditUserInfo" @click="detAdr(item)" src="../../../assets/images/icon-close.png" class="iconDet" >
                     </div>
-                    <el-cascader
-                      v-if="isEditUserInfo"
-                      size="small"
-                      placeholder="添加工作地"
-                      :options="adrOptions"
-                      v-model="selectedOptions"
-                      @change="handleChange"
-                    >
-                    </el-cascader>
+                    <template  v-if="bizCardInfo.expectedPlace.length<3">
+                      <el-cascader
+                        v-if="isEditUserInfo"
+                        size="small"
+                        placeholder="添加工作地"
+                        :options="adrOptions"
+                        v-model="selectedOptions"
+                        @change="handleChange"
+                      >
+                      </el-cascader>
+                    </template>
+                    
 
                   </div>
                 </div>
@@ -449,8 +471,21 @@ export default {
       gongZhoptions: [],
       gongZhvalue: '',
       productQuestions:[],
+      productQuestionsVal:'',
       adminUrl: '/api/commons/file/admin/v1/upload/public',
-
+      genderoptions:[
+        {
+          labelName:'男',
+          id:0
+        },
+        {
+          labelName:'女',
+          id:1
+        },{
+          labelName:'未知',
+          id:2
+        }
+      ]
 
     }
   },
@@ -487,30 +522,7 @@ export default {
         }
       })
     },
-    // 添加期望地
-    handleChange() {
-      var loc = "";
-      var code = 0;
-      for (let i = 0; i < this.selectedOptions.length; i++) {
-        code = this.selectedOptions[i]
-        loc += CodeToText[this.selectedOptions[i]];
-      }
-      var params = {
-        labelId:code,
-        labelName:loc,
-        labelType:1,
-        userBusinessCardId:this.bizCardInfo.id
-      }
-      workCardAdd(params).then(res => {
-        console.log(res)
-        if(res.code==200){
-          this.loadDate()
-        }
-      })
 
-
-
-    },
     loadDate(){
       this.getGongrenDetail();
     },
@@ -530,7 +542,7 @@ export default {
           phone:data.phone,
           adr:data.address ,
           userType:userInfo.userType==0?'企业端':userInfo.userType==1?'工人端':userInfo.userType==2?'管理端':'',
-          gender:data.gender==0?'男':'女',
+          gender:data.gender,
           grade:data.workerGrade==0?'普通工人':data.workerGrade==1?'铜牌':data.workerGrade==2?'银牌':data.workerGrade==3?'金牌工人':'',
           updateTime :data.updateTime
         }
@@ -539,7 +551,7 @@ export default {
         }
         if(data.realNameAuthDTO){
         this.realNameInfo = {
-          gender:data.realNameAuthDTO.gender==0?'男':'女',
+          gender:data.realNameAuthDTO.gender,
           age:data.realNameAuthDTO.age,
           nativePlace:data.realNameAuthDTO.nativePlace,
           realName:data.realNameAuthDTO.realName,
@@ -600,7 +612,7 @@ export default {
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
-          gender:this.basicInfo.gender=='男'?'0':'1',
+          gender:this.basicInfo.gender,
           phone :this.basicInfo.phone,
           realName :this.basicInfo.realName
         }
@@ -623,38 +635,44 @@ export default {
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
-        console.log(this.realNameInfo.gender)
-        var gender = 0;
-        if(this.realNameInfo.gender=='男'){
-          gender = 0
-        }else{
-          gender = 1
-        }
         console.log('保存')
-       var params = {
-         age:this.realNameInfo.age,
-         gender:gender,
-         householdRegister:this.realNameInfo.householdRegister,
-         idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
-         idCardUri:this.realNameInfo.idCardUriUp,
-         idNo:this.realNameInfo.idNo,
-         nation:this.realNameInfo.nation,
-         nativePlace:this.realNameInfo.nativePlace,
-         realName:this.realNameInfo.realName,
-         userId:this.userIdOrType.id,
-         validityEndTime:this.realNameInfo.validityEndTime,
-         validityStartTime:this.realNameInfo.validityEndTime
-       }
-       realNameAuth(params).then(res => {
-         var data = res.data
-         console.log(res)
-         this.isEditShM = true
-         this.$message({
-           type: 'success',
-           message: '操作成功!'
-         })
-         this.loadDate(this.userIdOrType)
-       })
+        if(this.realNameInfo.gender>1){
+          this.$message({
+            message: '请选择正常性别',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age>100){
+          this.$message({
+            message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            age:this.realNameInfo.age,
+            gender:this.realNameInfo.gender,
+            householdRegister:this.realNameInfo.householdRegister,
+            idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
+            idCardUri:this.realNameInfo.idCardUriUp,
+            idNo:this.realNameInfo.idNo,
+            nation:this.realNameInfo.nation,
+            nativePlace:this.realNameInfo.nativePlace,
+            realName:this.realNameInfo.realName,
+            userId:this.userIdOrType.id,
+            validityEndTime:this.realNameInfo.validityEndTime,
+            validityStartTime:this.realNameInfo.validityEndTime
+          }
+          realNameAuth(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.isEditShM = true
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.loadDate(this.userIdOrType)
+          })
+        }
+
 
       }else{
         this.isEditShM = false
@@ -836,7 +854,6 @@ export default {
           this.loadDate()
         }
       })
-
     },
     // 删除工种
     detGongZhong(item){
@@ -845,6 +862,28 @@ export default {
         id:item.id
       }
       workCardRemove(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          this.loadDate()
+        }
+      })
+
+    },
+    // 添加期望地
+    handleChange() {
+      var loc = "";
+      var code = 0;
+      for (let i = 0; i < this.selectedOptions.length; i++) {
+        code = this.selectedOptions[i]
+        loc += CodeToText[this.selectedOptions[i]];
+      }
+      var params = {
+        labelId:code,
+        labelName:loc,
+        labelType:1,
+        userBusinessCardId:this.bizCardInfo.id
+      }
+      workCardAdd(params).then(res => {
         console.log(res)
         if(res.code==200){
           this.loadDate()

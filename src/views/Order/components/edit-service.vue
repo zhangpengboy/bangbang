@@ -708,7 +708,6 @@
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
-				console.log('上班时间', val);
 				this.editFrom.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.editFrom.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratTime = Date.parse(val.workTimeList[0]);
@@ -765,8 +764,11 @@
 				this.isShowEdit = !this.isShowEdit;
 			},
 			//  取消编辑
-			handleCloseEdit() {
-				// console.log(this.recordFrom)
+			handleCloseEdit(data) {
+				if(data){
+					this.editFrom = data;
+					return;
+				}
 				this.isShowEdit = !this.isShowEdit;
 				this.editFrom = this.recordFrom
 			},

@@ -36,7 +36,7 @@
         <el-table-column prop="radius" label="半径范围" width="180" />
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.status == 1 ?'启用':'冻结'}}</p>
+            <p>{{scope.row.status == 1 ?'启用':'停用'}}</p>
           </template>
          </el-table-column>
         <!-- <el-table-column prop="name" label="手机号码" width="180"/> -->
@@ -45,7 +45,7 @@
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
-            <el-button type="text" size="small" @click="changeStatus(scope.row)">{{ scope.row.status==1?'冻结':'启用' }} </el-button>
+            <el-button type="text" size="small" @click="changeStatus(scope.row)">{{ scope.row.status==1?'停用':'启用' }} </el-button>
             <el-button type="text" size="small" @click="dete(scope.row)">删除</el-button>
           </template>
         </el-table-column>

@@ -21,8 +21,12 @@ import * as filters from './filters' // global filters
 
 import animated from 'animate.css' // 引入animate.css
 
+
 import audio from 'vue-mobile-audio'
 Vue.use(audio)
+// 引入echarts
+import echarts from 'echarts'
+Vue.prototype.$echarts = echarts
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api

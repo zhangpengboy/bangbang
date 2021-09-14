@@ -144,6 +144,7 @@
         this.loadDate(this.statusvalue);
       },
       add(){
+        this.textArea = '';
         this.dialogVisible = true;
         this.dialogtype = 0
       },
@@ -165,6 +166,7 @@
           }
           updateOneSelfIntroduce(params).then(res => {
             console.log(res)
+            this.textArea = '';
             this.dialogVisible = false;
             this.loadDate();
 
@@ -177,6 +179,7 @@
           }
           insertOneSelfIntroduce(params).then(res => {
             console.log(res)
+            this.textArea = '';
             this.dialogVisible = false;
             this.loadDate();
 

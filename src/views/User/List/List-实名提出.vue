@@ -12,7 +12,7 @@
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>实名状态：</span>
-            <el-select v-model="reamNamevalue" placeholder="全部">
+            <el-select v-model="reamNamevalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in reamNameOptions"
                 :key="item.value"
@@ -23,7 +23,7 @@
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>企业认证：</span>
-            <el-select v-model="authvalue" placeholder="全部">
+            <el-select v-model="authvalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in authOptions"
                 :key="item.value"
@@ -42,7 +42,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>工人等级：</span>
-            <el-select v-model="gradevalue" multiple placeholder="全部">
+            <el-select v-model="gradevalue" multiple placeholder="全部" clearable>
               <el-option
                 v-for="item in gradeOptions"
                 :key="item.value"
@@ -53,7 +53,7 @@
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>用户登录：</span>
-            <el-select v-model="loginvalue" placeholder="全部">
+            <el-select v-model="loginvalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in loginOptions"
                 :key="item.value"
@@ -64,7 +64,7 @@
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>状态：</span>
-            <el-select v-model="statusvalue" placeholder="全部">
+            <el-select v-model="statusvalue" placeholder="全部" clearable>
               <el-option
                 v-for="item in allStatus"
                 :key="item.value"
@@ -88,7 +88,7 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="id" label="ID" width="120" />
+        <el-table-column prop="id" label="ID" width="100" />
         <el-table-column prop="realName" label="名称" width="120"/>
         <el-table-column prop="phone" label="手机号码" width="120"/>
         <el-table-column prop="gender" label="性别">
@@ -101,9 +101,9 @@
             	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
             </template>
         </el-table-column>
-        <el-table-column prop="enterpriseAuthStatus" label="企业认证">
+        <el-table-column prop="enterpriseAuth" label="企业认证">
           <template slot-scope="scope">
-            {{scope.row.enterpriseAuthStatus == 0 ?'未提交':scope.row.enterpriseAuthStatus == 1 ?'审核中':scope.row.enterpriseAuthStatus == 2 ?'已通过':scope.row.enterpriseAuthStatus == 3 ?'已驳回':''}}
+            {{scope.row.enterpriseAuth == 0 ?'未提交':scope.row.enterpriseAuth == 1 ?'审核中':scope.row.enterpriseAuth == 2 ?'已通过':scope.row.enterpriseAuth == 3 ?'已驳回':''}}
           </template>
         </el-table-column>
         <el-table-column prop="workerGrade" label="工人等级">
@@ -114,23 +114,25 @@
 
         <el-table-column prop="userType" label="用户登录">
           <template slot-scope="scope">
-            {{scope.row.userType == 0 ?'企业端':scope.row.userType == 1 ?'工人端':scope.row.userType == 2 ?'管理端':''}}
+            {{scope.row.lastUserType == 0 ?'企业端':scope.row.lastUserType == 1 ?'工人端':scope.row.lastUserType == 2 ?'管理端':''}}
           </template>
         </el-table-column>
-        <el-table-column prop="userStatus" label="状态">
+        <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            {{scope.row.userStatus == 0 ?'正常':scope.row.userStatus == 1 ?'冻结':''}}
+            <p>用户端：{{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}}</p>
+            <p>企业端：{{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}</p>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="注册时间" />
         <el-table-column prop="updaterName" label="操作人" />
         <el-table-column prop="updateTime" label="操作时间" />
-        <el-table-column label="操作" width="220">
+        <el-table-column label="操作" width="210">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.userStatus==1?'激活':'冻结' }}</el-button>
+            <el-button type="text" size="small" @click="changeUserSte(scope.row)">{{ scope.row.workerStatus==1?'工人端激活':'工人端冻结' }}</el-button>
+            <el-button type="text" size="small" @click="changeEnterSte(scope.row)">{{ scope.row.enterpriseStatus==1?'企业端激活':'企业端冻结' }}</el-button>
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
-            <el-button v-if="scope.row.enterpriseAuthStatus==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
+            <el-button v-if="scope.row.enterpriseAuth==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -154,7 +156,7 @@
       <!-- 分页end -->
 
       <!-- 实名弹窗 -->
-      <realName :realNamePop.sync='realNamePop'/>
+      <realName :realNamePop.sync='realNamePop' @addRealname="addRealname"/>
 
       <!-- 企业认证 -->
       <el-dialog
@@ -234,7 +236,6 @@ import {
     getPreSignFile,
     uploadpublic
 } from '../../../api/user.js'
-
 import realName from '../components/real-name.vue';
 
 export default {
@@ -268,10 +269,10 @@ export default {
       authOptions: [
         {
           label: '未认证',
-          value: '1'
+          value: '0'
         }, {
           label: '已认证',
-          value: '2'
+          value: '1'
         }
       ], // 企业认证
       authvalue: '',
@@ -306,22 +307,38 @@ export default {
       loginvalue: '',
       allStatus: [
         {
-          label: '正常',
+          label: '企业端冻结',
           value: '0'
         }, {
-          label: '冻结',
+          label: '工人端冻结',
           value: '1'
+        }, {
+          label: '两端冻结',
+          value: '2'
         }
       ],
       statusvalue: '',
 
-      // 实名认证
-      realNamePop:false,
-      rnUserId :'',
-      rnUserType:'',
-
+      realNamePop: false,
+      idCard: '',
+      idCardUp: '', //上传用的
+      idCardBack: '',
+      idCardBackUp:'',
 
       qiyeRZPop: false,
+
+
+      // 实名认证
+      rnName:'',
+      rnGender:'',
+      rnNation:'',
+      rnAge:'',
+      rnIdnum:"",
+      rnNativePlace:'',
+      rnHouse:'',
+      rnvalidityStartTime:'',
+      rnvalidityEndTime:'',
+      rnUserId :'',
       // 企业认证
       enterpriseName:'',
       businessLicenseRegistrationNo:'',
@@ -340,19 +357,17 @@ export default {
     this.getUser()
   },
   methods: {
-    
-
     getUser() {
-       this.loading = true;
+      this.loading = true;
        var query = {
         id:this.serach,
-        enterpriseAuthStatus: this.authvalue,
+        enterpriseAuth: this.authvalue,
         grades: this.gradevalue.join(',') ,
         pageNum: this.PageIndex,
         pageSize: this.PageSize,
         realNameAuth: this.reamNamevalue,
         userStatus: this.statusvalue,
-        userType: this.loginvalue
+        lastUserType: this.loginvalue
       }
       getuserqueryPage(query).then(res => {
         var data = res.data
@@ -411,11 +426,12 @@ export default {
     /** 查看，区分工人和企业跳转不同页面 */
     handleLook(row) {
       console.log(row.userType)
-      if(row.userType==0){ //企业端
-        this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id ,userType:row.userType ,joinType:1 }})
-      }else if(row.userType==1){ //工人端
-         this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType,joinType:1 }})
-      }
+      this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType,joinType:1 }})
+      // if(row.userType==0){ //企业端
+      //   this.$router.push({ path: '/User/enterprisedetails', query: { id: row.id ,userType:row.userType ,joinType:1 }})
+      // }else if(row.userType==1){ //工人端
+      //    this.$router.push({ path: '/User/userdetail', query: { id: row.id ,userType:row.userType,joinType:1 }})
+      // }
 
 
     },
@@ -434,69 +450,85 @@ export default {
     reanName(row) {
       console.log(row)
       this.rnUserId = row.id
-      this.rnUserType = row.userType
       this.realNamePop = true
     },
-    // 激活冻结
-    changeSte(row) {
+    // 给工人激活冻结
+    changeUserSte(row) {
       var that = this;
       console.log(row)
-      if (row.userStatus == 1) { // 冻结去激活
-        this.$confirm('是否确定激活用户', '确认提示', {
+      if (row.workerStatus == 1) { // 冻结去激活
+        this.$confirm('是否确定激活用户工人端', '确认提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 0,
-            userType: row.userType
-          }
-          console.log(params)
-          updateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getUser()
-            }
-          })
-
+          this.changeUserStatus(row.id,0,1)
         }).catch(() => {})
       }else{
-        this.$confirm('是否确定冻结用户', '确认提示', {
+        this.$confirm('是否确定冻结用户工人端', '确认提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 1,
-            userType: row.userType
-          }
-          updateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getUser()
-            }
-          })
-
+          this.changeUserStatus(row.id,1,1)
         }).catch(() => {})
       }
     },
+    // 给企业冻结激活
+    changeEnterSte(row){
+      var that = this;
+      console.log(row)
+      if (row.enterpriseStatus == 1) { // 冻结去激活
+        this.$confirm('是否确定激活用户企业端', '确认提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.changeUserStatus(row.id,0,0)
+        }).catch(() => {})
+      }else{
+        this.$confirm('是否确定冻结用户企业端', '确认提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+         this.changeUserStatus(row.id,1,0)
+        }).catch(() => {})
+      }
+    },
+    // 修改用户状态封装
+    changeUserStatus(userId,userStatus,userType){
+      var that = this;
+      var params = {
+        userId:userId,
+        userStatus: userStatus,
+        userType:userType
+      }
+      updateUserStatus(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          that.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          that.getUser()
+        }
+      })
+    },
+
     // 企业认证
     authen(row) {
       console.log(row)
       this.qyuserId = row.id
       this.qiyeRZPop = true
     },
-
+    upIdCard(res, file) {
+      console.log(res)
+    },
+    upIdCardBack(res, file) {
+      console.log(res)
+      console.log(file)
+    },
 
     //图片上传数组
     qiyeUp(res,file) {
@@ -518,7 +550,73 @@ export default {
       console.log(this.fileUris);
 
     },
+    // 身份证正面
+    beforeUpload (file) {
+      console.log(file)
+      let data = new FormData()
+      data.append('multipartFile', file)
+      data.append('side', 'face')
+      uploadIdCardByAli(data).then(res => {
+        console.log(res)
+        this.rnName = res.data.realName
+        this.rnGender = res.data.gender
+        this.rnNation = res.data.nation
+        this.rnAge = res.data.age
+        this.rnIdnum = res.data.idNo
+        this.idCardUp = res.data.idCardUri
+        this.getIdUrl(1,res.data.idCardUri)
+      })
+      return false
+     },
+     // 解析身份证照片
+     getIdUrl(type,url){
+     	var query = {
+     		uri:url
+     	}
+     	 getPreSignFile(query).then(res => {
+     	   console.log(res)
+         if(type==1){
+           this.idCard = res.data
+         }else{
+           this.idCardBack = res.data
+         }
+     	 })
+     },
+     beforeUpload2(file) {
+        console.log(file)
+        let data = new FormData()
+        data.append('multipartFile', file)
+        data.append('side', 'back')
+        uploadIdCardByAli(data).then(res => {
+          console.log(res)
+          this.rnvalidityStartTime = res.data.startDate
+          this.rnvalidityEndTime = res.data.endDate
+          this.idCardBackUp = res.data.idCardUri
+          this.getIdUrl(2,res.data.idCardUri)
+        })
+        return false
+     },
+     addRealname(data){
+      data.userId = this.rnUserId;
+      console.log(data)
+      this.realNameTrue(data)
+      
+     },
+     // 添加实名
+     realNameTrue(params){
+        realNameAuth(params).then(res => {
+          console.log(res)
+          if(res.code==200){
+            this.$message({
+              type: 'success',
+              message: '提交成功!'
+            })
+             this.realNamePop = false
+             this.getUser()
+          }
+        })
 
+     },
      // 企业认证
      renZhTrue(){
        var fileUris = [];
@@ -543,6 +641,7 @@ export default {
                 type: 'success',
                 message: '提交成功!'
               })
+              this.getUser()
           }
         })
      }
@@ -551,7 +650,25 @@ export default {
 </script>
 
 <style lang="scss">
+.reanNamePoplist{
 
+  .item{
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    .tit{
+      width: 100px;
+      text-align: right;
+    }
+    .ipt{
+      flex:1;
+      height: 35px;
+      padding: 0 8px;
+      box-sizing: border-box;
+    }
+  }
+}
 
 .el-upload--picture-card{
   width: 120px;
