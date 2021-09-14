@@ -25,11 +25,6 @@
 						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch"
 							placeholder="请输入跟进人">
 						</el-input>
-					<!-- 	<el-select v-model="updator" placeholder="选择跟进人">
-							<el-option v-for="item in options" :key="item.value" :label="item.label"
-								:value="item.value">
-							</el-option>
-						</el-select> -->
 					</div>
 					<div class="flex fvertical top-content-item-status">
 						<span>地区：</span>
