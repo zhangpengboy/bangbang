@@ -8,7 +8,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" clearable/>
+            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/用户名称/手机号" clearable/>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>需求单数量：</span>
