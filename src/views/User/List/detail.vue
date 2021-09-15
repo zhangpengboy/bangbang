@@ -422,7 +422,24 @@
       <!-- 参加项目end -->
       <!-- 提现 -->
       <div v-if="tabPosition == 'withdrawal'" class="demand-service withdrawal">
-        <div class="box-demand-title">提现</div>
+        <div class="head flex alCen js-sa">
+          <div class="headItem alCen flex column">
+            <p class="tit">已提现金额</p>
+            <p class="num mt15">7000</p>
+          </div>
+          <div class="headItem alCen flex column">
+            <p class="tit">已提现笔数</p>
+            <p class="num mt15">7</p>
+          </div>
+          <div class="headItem alCen flex column">
+            <p class="tit">可提现金额</p>
+            <p class="num mt15">7</p>
+          </div>
+          <div class="headItem alCen flex column">
+            <p class="tit">待发金额</p>
+            <p class="num mt15">300</p>
+          </div>
+        </div>
 
       </div>
       <!-- 提现end -->
@@ -1118,8 +1135,12 @@ export default {
 
     }
     // 提现
-    
-    
+    .withdrawal{
+      border: 1px solid #E9E9E9;
+      padding: 15px 20px;
+      box-sizing: border-box;
+    }
+
     // 评价记录
 
 </style>
