@@ -379,7 +379,7 @@
 												<el-form-item label="每日工时">
 													<div class="flex">
 														<el-input style="width: 200px;"
-															:value="teams.workTimelen - teams.restTimelen"
+															:value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -481,7 +481,7 @@
 												<el-form-item label="每日工时">
 													<div class="flex">
 														<el-input style="width: 200px;"
-															:value="teams.workTimelen - teams.restTimelen"
+															:value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -647,7 +647,7 @@
 		AddOrder,
 		getBriefDetail,
 		getOrderDetail,
-		gettypeWorkClass,
+		gettypeWorkAllClass,
 		getAttendanceClass
 	} from '../../../api/user.js'
 	import moment from 'moment'
@@ -705,10 +705,10 @@
 						trigger: 'blur'
 					}],
 					description: [{
-							required: true,
-							message: '请输入工作描述',
-							trigger: 'blur'
-						}],
+						required: true,
+						message: '请输入工作描述',
+						trigger: 'blur'
+					}],
 					// unitPrice:[{
 					// 	required: true,
 					// 	message: '请输入工时单价',
@@ -758,7 +758,7 @@
 						required: true,
 						message: '请输入简介',
 						trigger: 'blur'
-					},{
+					}, {
 						min: 4,
 						max: 16,
 						message: '长度在 4 到 16 个字符',
@@ -864,7 +864,7 @@
 							0)], // 上班/下班 时间数组
 						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
 						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
-						workTimelen: 10, // 上班时长
+						dailyHours: 9, // 上班时长
 						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
 							0)], // 午休时间数组
 						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
@@ -1001,8 +1001,9 @@
 				let param = {};
 				param.pageSize = 10000;
 				param.pageNum = 1;
-				let res = await gettypeWorkClass(param);
-				this.options = res.data.list;
+				param.type = 0;
+				let res = await gettypeWorkAllClass(param);
+				this.options = res.data;
 				if (this.options.length > 0) {
 					this.schemes.forEach(item => {
 						item.teams.forEach(data => {
@@ -1093,8 +1094,8 @@
 			// 计算工时单价
 			handleUnitPrice(index, inx, type_index, val) {
 				val.unitPrice = val.unitPrice.replace(/^\.+|[^\d.]/g, '')
-				let dailyFee = (this.schemes[index].teams[inx].workTimelen - this.schemes[index].teams[inx].restTimelen) *
-					val.unitPrice
+				let dailyFee = ((this.schemes[index].teams[inx].dailyHours) *
+					val.unitPrice).toFixed(2)
 				val.dailyFee = dailyFee;
 				this.getGroupTotal({
 					index,
@@ -1207,7 +1208,7 @@
 						0)], // 上班/下班 时间数组
 					workStartTime: "", // 上班时间
 					workEndTime: "", // 下班时间
-					workTimelen: 10, // 上班时长
+					dailyHours: 9, // 上班时长
 					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
 						0)], // 午休时间数组
 					restStartTime: "", // 午休开始时间
@@ -1270,25 +1271,44 @@
 					this.handleWorkTime(index, inx, val);
 					return;
 				};
-				this.schemes[index].teams[inx].restStartTime = this.formatDateTime(val.restTimeList[0]);
-				this.schemes[index].teams[inx].restEndTime = this.formatDateTime(val.restTimeList[1]);
-				let stratTime = Date.parse(val.restTimeList[0]);
-				let endTime = Date.parse(val.restTimeList[1]);
-				this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
+				
+				
 				this.handleWorkTime(index, inx, val);
 
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
+				this.getDayLen(index, inx, val)
+			},
+			// 计算每日上班时长
+			getDayLen(index, inx, val){
+				//  上班时间
 				this.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
-				let stratTime = Date.parse(val.workTimeList[0]);
-				let endTime = Date.parse(val.workTimeList[1]);
-				this.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
-				let teamTypes = this.schemes[index].teams[inx].teamTypes;
-				let timeLen = val.workTimelen - val.restTimelen;
-				this.getCalculationUnitPrice(timeLen, teamTypes)
+				let stratWorkTime = Date.parse(val.workTimeList[0]);
+				let endWorkTime = Date.parse(val.workTimeList[1]);
+				
+				// this.schemes[index].teams[inx].dailyHours = this.timeFn(stratTime, endTime);
+				
+				// 午休时间
+				if(val.restTimeList){
+					val.restStartTime = this.formatDateTime(val.restTimeList[0]);
+					val.restEndTime = this.formatDateTime(val.restTimeList[1]);
+					let stratTime = Date.parse(val.restTimeList[0]);
+					let endTime = Date.parse(val.restTimeList[1]);
+					this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
+					let endStartTime = this.getMinute(stratWorkTime,endWorkTime)  - this.getMinute(stratTime,endTime);
+					let  {minutes,seconds} = this.getFormatSecond(endStartTime);
+					val.dailyHours = Number(minutes + '.' + seconds).toFixed(2);
+				}else{
+					val.restStartTime = 0;
+					val.restEndTime = 0;
+					this.schemes[index].teams[inx].dailyHours = this.timeFn(stratWorkTime, endWorkTime);
+				}
+				
+				
 			},
+			
 
 			// 计算工时单价
 			getCalculationUnitPrice(timeLen, list) {
@@ -1296,6 +1316,28 @@
 					list[i].dailyFee = list[i].unitPrice * timeLen
 				}
 			},
+			/** 
+			 * 计算器 - 时分秒
+			 * @param {Number} second 分钟
+			 * */
+			getFormatSecond(second) {
+				const minutes = Math.floor(((second % 86400) % 3600) / 60);
+				const seconds = Math.floor(((second % 86400) % 3600) % 60);
+				const forMatDate = {
+					minutes: minutes,
+					seconds: seconds > 10 ? seconds : '0' + seconds
+				};
+				return forMatDate;
+			},
+			/** 计算-相差多少分钟 */
+			getMinute(day1, day2) {
+				var day_day1 = new Date(day1);
+				var day_day2 = new Date(day2);
+				let disparity = day_day2.getTime() - day_day1.getTime();
+				// 转为分钟数的时候，可能会出现精度丢失;你需要注意下
+				return Math.round(disparity / 1000 / 60);
+			},
+
 			// 计算时分
 			timeFn(startTime, endTime) { //di作为一个变量传进来
 				//如果时间格式是正确的，那下面这一步转化时间格式就可以不用了
@@ -1629,8 +1671,7 @@
 
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
 							schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
-							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
-								.teams[j].restTimelen
+							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].dailyHours
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
@@ -1679,8 +1720,11 @@
 					this.addressMap = new BMap.Map("DetailsAddress", {
 						enableMapClick: false
 					}) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
+
 					var point = new BMap.Point(lng, lat);
-					this.addressMap.centerAndZoom(point, 19)
+
+					this.addressMap.centerAndZoom(point, 19);
+					// return;
 					var opts = {
 						width: 120,
 						height: 100,
@@ -1700,7 +1744,7 @@
 				var that = this;
 				this.$nextTick(() => {
 					this.map = new BMap.Map("map-container", {
-						enableMapClick: false
+						enableMapClick: true
 					}) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
 					var point = new BMap.Point(113.45229348086244, 23.166207444960165);
 					this.map.centerAndZoom(point, 19)
@@ -1749,6 +1793,7 @@
 				var local = new BMap.LocalSearch(this.map, options) //创建LocalSearch构造函数
 				local.search(str) //调用search方法，根据检索词str发起检索
 			},
+			/** 搜索地址 */
 			handleSelect(item) {
 				var opts = {
 					width: 120,
@@ -1756,7 +1801,6 @@
 					title: item.title
 				};
 				let infoWindow = new BMap.InfoWindow(item.address ? item.address : item.city + item.title, opts);
-				// console.log(item)
 				this.form.address = item.address ? item.address : item.city + item.title; //记录详细地址，含建筑物名
 				this.form.addrPoint = item.point; //记录当前选中地址坐标
 				this.form.allAddress = item;
@@ -1765,10 +1809,8 @@
 				this.map.addOverlay(this.mk) //将覆盖物重新添加到地图中
 				this.map.panTo(item.point) //将地图的中心点更改为选定坐标点
 				this.map.openInfoWindow(infoWindow, item.point);
-
+				console.log('执行666')
 			},
-
-
 			/**
 			 * 逆地址解析函数（根据坐标点获取详细地址）
 			 * @param {Object} point   百度地图坐标点，必传
@@ -1834,7 +1876,7 @@
 							0)], // 上班/下班 时间数组
 						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
 						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
-						workTimelen: 10, // 上班时长
+						dailyHours: 9, // 上班时长
 						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
 							0)], // 午休时间数组
 						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
@@ -1897,15 +1939,11 @@
 			// 图片删除
 			handleRemoveImg(file, fileList) {
 				this.basicForm.images = fileList;
-				// this.basicForm = fileList.map(item => item.response.data)
 			},
 			// 图片上传成功
 			handleSuccessImg(response, file, fileList) {
 				this.videoFlag = false;
 				this.videoUploadPercent = 0;
-				console.log('上传成功！！')
-				// let arr = [];
-				// arr.push(file.response.data);
 				this.basicForm.images.push(file.response.data);
 			},
 		}

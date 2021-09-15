@@ -481,6 +481,12 @@ export function exportCsvGongren(params) {
 }
 
 // 工种、考勤、自我介绍、收款信息开始-----------------
+/** 查询所有工种 */
+export function gettypeWorkAllClass(){
+	return request({
+		url: `/api/commons/admin/commonsLabel/v1.0/queryAllChild`,
+	})
+}
 
 // 工种查询分类
 export function gettypeWorkClass(params) {
