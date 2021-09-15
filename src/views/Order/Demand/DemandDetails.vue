@@ -1481,6 +1481,7 @@
 			// 计算班组工程量
 			handleQuantity(index, inx, types_index, val) {
 				val.number = val.number.replace(/^(0+)|[^\d]+/g, '')
+				val.personalQuantity = val.personalQuantity.replace(/^(0+)|[^\d]+/g, '')
 				let teamTypes = this.schemes[index].teams[inx].teamTypes;
 				let total = 0;
 				let allToal = 0;
