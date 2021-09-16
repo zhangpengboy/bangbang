@@ -2,7 +2,7 @@
   <div class="main">
 
     <!-- 头部  -->
-    <div class="top">
+    <div class="top" id="top">
       <div class="top-title ">数据筛选</div>
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
@@ -52,13 +52,13 @@
     <!-- 头部end  -->
 
     <div class="box">
-      <div class="box-top flex fbetween fvertical">
+      <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
         <el-button @click="exportTable">导出</el-button>
       </div>
 
       <!-- 表格  -->
-      <el-table :data="tableData" stripe style="width: 100%" border>
+      <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="120" />
         <el-table-column prop="enterpriseName" label="企业名称" width="150"/>
@@ -100,7 +100,7 @@
       <!-- 表格end -->
 
       <!-- 分页  -->
-      <div class="flex fcenter page">
+      <div class="flex fcenter page" id="page">
         <el-pagination
           id="page"
           class="page"
@@ -344,15 +344,34 @@ export default {
       fileUris:[], //证件
       dialogVisible:false,
       adminUrl: '/api/commons/file/admin/v1/upload/public',
-
+      clientHeight:0
 
     }
   },
   created() {
     this.getList()
+    this.getWebHeing();
     // this.getByOrderAndBrief();
   },
   methods: {
+    /** 计算页面高度 */
+    getWebHeing() {
+    	this.$nextTick(() => {
+    		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+    			.offsetHeight - document.getElementById('page')
+    			.offsetHeight - document.getElementById('boxTop')
+    			.offsetHeight - 180;
+    	})
+    	window.addEventListener('resize', () => {
+    		if(document.getElementById('top')!=null){
+    		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+    		  	.offsetHeight - document.getElementById('page')
+    		  	.offsetHeight - document.getElementById('boxTop')
+    		  	.offsetHeight - 180;
+    		  this.$forceUpdate();
+    		}
+    	})
+    },
     getByOrderAndBrief(){
       var params = {
         orderMinCount:this.fwMinNum,
@@ -369,7 +388,7 @@ export default {
     },
     getList() {
        var params = {
-        id:this.serach,
+        keyword:this.serach,
         pageNum: this.PageIndex,
         pageSize: this.PageSize,
         userStatus: this.statusvalue,
@@ -386,6 +405,7 @@ export default {
       })
     },
     search() {
+      this.PageIndex = 1
       console.log('查询')
       this.getList();
     },
