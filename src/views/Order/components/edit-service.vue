@@ -1373,6 +1373,8 @@
 					this.addressMap = new BMap.Map("allmap", {
 						enableMapClick: false
 					}) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
+					console.log('lat',lat)
+					console.log(lng);
 					var point = new BMap.Point(lng, lat);
 					this.addressMap.centerAndZoom(point, 19)
 					var opts = {
@@ -1467,7 +1469,6 @@
 			async handleAddSerice() {
 				let param = this.deepClone(this.editFrom);
 				let schemes = param.schemes;
-				console.log('schemes',schemes);
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
 					

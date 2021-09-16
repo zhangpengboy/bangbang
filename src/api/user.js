@@ -483,6 +483,12 @@ export function exportCsvGongren(params) {
 }
 
 // 工种、考勤、自我介绍、收款信息开始-----------------
+/** 查询所有工种 */
+export function gettypeWorkAllClass(){
+	return request({
+		url: `/api/commons/admin/commonsLabel/v1.0/queryAllChild`,
+	})
+}
 
 // 工种查询分类
 export function gettypeWorkClass(params) {
@@ -742,6 +748,14 @@ export function visitListexportCsv(params) {
 export function visitListcount(params) {
 	return request({
 		url: `/api/user/admin/userLoginLog/v1.0/count`,
+		method: 'get',
+		params
+	})
+}
+// 根据需求单总数和服务单总数查找企业信息
+export function getByOrderAndBrief(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/getByOrderAndBrief`,
 		method: 'get',
 		params
 	})

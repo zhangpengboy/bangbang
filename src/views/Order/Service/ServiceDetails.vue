@@ -12,7 +12,7 @@
 		<!-- tab按钮切换end -->
 
 		<!-- 需求单详情 -->
-		<demanInfo :info="{}" v-if="tabPosition == 'top'" />
+		<demanInfo :info="info" v-if="tabPosition == 'top'" />
 		<!-- 需求单详情end -->
 
 		<!-- 服务单 -->
@@ -135,7 +135,7 @@
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>班组工期</span>
-								<el-input placeholder="请输入内容" :value="bjDate(item.enterStartTime,item.enterEndTime)"
+								<el-input placeholder="请输入内容" :value="item.enterDay"
 									:disabled="true" class="f1"></el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
@@ -143,7 +143,7 @@
 								<div class="flex f1">
 									<el-input placeholder="请输入内容" :value="item.totalUnit" :disabled="true" class="f1">
 									</el-input>
-									<el-input class="member-min-input" placeholder="" :disabled="true"></el-input>
+									<el-input class="member-min-input" :value="getCompanyUnit(item.unit)" :disabled="true"></el-input>
 								</div>
 
 							</div>
@@ -153,9 +153,10 @@
 								</el-input>
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
-								<span>上班时间</span>
-								<el-input placeholder="请输入内容" :value="formatDate(item.workStartTime)" :disabled="true"
-									class="f1"></el-input>
+								<span>上班时间：</span>
+								<span>{{formatDateTime(item.workStartTime)}}~{{formatDateTime(item.workEndTime)}}</span>
+								<!-- <el-input placeholder="请输入内容" :value="formatDate(item.workStartTime)" :disabled="true"
+									class="f1"></el-input> -->
 							</div>
 							<div class="service-details-member-box-list-top-item flex fvertical">
 								<span>午休时间</span>
@@ -197,7 +198,7 @@
 								<span>工种工期</span>
 								<div class="flex f1">
 									<el-input class="f1" :disabled="true"
-										:value="bjDate(items.enterStartTime,items.enterEndTime)"></el-input>
+										:value="items.enterDay"></el-input>
 									<el-input class="member-min-input" :disabled="true" value="天"></el-input>
 								</div>
 							</div>
@@ -215,7 +216,7 @@
 								<div class="service-details-member-box-list-item-main flex fvertical">
 									<span>个人工程量</span>
 									<div class="flex f1">
-										<el-input class="f1" :disabled="true" value="电工"></el-input>
+										<el-input class="f1" :disabled="true" :value="items.personalQuantity "></el-input>
 										<el-input class="member-min-input" :disabled="true" value="㎡"></el-input>
 									</div>
 								</div>
@@ -276,7 +277,7 @@
 								<!-- 计时 -->
 								<div class="service-details-member-box-list-item-main flex fvertical">
 									<span>每日工时</span>
-									<el-input class="f1" :disabled="true" value=""></el-input>
+									<el-input class="f1" :disabled="true" :value="items.dailyHours"></el-input>
 								</div>
 
 								<div class="service-details-member-box-list-item-main flex fvertical">
@@ -289,7 +290,7 @@
 
 								<div class="service-details-member-box-list-item-main flex fvertical">
 									<span>每日收入</span>
-									<el-input class="f1" :disabled="true" value=""></el-input>
+									<el-input class="f1" :disabled="true" :value="items.dailyFee"></el-input>
 								</div>
 
 								<div class="service-details-member-box-list-item-main flex fvertical">
@@ -315,7 +316,7 @@
 								v-if="items.tag == '班组长' || items.workType == 3">
 								<span class="service-details-member-box-list-item-admin-name">带班管理费</span>
 								<div class="flex fvertical f1">
-									<el-input class="f1" :disabled="true" :value="item.leaderFee"></el-input>
+									<el-input class="f1" :disabled="true" :value="items.leaderFee"></el-input>
 									<el-input class="member-min-input" :disabled="true" value="元/天"></el-input>
 								</div>
 							</div>
@@ -687,7 +688,10 @@
 			demanInfo,
 			editService
 		},
-		async mounted() {
+		async created(){
+			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
+		},
+		 mounted() {
 			this.orderId = this.$route.query.id;
 			this.briefId = this.$route.query.briefId;
 			if (this.$route.query.name == 'top') {
@@ -695,10 +699,11 @@
 			}
 			this.getBriefPay(this.orderId);
 			this.getOrderdetail(this.orderId);
-			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
+			
 			this.getOrderTeamType();
 			this.gettypeWorkClass();
 			
+			console.log('获取百度地图地址：',window)
 			console.log(this.basicForm)
 			
 		},
@@ -722,6 +727,15 @@
 				}
 			},
 
+			// 获取班组单位
+			getCompanyUnit(val){
+				console.log(val);
+				for(let i = 0 ; i < this.companyList.length;i++){
+					if(val == this.companyList[i].value){
+						return this.companyList[i].label;
+					}
+				}
+			},
 			// 获取工种列表
 			async gettypeWorkClass() {
 				let param = {};
@@ -788,7 +802,7 @@
 			//获取工种模式
 			getPatternList(val) {
 				for (let i = 0; i < this.patternList.length; i++) {
-					if (val == this.patternList[i].label) {
+					if (val == this.patternList[i].value) {
 						return this.patternList[i].label
 					}
 				}
@@ -822,7 +836,7 @@
 				}
 			},
 			formatDateTime(value) {
-				return value ? moment(value).format('hh:mm:ss') : '';
+				return value ? moment(value).format('HH:mm:ss') : '';
 			},
 			formatDate(value) {
 				return value ? moment(value).format('YYYY-MM-DD') : '';
@@ -859,14 +873,23 @@
 					let lng = res.data.gpsLocation.split(',')[0];
 					let lat = res.data.gpsLocation.split(',')[1];
 					this.$refs.editFrom.getDataInfo(this.basicForm);
-					this.getDetailsAdderss({
-						lng,
-						lat
-					})
+					setTimeout(()=>{
+						this.getDetailsAdderss({
+							lng,
+							lat
+						})
+					},500)
 				} catch (e) {
 					this.loading = false;
 					//TODO handle the exception
 				}
+			},
+			/** 转成数组格式时间转换 */
+			getArrayList(start,end){
+				let arr = [];
+				arr[0] = start;
+				arr[1] = end;
+				return arr;
 			},
 			/** 重置充值 */
 			handleReset() {

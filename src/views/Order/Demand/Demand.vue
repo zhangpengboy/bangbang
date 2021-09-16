@@ -8,8 +8,8 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch"
-							placeholder="用户ID/账号">
+						<el-input class="top-content-item-input" v-model="keywords" @keyup.enter.native="handelSearch"
+							placeholder="需求单ID/名称/手机号">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -22,7 +22,7 @@
 					</div>
 					<div class="flex fvertical top-content-item-status">
 						<span>跟进人：</span>
-						<el-input class="top-content-item-input" v-model="creator" @keyup.enter.native="handelSearch"
+						<el-input class="top-content-item-input" v-model="updator" @keyup.enter.native="handelSearch"
 							placeholder="请输入跟进人">
 						</el-input>
 					</div>
@@ -170,7 +170,7 @@
 					value: "",
 					label: "全部"
 				}],
-				creator: "", // 输入查询
+				keywords: "", // 输入查询
 				updator: "", // 跟进人ID
 				loading: false,
 				clientHeight:0
@@ -213,7 +213,7 @@
 			},
 			/** 重置 */
 			handleReset() {
-				this.creator = '';
+				this.keywords = '';
 				this.value = '';
 				this.pageIndex = 1;
 				this.type_name = '';
@@ -318,14 +318,13 @@
 				let param = {};
 				param.pageIndex = this.pageIndex;
 				param.pageSize = this.pageSize;
-				param.creator = this.creator;
+				param.keywords = this.keywords.trim();
 				param.updator = this.updator;
 				param.type = this.type_name;
 				param.city = this.address;
 				this.loading = true;
 				try {
 					let res = await getBriel(param);
-					console.log('获取企业服务单::', res);
 					this.tableData = res.data.records;
 					this.PageCount = res.data.total;
 					this.loading = false;

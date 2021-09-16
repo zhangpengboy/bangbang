@@ -8,7 +8,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" clearable/>
+            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/用户名称/手机号" clearable/>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>需求单数量：</span>
@@ -79,8 +79,8 @@
             {{scope.row.enterpriseAuth == 0 ?'未提交':scope.row.enterpriseAuth == 1 ?'审核中':scope.row.enterpriseAuth == 2 ?'已通过':scope.row.enterpriseAuth == 3 ?'已驳回':''}}
           </template>
         </el-table-column>
-        <el-table-column prop="userStatus" label="需求单数量"/>
-        <el-table-column prop="userStatus" label="服务单数量"/>
+        <el-table-column prop="briefCount" label="需求单数量"/>
+        <el-table-column prop="orderCount" label="服务单数量"/>
         <el-table-column prop="enterpriseStatus" label="状态">
           <template slot-scope="scope">
             {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}
@@ -287,19 +287,14 @@ import {
     uploadIdCardByAli,
     getPreSignFile,
     uploadpublic,
-    qiYeRealNameAuth
+    qiYeRealNameAuth,
+    getByOrderAndBrief
 } from '../../../api/user.js'
 
 export default {
   data() {
     return {
-      tableData: [{
-        type: 0,
-        name: '工人1'
-      }, {
-        type: 1,
-        name: '工人2'
-      }], // 表单列表
+      tableData: [], // 表单列表
       PageIndex: 1, // 页码
       PageSize: 10, // 显示多少条数据
       PageCount: 0, // 总条数
@@ -355,14 +350,33 @@ export default {
   },
   created() {
     this.getList()
+    // this.getByOrderAndBrief();
   },
   methods: {
+    getByOrderAndBrief(){
+      var params = {
+        orderMinCount:this.fwMinNum,
+        orderMaxCount: this.fwMaxNum,
+        briefMinCount	: this.xqMinNum,
+        briefMaxCount: this.xqMaxNum
+      }
+      getByOrderAndBrief(params).then(res => {
+        var data = res.data
+        console.log(data.join(','))
+        this.ids = data.join(',')
+
+      })
+    },
     getList() {
        var params = {
         id:this.serach,
         pageNum: this.PageIndex,
         pageSize: this.PageSize,
-        userStatus: this.statusvalue
+        userStatus: this.statusvalue,
+        orderMinCount:this.fwMinNum,
+        orderMaxCount: this.fwMaxNum,
+        briefMinCount	: this.xqMinNum,
+        briefMaxCount: this.xqMaxNum
       }
       qiYeQueryPage(params).then(res => {
         var data = res.data
@@ -373,7 +387,7 @@ export default {
     },
     search() {
       console.log('查询')
-      this.getList()
+      this.getList();
     },
     // 重置
     raLoad(){
@@ -384,7 +398,7 @@ export default {
         this.fwMinNum = '';
         this.fwMaxNum = '';
         this.PageIndex = 1;
-        this.getList()
+        this.getList();
     },
     // 导出
     exportTable(){
@@ -418,12 +432,12 @@ export default {
     handleSizeChange(e) {
       this.PageSize = e
       this.PageIndex = 1
-      this.getList()
+      this.getList();
     },
     /** 点击分页 */
     handleCurrentChange(e) {
       this.PageIndex = e
-      this.getList()
+      this.getList();
     },
 
     // 激活冻结
@@ -565,7 +579,7 @@ export default {
              message: '提交成功!'
            })
             this.realNamePop = false
-            this.getList()
+            this.getList();
          }
        })
 
@@ -689,7 +703,7 @@ export default {
 }
 
 .numIpt{
-  width: 100px;
+  width: 110px;
 }
 
 </style>

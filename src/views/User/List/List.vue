@@ -8,7 +8,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/项目名称" />
+            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/用户名称/手机号" />
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>实名状态：</span>
@@ -119,7 +119,7 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p>用户端：{{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}}</p>
+            <p>工人端：{{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}}</p>
             <p>企业端：{{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}</p>
           </template>
         </el-table-column>
