@@ -8,11 +8,11 @@
 		<!-- tab按钮切换end -->
 		<div class="box">
 			<!-- 需求详情 -->
-			<demanInfo :info="info"  v-if="tabPosition == 'top'" />
+			<demanInfo :info="info" v-if="tabPosition == 'top'" />
 			<!-- 需求详情end -->
 			<template v-else>
 				<!-- 编辑服务单  -->
-				<editDeman v-if="editFrom.id"  ref="editFrom" />
+				<editDeman v-if="editFrom.id" ref="editFrom" />
 				<!-- 编辑服务单end  -->
 				<!-- 服务单 -->
 				<div class="demand-service" v-else>
@@ -33,7 +33,7 @@
 									</el-option>
 								</el-select>
 							</el-form-item>
-						
+
 
 							<!-- 	<el-form-item label="项目简称" >
 								<el-input v-model="ruleForm.name"></el-input>
@@ -339,8 +339,7 @@
 												<!-- <div class="plan-box-btn"></div> -->
 												<el-form-item label="每日工时">
 													<div class="flex">
-														<el-input style="width: 200px;"
-															:value="teams.dailyHours"
+														<el-input style="width: 200px;" :value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -441,8 +440,7 @@
 												<!-- <div class="plan-box-btn"></div> -->
 												<el-form-item label="每日工时">
 													<div class="flex">
-														<el-input style="width: 200px;"
-															:value="teams.dailyHours"
+														<el-input style="width: 200px;" :value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -619,10 +617,10 @@
 				myHeaders: {
 					requestId: uuid.v4().replaceAll('-', '')
 				},
-				typeList:[{
+				typeList: [{
 					value: 1,
 					label: "劳务派遣"
-				},{
+				}, {
 					value: 2,
 					label: "劳务分包"
 				}], // 类型列表
@@ -813,8 +811,8 @@
 					duration: "", // 项目工期
 					description: "", // 项目介绍
 					scope: "100", // 打卡范围
-					images: [] ,// 图片地址
-					type:null,
+					images: [], // 图片地址
+					type: null,
 				},
 				schemes: [{ // 方案
 					tag: "", // 标签
@@ -830,15 +828,19 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-							0)], // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
-						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
+						workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(
+							new Date().setHours(18, 0, 0, 0)).getTime()], // 上班/下班 时间数组
+						workStartTime: this.formatDateTime(new Date(new Date().setHours(8, 0, 0, 0))
+							.getTime()), // 上班时间
+						workEndTime: this.formatDateTime(new Date(new Date().setHours(18, 0, 0, 0))
+							.getTime()), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-							0)], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(2016, 9, 10, 13, 0)), // 午休结束时间
+						restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(
+							new Date().setHours(13, 0, 0, 0)).getTime()], // 午休时间数组
+						restStartTime: this.formatDateTime(new Date(new Date().setHours(12, 0, 0, 0))
+							.getTime()), // 午休开始时间
+						restEndTime: this.formatDateTime(new Date(new Date().setHours(13, 0, 0, 0))
+							.getTime()), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
@@ -1176,13 +1178,13 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-						0)], // 上班/下班 时间数组
+					workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(new Date().setHours(
+						18, 0, 0, 0)).getTime()], // 上班/下班 时间数组
 					workStartTime: "", // 上班时间
 					workEndTime: "", // 下班时间
 					dailyHours: 9, // 上班时长
-					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-						0)], // 午休时间数组
+					restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(new Date().setHours(
+						13, 0, 0, 0)).getTime()], // 午休时间数组
 					restStartTime: "", // 午休开始时间
 					restEndTime: "", // 午休结束时间
 					restTimelen: 1, // 午休时长
@@ -1237,50 +1239,49 @@
 			},
 			// 午休时间
 			handleRestTime(index, inx, val) {
-				// console.log(val);
 				if (!val.restTimeList || val.restTimeList.length == 0) {
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
 					return;
 				};
-				
-				
 				this.handleWorkTime(index, inx, val);
-
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
+				console.log('上班时间：：', val);
 				this.getDayLen(index, inx, val)
 			},
 			// 计算每日上班时长
-			getDayLen(index, inx, val){
+			getDayLen(index, inx, val) {
 				//  上班时间
 				this.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratWorkTime = Date.parse(val.workTimeList[0]);
 				let endWorkTime = Date.parse(val.workTimeList[1]);
-				
+
 				// this.schemes[index].teams[inx].dailyHours = this.timeFn(stratTime, endTime);
-				
+
 				// 午休时间
-				if(val.restTimeList){
+				if (val.restTimeList) {
 					val.restStartTime = this.formatDateTime(val.restTimeList[0]);
 					val.restEndTime = this.formatDateTime(val.restTimeList[1]);
-					let stratTime = Date.parse(val.restTimeList[0]);
-					let endTime = Date.parse(val.restTimeList[1]);
-					this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
-					let endStartTime = this.getMinute(stratWorkTime,endWorkTime)  - this.getMinute(stratTime,endTime);
-					let  {minutes,seconds} = this.getFormatSecond(endStartTime);
+					this.schemes[index].teams[inx].restTimelen = this.timeFn(val.restStartTime, val.restEndTime);
+					let endStartTime = this.getMinute(stratWorkTime, endWorkTime) - this.getMinute(val.restStartTime, val
+						.restEndTime);
+					let {
+						minutes,
+						seconds
+					} = this.getFormatSecond(endStartTime);
 					val.dailyHours = Number(minutes + '.' + seconds).toFixed(2);
-				}else{
+				} else {
 					val.restStartTime = 0;
 					val.restEndTime = 0;
 					this.schemes[index].teams[inx].dailyHours = this.timeFn(stratWorkTime, endWorkTime);
 				}
-				
-				
+
+
 			},
-			
+
 
 			// 计算工时单价
 			getCalculationUnitPrice(timeLen, list) {
@@ -1844,15 +1845,20 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-							0)], // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
-						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
+						workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(new Date()
+							.setHours(18, 0, 0, 0)).getTime()],
+						 // 上班/下班 时间数组
+						workStartTime: this.formatDateTime(new Date(new Date().setHours(8, 0, 0, 0))
+						.getTime()), // 上班时间
+						workEndTime: this.formatDateTime(new Date(new Date().setHours(18, 0, 0, 0))
+					.getTime()), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-							0)], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(2016, 9, 10, 13, 0)), // 午休结束时间
+						restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(
+						new Date().setHours(13, 0, 0, 0)).getTime()], // 午休时间数组
+						restStartTime: this.formatDateTime(new Date(new Date().setHours(12, 0, 0, 0))
+						.getTime()), // 午休开始时间
+						restEndTime: this.formatDateTime(new Date(new Date().setHours(13, 0, 0, 0))
+					.getTime()), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
@@ -1923,10 +1929,9 @@
 </script>
 
 <style lang="scss">
-	
 	.demand-service-info-item {
 		position: relative;
-	
+
 		span {
 			position: absolute;
 			right: 10px;
