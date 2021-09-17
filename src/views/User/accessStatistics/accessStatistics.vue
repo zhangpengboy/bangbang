@@ -185,7 +185,7 @@
           pageNum:this.PageIndex,
           createTimeBegin:createTimeBegin,
           createTimeEnd:createTimeEnd,
-          phone:this.serach,
+          keyword:this.serach,
           userType:this.statusvalue
         }
         visitList(params).then(res => {
@@ -213,11 +213,13 @@
         this.loadDate();
       },
       search() {
+        this.PageIndex = 1
         console.log('查询')
         this.loadDate(this.statusvalue);
       },
       // 重置
       raLoad(){
+        this.serach = '';
         this.statusvalue = '';
         this.PageIndex = 1;
         this.startDate = '';

@@ -2,7 +2,7 @@
   <div class="main" v-loading="loading">
 
     <!-- 头部  -->
-    <div class="top">
+    <div class="top" id="top">
       <div class="top-title ">数据筛选</div>
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
@@ -80,13 +80,13 @@
     <!-- 头部end  -->
 
     <div class="box">
-      <div class="box-top flex fbetween fvertical">
+      <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
         <el-button @click="exportTable">导出</el-button>
       </div>
 
       <!-- 表格  -->
-      <el-table :data="tableData" stripe style="width: 100%" border>
+      <el-table :data="tableData" stripe style="width: 100%" border  :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="id" label="ID" width="100" />
         <el-table-column prop="realName" label="名称" width="120"/>
@@ -139,7 +139,7 @@
       <!-- 表格end -->
 
       <!-- 分页  -->
-      <div class="flex fcenter page">
+      <div class="flex fcenter page" id="page">
         <el-pagination
           id="page"
           class="page"
@@ -335,13 +335,7 @@ export default {
   data() {
     return {
       loading: false,
-      tableData: [{
-        type: 0,
-        name: '工人1'
-      }, {
-        type: 1,
-        name: '工人2'
-      }], // 表单列表
+      tableData: [], // 表单列表
       PageIndex: 1, // 页码
       PageSize: 10, // 显示多少条数据
       PageCount: 0, // 总条数
@@ -440,18 +434,38 @@ export default {
       fileUris:[], //证件
       dialogVisible:false,
       adminUrl: '/api/commons/file/admin/v1/upload/public',
+      clientHeight:0
 
     }
   },
   created() {
     this.getUser()
+    this.getWebHeing();
   },
   methods: {
+    /** 计算页面高度 */
+    getWebHeing() {
+    	this.$nextTick(() => {
+    		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+    			.offsetHeight - document.getElementById('page')
+    			.offsetHeight - document.getElementById('boxTop')
+    			.offsetHeight - 180;
+    	})
+    	window.addEventListener('resize', () => {
+    		if(document.getElementById('top')!=null){
+    		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+    		  	.offsetHeight - document.getElementById('page')
+    		  	.offsetHeight - document.getElementById('boxTop')
+    		  	.offsetHeight - 180;
+    		  this.$forceUpdate();
+    		}
+    	})
+    },
     getUser() {
       this.loading = true;
       // console.log(this.gradevalue.join(','))
        var query = {
-        id:this.serach,
+        keyword:this.serach,
         enterpriseAuth: this.authvalue,
         grades: this.gradevalue.join(','),
         pageNum: this.PageIndex,
@@ -469,6 +483,7 @@ export default {
       })
     },
     search() {
+      this.PageIndex = 1
       console.log('查询')
       this.getUser()
     },
