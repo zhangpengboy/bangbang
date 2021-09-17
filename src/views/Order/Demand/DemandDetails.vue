@@ -232,7 +232,7 @@
 												<el-time-picker is-range v-model="teams.restTimeList" format='HH:mm'
 													range-separator="至" start-placeholder="开始时间"
 													@change="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
-													placeholder="选择时间范围">
+													placeholder="选择时间范围" :clearable="false">
 												</el-time-picker>
 											</el-form-item>
 										</div>
@@ -828,19 +828,13 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(
-							new Date().setHours(18, 0, 0, 0)).getTime()], // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(new Date().setHours(8, 0, 0, 0))
-							.getTime()), // 上班时间
-						workEndTime: this.formatDateTime(new Date(new Date().setHours(18, 0, 0, 0))
-							.getTime()), // 下班时间
+						workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组
+						workStartTime: this.formatDateTime(this.getYear()), // 上班时间
+						workEndTime: this.formatDateTime(this.getYear(64800000)), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(
-							new Date().setHours(13, 0, 0, 0)).getTime()], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(new Date().setHours(12, 0, 0, 0))
-							.getTime()), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(new Date().setHours(13, 0, 0, 0))
-							.getTime()), // 午休结束时间
+						restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
+						restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
+						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
@@ -929,8 +923,17 @@
 			this.briefId = id;
 			this.getBriefDetail(id)
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
+			console.log(this.getYear())
 		},
 		methods: {
+			/** 获取时间日期时钟 */
+			getYear(clock = 28800000) {
+				var date = new Date();
+				var year1 = date.getFullYear();
+				var firstMonth = year1 + '-' + '01' + '-' + '01' + ' 00:00:00';
+				let day = new Date(firstMonth).getTime() + clock;
+				return this.formatDateTime(new Date(day))
+			},
 			// 删除图片
 			handleDeteleImg(item, index) {
 				this.basicForm.images.splice(index, 1)
@@ -1178,13 +1181,11 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(new Date().setHours(
-						18, 0, 0, 0)).getTime()], // 上班/下班 时间数组
+					workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组, 
 					workStartTime: "", // 上班时间
 					workEndTime: "", // 下班时间
 					dailyHours: 9, // 上班时长
-					restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(new Date().setHours(
-						13, 0, 0, 0)).getTime()], // 午休时间数组
+					restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
 					restStartTime: "", // 午休开始时间
 					restEndTime: "", // 午休结束时间
 					restTimelen: 1, // 午休时长
@@ -1258,9 +1259,6 @@
 				this.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratWorkTime = Date.parse(val.workTimeList[0]);
 				let endWorkTime = Date.parse(val.workTimeList[1]);
-
-				// this.schemes[index].teams[inx].dailyHours = this.timeFn(stratTime, endTime);
-
 				// 午休时间
 				if (val.restTimeList) {
 					val.restStartTime = this.formatDateTime(val.restTimeList[0]);
@@ -1330,14 +1328,14 @@
 			},
 			// 获取当前工种标签
 			handleTag(index, inx, types_index, val) {
-				console.log('获取当前工种标签：：：',val)
+				console.log('获取当前工种标签：：：', val)
 				if (val.tag == '班组长') {
 					val.workTypeVal = '';
 				}
-				if(val.tag != '班组长' && val.workType == 3){
+				if (val.tag != '班组长' && val.workType == 3) {
 					val.workTypeVal = '';
 				}
-				
+
 				// this.$refs.typeRuleForm.clearValidate();
 				this.handleQuantity(index, inx, types_index, val)
 			},
@@ -1850,20 +1848,14 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(new Date().setHours(8, 0, 0, 0)).getTime(), new Date(new Date()
-							.setHours(18, 0, 0, 0)).getTime()],
-						 // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(new Date().setHours(8, 0, 0, 0))
-						.getTime()), // 上班时间
-						workEndTime: this.formatDateTime(new Date(new Date().setHours(18, 0, 0, 0))
-					.getTime()), // 下班时间
+						workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组
+						// 上班/下班 时间数组
+						workStartTime: this.formatDateTime(this.getYear()), // 上班时间
+						workEndTime: this.formatDateTime(this.getYear(64800000)), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(new Date().setHours(12, 0, 0, 0)).getTime(), new Date(
-						new Date().setHours(13, 0, 0, 0)).getTime()], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(new Date().setHours(12, 0, 0, 0))
-						.getTime()), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(new Date().setHours(13, 0, 0, 0))
-					.getTime()), // 午休结束时间
+						restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
+						restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
+						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
