@@ -558,7 +558,6 @@ export default {
         }
       })
     },
-
     loadDate(){
       this.getGongrenDetail();
     },
