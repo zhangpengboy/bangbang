@@ -219,6 +219,7 @@
       },
       // 重置
       raLoad(){
+        this.serach = '';
         this.statusvalue = '';
         this.PageIndex = 1;
         this.startDate = '';
