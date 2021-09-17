@@ -741,7 +741,8 @@ export function visitListexportCsv(params) {
 	return request({
 		url: `/api/user/admin/userLoginLog/v1.0/exportCsv`,
 		method: 'get',
-		params
+		params,
+    responseType: 'blob'
 	})
 }
 // 访问统计列表折线图
