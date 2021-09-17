@@ -1330,9 +1330,14 @@
 			},
 			// 获取当前工种标签
 			handleTag(index, inx, types_index, val) {
+				console.log('获取当前工种标签：：：',val)
 				if (val.tag == '班组长') {
 					val.workTypeVal = '';
 				}
+				if(val.tag != '班组长' && val.workType == 3){
+					val.workTypeVal = '';
+				}
+				
 				// this.$refs.typeRuleForm.clearValidate();
 				this.handleQuantity(index, inx, types_index, val)
 			},
