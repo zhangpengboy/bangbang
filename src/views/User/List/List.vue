@@ -432,6 +432,7 @@ export default {
       operatorIdNo:'',
       qyuserId:'',
       fileUris:[], //证件
+
       dialogVisible:false,
       adminUrl: '/api/commons/file/admin/v1/upload/public',
       clientHeight:0
@@ -556,6 +557,19 @@ export default {
     reanName(row) {
       console.log(row)
       this.rnUserId = row.id
+      this.idCard = '',
+      this.idCardUp ='', 
+      this.idCardBack = '',
+      this.idCardBackUp ='',
+      this.rnName ='',
+      this.rnGender ='',
+      this.rnNation ='',
+      this.rnAge ='',
+      this.rnIdnum ="",
+      this.rnNativePlace ='',
+      this.rnHouse ='',
+      this.rnvalidityStartTime ='',
+      this.rnvalidityEndTime ='',
       this.realNamePop = true
     },
     // 给工人激活冻结
@@ -626,6 +640,13 @@ export default {
     authen(row) {
       console.log(row)
       this.qyuserId = row.id
+      this.enterpriseName = '',
+      this.businessLicenseRegistrationNo = '',
+      this.legalRepresentativeName = '',
+      this.operatorName = '',
+      this.operatorMobileNo = '',
+      this.operatorIdNo = '',
+      this.fileUris = [],
       this.qiyeRZPop = true
     },
     upIdCard(res, file) {
