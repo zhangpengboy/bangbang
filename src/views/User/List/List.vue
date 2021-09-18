@@ -558,7 +558,7 @@ export default {
       console.log(row)
       this.rnUserId = row.id
       this.idCard = '',
-      this.idCardUp ='', 
+      this.idCardUp ='',
       this.idCardBack = '',
       this.idCardBackUp ='',
       this.rnName ='',
@@ -635,7 +635,7 @@ export default {
         }
       })
     },
-
+    //-------
     // 企业认证
     authen(row) {
       console.log(row)
