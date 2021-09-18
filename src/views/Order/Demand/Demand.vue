@@ -91,8 +91,9 @@
 						<span>{{formatDate(scope.row.createTime)}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="updateTime" label="操作时间" width="120">
+				<el-table-column  label="操作时间" width="120">
 					<template slot-scope="scope">
+						<!-- <p>{{scope.row.updateTime}}</p> -->
 						<span>{{formatDate(scope.row.updateTime)}}</span>
 					</template>
 				</el-table-column>
@@ -222,7 +223,7 @@
 			},
 
 			formatDate(value) {
-				return moment(value).format('YYYY-MM-DD')
+				return value ? moment(value).format('YYYY-MM-DD') : ''
 			},
 			/** 取消订单 */
 			handleClose(row) {
