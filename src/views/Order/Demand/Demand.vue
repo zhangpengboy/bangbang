@@ -115,7 +115,7 @@
 								@click="handleCreate(scope.row)">创建报价单</el-button>
 						</template>
 
-						<el-button v-if="scope.row.status == 0 " type="text" size="small"
+						<el-button v-if="scope.row.status == 0 || scope.row.status == 1" type="text" size="small"
 							@click="handleClose(scope.row)">取消</el-button>
 					</template>
 				</el-table-column>
