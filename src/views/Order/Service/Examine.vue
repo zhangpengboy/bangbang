@@ -41,7 +41,7 @@
 			</div>
 
 			<el-table :data="tableData" border style="width: 100%" :height="clientHeight+'px'">
-				<el-table-column prop="creatorId" label="ID" width="100">
+				<el-table-column prop="creatorId" label="ID" width="170">
 				</el-table-column>
 				<el-table-column prop="title" label="项目名称" width="180">
 				</el-table-column>
@@ -157,7 +157,7 @@
 					type: 'warning'
 				}).then(() => {
 					let param = {};
-					param.id = row.id;
+					param.id = row.enrollId;
 					param.status = 1;
 					this.getUpdateExamieList(param);
 				})
@@ -170,7 +170,7 @@
 					type: 'warning'
 				}).then(() => {
 					let param = {};
-					param.id = row.id;
+					param.id = row.enrollId;
 					param.status = 2;
 					this.getUpdateExamieList(param);
 				})
