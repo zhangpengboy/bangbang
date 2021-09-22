@@ -764,11 +764,7 @@
 				this.isShowEdit = !this.isShowEdit;
 			},
 			//  取消编辑
-			handleCloseEdit(data) {
-				if(data){
-					this.editFrom = data;
-					return;
-				}
+			handleCloseEdit() {
 				this.isShowEdit = !this.isShowEdit;
 				this.editFrom = this.recordFrom
 			},
