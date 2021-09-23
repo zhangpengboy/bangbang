@@ -2,7 +2,7 @@
   <div class="main">
     <!-- tab按钮切换 -->
     <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
-      <el-radio-button label="detail">工人详情</el-radio-button>
+      <el-radio-button label="detail">用户详情</el-radio-button>
       <el-radio-button label="card">名片</el-radio-button>
       <el-radio-button label="joinPro">参加项目</el-radio-button>
       <el-radio-button label="withdrawal">提现</el-radio-button>
@@ -138,42 +138,125 @@
         <!-- 身份证 -->
         <div class="mt15 flex alCen">
           <div class="">
-            <el-upload
-              class="avatar-uploader"
-              action="123"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :with-credentials='true'
-              :auto-upload="true"
-              :on-success="upIdCard"
-            >
-              <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+            <!-- :disabled='isEditShM' -->
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证正面</div>
           </div>
-          <div class="">
-            <el-upload
-              class="avatar-uploader"
-              style="margin-left: 10px;"
-              action="123"
-              :before-upload="beforeUpload2"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :auto-upload="true"
-              :with-credentials='true'
-              :on-success="upIdCardBack"
-            >
-              <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+          <div class="" style="margin-left: 20px;">
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardReverseUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardReverseUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证背面</div>
           </div>
+        </div>
+        <!-- <div class="box-demand-title mt15">企业认证</div> -->
+        <div class="alCen js-sb flex mt30">
+          <div class="box-demand-title">企业认证</div>
+          <div class="flex alCen">
+            <el-button type="primary" @click="editQiY">{{ isEditQiY?'编辑':'保存' }}</el-button>
+            <el-button type="primary" v-if="isEditQiY==false" @click="canceleditQiY">取消</el-button>
+          </div>
+        </div>
+        <el-row class="demand-deltails-box user">
+          <el-col :span="12">
+            <div class="list">
+              <div class="item flex">
+                <p class="backgroud tit">企业认证</p>
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.enterpriseAuth==0?'未提交':userInfo.enterpriseAuth==1?'审核中':userInfo.enterpriseAuth==2?'已认证':userInfo.enterpriseAuth==3?'已驳回':''" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit">统一社会信用代码</p>
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.businessLicenseRegistrationNo" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit">运营者姓名</p>
+               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorName" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit">运营者联系方式</p>
+               <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorMobileNo" />
+              </div>
+            </div>
+          </el-col>
+          <el-col :span="12">
+            <div class="list">
+              <div class="item flex">
+                <p class="backgroud tit">企业名称</p>
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.enterpriseName" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit">法人</p>
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.legalRepresentativeName" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit">身份证号</p>
+                <input  class="desc flex1 col666" type="" name="" :disabled="isEditQiY" v-model="renZhengInfo&&renZhengInfo.operatorIdNo" />
+              </div>
+              <div class="item flex">
+                <p class="backgroud tit" />
+                <p class="desc flex1 col666" />
+              </div>
+            </div>
+          </el-col>
+        </el-row>
+        <!-- 企业照片 -->
+        <div class="mt15 flex">
+
+          <div v-if="isEditQiY">
+            <img :src="item.url" v-for="(item,index) in renZhengInfo.fileUris" style="width: 146px;height: 146px;" @click="IdCardPreview(item.url)">
+          </div>
+          <div v-else>
+            <el-upload
+              name="multipartFile"
+              :action="adminUrl"
+              list-type="picture-card"
+              :file-list="renZhengInfo.fileUris"
+              :on-success="qiyeUpsuccess"
+              :on-remove="qiyeRemove"
+              :on-exceed="handleExceed"
+              :limit='3'>
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="qiyeDiaLog">
+              <img width="100%" :src="renZhengInfo.fileUris" alt="">
+            </el-dialog>
+          </div>
+
         </div>
 
 
@@ -449,6 +532,12 @@
 
       </div>
       <!-- 评价记录end -->
+
+      <!-- 图片预览 -->
+      <el-dialog :visible.sync="dialogVisible1" append-to-body>
+        <img width="100%" fit="contain" :src="yulanImg" alt="">
+      </el-dialog>
+
     </div>
 
   </div>
@@ -468,6 +557,7 @@ import {
     getgongzhong,
     workCardAdd,
     getbiref,
+    qiYeApply,
     workCardAddGongRen,
     workCardRemove,
     workCardRemoveGongRen,
@@ -484,6 +574,7 @@ export default {
       tabPosition: 'detail',
       isEdit: true, // 详情编辑or保存
       isEditShM:true,
+      isEditQiY:true,  //企业
       isEditUserInfo: false, // 个人名片
       workPhotoList: [], // 工作成果照片
       imageUr3: '',
@@ -500,6 +591,18 @@ export default {
       basicInfo:{}, //基本信息
       realNameInfo:{}, //实名信息
       bizCardInfo:{}, //名片信息
+      // 企业认证信息
+      renZhengInfo:{
+        businessLicenseRegistrationNo:'',
+        enterpriseName:'',
+        fileUris:[],
+        legalRepresentativeName:'',
+        operatorIdNo:'',
+        operatorMobileNo:'',
+        operatorName:'',
+        userId:''
+      },
+      qiyeDiaLog:false,
 
       adrOptions: regionData,
       selectedOptions: [],
@@ -521,7 +624,9 @@ export default {
           labelName:'未知',
           id:2
         }
-      ]
+      ],
+      dialogVisible1:false,
+      yulanImg:'',
 
     }
   },
@@ -636,6 +741,19 @@ export default {
           }
           this.certificateUrl = imgdata2
         }
+        if(data.enterpriseCertApplyDTO){
+          this.renZhengInfo = data.enterpriseCertApplyDTO
+          var imgdata = data.enterpriseCertApplyDTO.fileUris.split(',')
+          for(var i=0;i<imgdata.length;i++){
+             var obj = {};
+            obj.url = imgdata[i]
+            obj.name = 'img'+ i
+            imgdata[i] = obj
+          }
+
+          this.renZhengInfo.fileUris = imgdata
+          this.renZhengInfo.userId = data.id
+        }
 
       })
     },
@@ -644,23 +762,32 @@ export default {
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var params = {
-          id:this.userIdOrType.id,
-          address :this.basicInfo.adr,
-          gender:this.basicInfo.gender,
-          phone :this.basicInfo.phone,
-          realName :this.basicInfo.realName
-        }
-        updateInfo(params).then(res => {
-          var data = res.data
-          console.log(res)
+        if(this.basicInfo.phone==''){
           this.$message({
-            type: 'success',
-            message: '操作成功!'
+            message: '请输入电话号码',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            id:this.userIdOrType.id,
+            address :this.basicInfo.adr,
+            gender:this.basicInfo.gender,
+            phone :this.basicInfo.phone,
+            realName :this.basicInfo.realName
+          }
+          updateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
           })
-          this.isEdit = true
-          this.loadDate(this.userIdOrType)
-        })
+        }
+
+
 
       }else{
         this.isEdit = false
@@ -684,6 +811,31 @@ export default {
         }else if(this.realNameInfo.age>100){
           this.$message({
             message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age==''){
+          this.$message({
+            message: '年龄不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.realName==''){
+          this.$message({
+            message: '姓名不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.nation==''){
+          this.$message({
+            message: '民族不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.idNo==''){
+          this.$message({
+            message: '身份证号不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.householdRegister==''){
+          this.$message({
+            message: '户籍地不能为空',
             type: 'warning'
           });
         }else{
@@ -773,12 +925,118 @@ export default {
        })
        return false
     },
+    // 企业认证
+    editQiY() {
+      if(this.isEditQiY==false){
+        var fileUris = [];
+        this.renZhengInfo.fileUris.forEach((item)=>{
+          fileUris.push(item.url)
+        })
+        if(fileUris.length==0){
+          this.$message({
+            message: '请上传照片',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.businessLicenseRegistrationNo==''){
+          this.$message({
+            message: '请输入信用代码',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorName==''){
+          this.$message({
+            message: '请输入运营者姓名',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorMobileNo==''){
+          this.$message({
+            message: '请输入联系方式',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.enterpriseName==''){
+          this.$message({
+            message: '请输入企业名称',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.legalRepresentativeName==''){
+          this.$message({
+            message: '请输入法人姓名',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorIdNo==''){
+          this.$message({
+            message: '请输入法人身份证号',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
+            enterpriseName:this.renZhengInfo.enterpriseName,
+            fileUris:fileUris.join(','),
+            legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
+            operatorIdNo:this.renZhengInfo.operatorIdNo,
+            operatorMobileNo:this.renZhengInfo.operatorMobileNo,
+            operatorName:this.renZhengInfo.operatorName,
+            userId:this.userInfo.id
+          }
+          qiYeApply(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.isEditQiY = true
+               this.$message({
+                 type: 'success',
+                 message: '操作成功!'
+               })
+               this.loadDate(this.userIdOrType)
+            }
+          })
+        }
+
+
+
+      }else{
+        this.isEditQiY = false
+      }
+    },
+    canceleditQiY(){
+      this.isEditQiY = true
+      this.loadDate(this.userIdOrType)
+    },
+
     upIdCard(res, file) {
       console.log(res)
     },
     upIdCardBack(res, file) {
       console.log(res)
       console.log(file)
+    },
+    // 点击查看大图
+    IdCardPreview(url){
+      console.log(url)
+      this.yulanImg = url;
+      this.dialogVisible1 = true;
+    },
+
+    // 提示用户上传的图片数量
+    handleExceed(files, fileList) {
+    	this.$message.warning('最多上传3张');
+    },
+
+    qiyeUpsuccess(res,file) {
+      var obj = {};
+      obj.url = res.data
+      obj.name = file.raw.uid
+      this.renZhengInfo.fileUris.push(obj);
+      console.log(this.renZhengInfo.fileUris)
+    },
+    qiyeRemove(file,fileList) {
+      console.log(file.name)
+      for(var i=0;i<this.renZhengInfo.fileUris.length;i++){
+        if(this.renZhengInfo.fileUris[i].name==file.name){
+              this.renZhengInfo.fileUris.splice(i,1)
+            }
+      }
+      console.log(this.renZhengInfo.fileUris);
+
     },
 
     workPhotoSuccess(res,file) {
@@ -1021,6 +1279,7 @@ export default {
       border-bottom: 1px solid #E9E9E9;
       .tit{
         width: 140px;
+        font-size: 14px;
         padding-right: 20px;
         text-align: right;
         border-right: 1px solid #E9E9E9;

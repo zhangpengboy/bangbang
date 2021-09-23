@@ -135,40 +135,48 @@
         <!-- 身份证 -->
         <div class="mt15 flex alCen">
           <div class="">
-            <el-upload
-              class="avatar-uploader"
-              action="123"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :with-credentials='true'
-              :auto-upload="true"
-              :on-success="upIdCard"
-            >
-              <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证正面</div>
           </div>
-          <div class="">
-            <el-upload
-              class="avatar-uploader"
-              style="margin-left: 10px;"
-              action="123"
-              :before-upload="beforeUpload2"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :auto-upload="true"
-              :with-credentials='true'
-              :on-success="upIdCardBack"
-            >
-              <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+          <div class="" style="margin-left: 20px;">
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardReverseUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardReverseUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证背面</div>
           </div>
         </div>
@@ -424,6 +432,12 @@
 
       </div>
       <!-- 提现end -->
+      
+      <!-- 图片预览 -->
+      <el-dialog :visible.sync="dialogVisible1" append-to-body>
+        <img width="100%" fit="contain" :src="yulanImg" alt="">
+      </el-dialog>
+      
     </div>
 
   </div>
@@ -496,7 +510,9 @@ export default {
           labelName:'未知',
           id:2
         }
-      ]
+      ],
+      dialogVisible1:false,
+      yulanImg:'',
 
     }
   },
@@ -644,23 +660,31 @@ export default {
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var params = {
-          id:this.userIdOrType.id,
-          address :this.basicInfo.adr,
-          gender:this.basicInfo.gender,
-          phone :this.basicInfo.phone,
-          realName :this.basicInfo.realName
-        }
-        gongrenupdateInfo(params).then(res => {
-          var data = res.data
-          console.log(res)
+        if(this.basicInfo.phone==''){
           this.$message({
-            type: 'success',
-            message: '操作成功!'
+            message: '请输入电话号码',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            id:this.userIdOrType.id,
+            address :this.basicInfo.adr,
+            gender:this.basicInfo.gender,
+            phone :this.basicInfo.phone,
+            realName :this.basicInfo.realName
+          }
+          gongrenupdateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.isEdit = true
+            this.loadDate(this.userIdOrType)
           })
-          this.isEdit = true
-          this.loadDate(this.userIdOrType)
-        })
+        }
+
 
       }else{
         this.isEdit = false
@@ -686,6 +710,31 @@ export default {
         }else if(this.realNameInfo.age>100){
           this.$message({
             message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age==''){
+          this.$message({
+            message: '年龄不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.realName==''){
+          this.$message({
+            message: '姓名不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.nation==''){
+          this.$message({
+            message: '民族不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.idNo==''){
+          this.$message({
+            message: '身份证号不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.householdRegister==''){
+          this.$message({
+            message: '户籍地不能为空',
             type: 'warning'
           });
         }else{
@@ -783,7 +832,12 @@ export default {
       console.log(res)
       console.log(file)
     },
-
+    // 点击查看大图
+    IdCardPreview(url){
+      console.log(url)
+      this.yulanImg = url;
+      this.dialogVisible1 = true;
+    },
     workPhotoSuccess(res,file) {
       var obj = {};
       obj.url = res.data

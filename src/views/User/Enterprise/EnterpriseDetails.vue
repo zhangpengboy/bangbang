@@ -145,40 +145,49 @@
         <!-- 身份证 -->
         <div class="mt15 flex">
           <div class="">
-            <el-upload
-              class="avatar-uploader"
-              action="123"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              :disabled="isEditShM"
-              ref="newupload"
-              name="multipartFile"
-              :with-credentials='true'
-              :auto-upload="true"
-              :on-success="upIdCard"
-            >
-              <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证正面</div>
           </div>
           <div class="">
-            <el-upload
-              class="avatar-uploader"
-              style="margin-left: 10px;"
-              action="123"
-              :before-upload="beforeUpload2"
-              :show-file-list="false"
-              :disabled="isEditShM"
-              ref="newupload"
-              name="multipartFile"
-              :auto-upload="true"
-              :with-credentials='true'
-              :on-success="upIdCardBack"
-            >
-              <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+            <div v-if="isEditShM" style="margin-left: 20px;">
+              <img :src="realNameInfo.idCardReverseUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardReverseUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证背面</div>
           </div>
         </div>
@@ -235,21 +244,25 @@
         </el-row>
         <!-- 企业照片 -->
         <div class="mt15 flex">
-          <el-upload
-            name="multipartFile"
-            :action="adminUrl"
-            list-type="picture-card"
-            :disabled="isEditQiY"
-            :file-list="renZhengInfo.fileUris"
-            :on-success="qiyeUpsuccess"
-            :on-remove="qiyeRemove"
-            :on-exceed="handleExceed"
-            :limit='3'>
-            <i class="el-icon-plus"></i>
-          </el-upload>
-          <el-dialog :visible.sync="qiyeDiaLog">
-            <img width="100%" :src="renZhengInfo.fileUris" alt="">
-          </el-dialog>
+          <div v-if="isEditQiY">
+            <img :src="item.url" v-for="(item,index) in renZhengInfo.fileUris" style="width: 146px;height: 146px;" @click="IdCardPreview(item.url)">
+          </div>
+          <div v-else>
+            <el-upload
+              name="multipartFile"
+              :action="adminUrl"
+              list-type="picture-card"
+              :file-list="renZhengInfo.fileUris"
+              :on-success="qiyeUpsuccess"
+              :on-remove="qiyeRemove"
+              :on-exceed="handleExceed"
+              :limit='3'>
+              <i class="el-icon-plus"></i>
+            </el-upload>
+            <el-dialog :visible.sync="qiyeDiaLog">
+              <img width="100%" :src="renZhengInfo.fileUris" alt="">
+            </el-dialog>
+          </div>
         </div>
 
       </div>
@@ -294,6 +307,12 @@
 
       </div>
       <!-- 参加项目end -->
+      
+      <!-- 图片预览 -->
+      <el-dialog :visible.sync="dialogVisible1" append-to-body>
+        <img width="100%" fit="contain" :src="yulanImg" alt="">
+      </el-dialog>
+      
     </div>
 
   </div>
@@ -353,7 +372,9 @@ export default {
           labelName:'未知',
           id:2
         }
-      ]
+      ],
+      dialogVisible1:false,
+      yulanImg:'',
 
     }
   },
@@ -413,25 +434,33 @@ export default {
     // 基本信息编辑
     edit() {
       if(this.isEdit==false){
-        var params = {
-          birthday:this.userInfo.birthday,
-          gender:this.userInfo.gender,
-          headPortrait:this.userInfo.headPortrait,
-          id:this.userIdOrType.id,
-          occupation:this.userInfo.occupation,
-          phone:this.userInfo.phone,
-          realName:this.userInfo.realName,
+        if(this.userInfo.phone==''){
+          this.$message({
+            message: '请输入电话号码',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            birthday:this.userInfo.birthday,
+            gender:this.userInfo.gender,
+            headPortrait:this.userInfo.headPortrait,
+            id:this.userIdOrType.id,
+            occupation:this.userInfo.occupation,
+            phone:this.userInfo.phone,
+            realName:this.userInfo.realName,
+          }
+          qiYeupdateInfo(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.isEdit = true
+             this.$message({
+               type: 'success',
+               message: '操作成功!'
+             })
+             this.loadDate(this.userIdOrType)
+          })
         }
-        qiYeupdateInfo(params).then(res => {
-          var data = res.data
-          console.log(res)
-          this.isEdit = true
-           this.$message({
-             type: 'success',
-             message: '操作成功!'
-           })
-           this.loadDate(this.userIdOrType)
-        })
+
       }else{
         this.isEdit = false
       }
@@ -447,27 +476,65 @@ export default {
         this.renZhengInfo.fileUris.forEach((item)=>{
           fileUris.push(item.url)
         })
-        var params = {
-          businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
-          enterpriseName:this.renZhengInfo.enterpriseName,
-          fileUris:fileUris.join(','),
-          legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
-          operatorIdNo:this.renZhengInfo.operatorIdNo,
-          operatorMobileNo:this.renZhengInfo.operatorMobileNo,
-          operatorName:this.renZhengInfo.operatorName,
-          userId:this.userInfo.id
-        }
-        enterQiYeApply(params).then(res => {
-          console.log(res)
-          if(res.code==200){
-            this.isEditQiY = true
-             this.$message({
-               type: 'success',
-               message: '操作成功!'
-             })
-             this.loadDate(this.userIdOrType)
+        if(fileUris.length==0){
+          this.$message({
+            message: '请上传照片',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.businessLicenseRegistrationNo==''){
+          this.$message({
+            message: '请输入信用代码',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorName==''){
+          this.$message({
+            message: '请输入运营者姓名',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorMobileNo==''){
+          this.$message({
+            message: '请输入联系方式',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.enterpriseName==''){
+          this.$message({
+            message: '请输入企业名称',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.legalRepresentativeName==''){
+          this.$message({
+            message: '请输入法人姓名',
+            type: 'warning'
+          });
+        }else if(this.renZhengInfo.operatorIdNo==''){
+          this.$message({
+            message: '请输入法人身份证号',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            businessLicenseRegistrationNo:this.renZhengInfo.businessLicenseRegistrationNo,
+            enterpriseName:this.renZhengInfo.enterpriseName,
+            fileUris:fileUris.join(','),
+            legalRepresentativeName:this.renZhengInfo.legalRepresentativeName,
+            operatorIdNo:this.renZhengInfo.operatorIdNo,
+            operatorMobileNo:this.renZhengInfo.operatorMobileNo,
+            operatorName:this.renZhengInfo.operatorName,
+            userId:this.userInfo.id
           }
-        })
+          enterQiYeApply(params).then(res => {
+            console.log(res)
+            if(res.code==200){
+              this.isEditQiY = true
+               this.$message({
+                 type: 'success',
+                 message: '操作成功!'
+               })
+               this.loadDate(this.userIdOrType)
+            }
+          })
+        }
+
 
       }else{
         this.isEditQiY = false
@@ -530,31 +597,69 @@ export default {
     // 实名认证
     editShM() {
       if(this.isEditShM==false){
-       var params = {
-         age:this.realNameInfo.age,
-         gender:this.realNameInfo.gender,
-         householdRegister:this.realNameInfo.householdRegister,
-         idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
-         idCardUri:this.realNameInfo.idCardUriUp,
-         idNo:this.realNameInfo.idNo,
-         nation:this.realNameInfo.nation,
-         nativePlace:this.realNameInfo.nativePlace,
-         realName:this.realNameInfo.realName,
-         userId:this.userIdOrType.id,
-         validityEndTime:this.realNameInfo.validityEndTime,
-         validityStartTime:this.realNameInfo.validityEndTime
-       }
-       qiYeRealNameAuth(params).then(res => {
-         var data = res.data
-         console.log(res)
-         this.isEditShM = true
-         this.$message({
-           type: 'success',
-           message: '操作成功!'
-         })
-         this.loadDate(this.userIdOrType)
+        if(this.realNameInfo.gender>1){
+          this.$message({
+            message: '请选择正常性别',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age>100){
+          this.$message({
+            message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age==''){
+          this.$message({
+            message: '年龄不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.realName==''){
+          this.$message({
+            message: '姓名不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.nation==''){
+          this.$message({
+            message: '民族不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.idNo==''){
+          this.$message({
+            message: '身份证号不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.householdRegister==''){
+          this.$message({
+            message: '户籍地不能为空',
+            type: 'warning'
+          });
+        }else{
+          var params = {
+            age:this.realNameInfo.age,
+            gender:this.realNameInfo.gender,
+            householdRegister:this.realNameInfo.householdRegister,
+            idCardReverseUri:this.realNameInfo.idCardReverseUriUp,
+            idCardUri:this.realNameInfo.idCardUriUp,
+            idNo:this.realNameInfo.idNo,
+            nation:this.realNameInfo.nation,
+            nativePlace:this.realNameInfo.nativePlace,
+            realName:this.realNameInfo.realName,
+            userId:this.userIdOrType.id,
+            validityEndTime:this.realNameInfo.validityEndTime,
+            validityStartTime:this.realNameInfo.validityEndTime
+          }
+          qiYeRealNameAuth(params).then(res => {
+            var data = res.data
+            console.log(res)
+            this.isEditShM = true
+            this.$message({
+              type: 'success',
+              message: '操作成功!'
+            })
+            this.loadDate(this.userIdOrType)
 
-       })
+          })
+        }
+
 
       }else{
         this.isEditShM = false
@@ -566,6 +671,12 @@ export default {
     },
     upIdCard(res, file) {
       console.log(res)
+    },
+    // 点击查看大图
+    IdCardPreview(url){
+      console.log(url)
+      this.yulanImg = url;
+      this.dialogVisible1 = true;
     },
     // 提示用户上传的图片数量
     handleExceed(files, fileList) {

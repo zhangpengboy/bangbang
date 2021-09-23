@@ -83,7 +83,15 @@
         <el-table-column prop="orderCount" label="服务单数量"/>
         <el-table-column prop="enterpriseStatus" label="状态">
           <template slot-scope="scope">
-            {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}
+            <el-switch
+               v-model="scope.row.enterpriseStatus"
+               :active-value="1"
+               :inactive-value="0"
+               @change="enterpriseStatusChange(scope.row)"
+               active-color="#e5dbe5"
+               inactive-color="#4e49e1">
+             </el-switch>
+            <!-- {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}} -->
           </template>
         </el-table-column>
         <el-table-column prop="updaterName" label="操作人" />
@@ -91,7 +99,6 @@
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.enterpriseStatus==1?'激活':'冻结' }}</el-button>
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
             <el-button v-if="scope.row.enterpriseAuth==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
           </template>
@@ -459,58 +466,33 @@ export default {
       this.PageIndex = e
       this.getList();
     },
-
-    // 激活冻结
-    changeSte(row) {
-      var that = this;
-      console.log(row)
-      if (row.enterpriseStatus == 1) { // 冻结去激活
-        this.$confirm('是否确定激活用户', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 0
-          }
-          console.log(params)
-          qiyeupdateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getList()
-            }
-          })
-
-        }).catch(() => {})
+    // 给企业冻结激活
+    enterpriseStatusChange(row){
+      if (row.enterpriseStatus) {
+          this.changeUserStatus(row.id,1)
       }else{
-        this.$confirm('是否确定冻结用户', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 1
-          }
-          qiyeupdateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getList()
-            }
-          })
-
-        }).catch(() => {})
+         this.changeUserStatus(row.id,0)
       }
     },
+    // 修改用户状态封装
+    changeUserStatus(userId,userStatus){
+      var that = this;
+      var params = {
+        userId:userId,
+        userStatus: userStatus
+      }
+      qiyeupdateUserStatus(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          that.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          that.getList()
+        }
+      })
+    },
+    
     /** 实名 */
     reanName(row) {
       console.log(row)
