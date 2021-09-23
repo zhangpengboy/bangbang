@@ -1636,6 +1636,7 @@
 				param.images = this.basicForm.images
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
+				param.type = this.basicForm.type
 				let schemes = this.deepClone(this.schemes);
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
