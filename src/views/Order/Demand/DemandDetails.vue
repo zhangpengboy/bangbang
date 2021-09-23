@@ -33,7 +33,15 @@
 									</el-option>
 								</el-select>
 							</el-form-item>
-
+							<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
+								</el-input>
+								<span>已输入{{basicForm.title.length}}/30</span>
+							</el-form-item>
+							<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseAddress " placeholder="请输入联系地址">
+								</el-input>
+							</el-form-item>
 
 							<!-- 	<el-form-item label="项目简称" >
 								<el-input v-model="ruleForm.name"></el-input>
@@ -812,6 +820,8 @@
 					description: "", // 项目介绍
 					scope: "100", // 打卡范围
 					images: [], // 图片地址
+					enterpriseName:"", //公司名称
+					enterpriseAddress:"",//公司联系地址
 					type: null,
 				},
 				schemes: [{ // 方案
@@ -1637,6 +1647,8 @@
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
 				param.type = this.basicForm.type
+				param.enterpriseName = this.basicForm.enterpriseName
+				param.enterpriseAddress   = this.basicForm.enterpriseAddress  
 				let schemes = this.deepClone(this.schemes);
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
