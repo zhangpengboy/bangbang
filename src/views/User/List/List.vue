@@ -123,22 +123,22 @@
             <!-- {{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}} -->
            <el-switch
               v-model="scope.row.workerStatus"
-              :active-value="1"
-              :inactive-value="0"
+              :active-value="0"
+              :inactive-value="1"
               @change="workerStatusChange(scope.row)"
-              active-color="#e5dbe5"
-              inactive-color="#4e49e1">
+              active-color="#0079fe"
+              inactive-color="#e5dbe5">
             </el-switch>
             </p>
             <p class="alCen flex">企业端：
             <!-- {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}} -->
             <el-switch
               v-model="scope.row.enterpriseStatus"
-              :active-value="1"
-              :inactive-value="0"
+              :active-value="0"
+              :inactive-value="1"
               @change="enterpriseStatusChange(scope.row)"
-              active-color="#e5dbe5"
-              inactive-color="#4e49e1">
+              active-color="#0079fe"
+              inactive-color="#e5dbe5">
             </el-switch>
             </p>
           </template>

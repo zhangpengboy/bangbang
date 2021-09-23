@@ -83,11 +83,11 @@
           	<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
             <el-switch
                v-model="scope.row.workerStatus"
-               :active-value="1"
-               :inactive-value="0"
+               :active-value="0"
+               :inactive-value="1"
                @change="workerStatusChange(scope.row)"
-               active-color="#e5dbe5"
-               inactive-color="#4e49e1">
+               active-color="#0079fe"
+               inactive-color="#e5dbe5">
              </el-switch>
           </template>
          </el-table-column>
@@ -96,7 +96,7 @@
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-           
+
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
           </template>
         </el-table-column>
@@ -422,7 +422,7 @@ export default {
         }
       })
     },
-    
+
     /** 实名 */
     reanName(row) {
       console.log(row)

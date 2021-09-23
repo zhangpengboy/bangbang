@@ -125,6 +125,14 @@ export const constantRoutes = [
 				title: '实名认证'
 			}
 		}, {
+			path: 'realNameDetail',
+			component: () => import('@/views/User/RealName/realNameDetail'),
+			name: 'realNameDetail',
+      hidden: true,
+			meta: {
+				title: '实名详情'
+			}
+		},{
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
@@ -149,11 +157,18 @@ export const constantRoutes = [
 
 			}
 		}, {
+			path: 'enterprise',
+			component: () => import('@/views/User/Worker/VerifyEnterprise'),
+			name: 'enterprise',
+			meta: {
+				title: '企业认证审核'
+			}
+		}, {
 			path: 'member',
 			component: () => import('@/views/User/Worker/VerifyMember'),
 			name: 'member',
 			meta: {
-				title: '成为会员审核'
+				title: '认证工人审核'
 			}
 		}, {
 			path: 'upgrade',
@@ -169,7 +184,8 @@ export const constantRoutes = [
 			meta: {
 				title: '退还保证金审核'
 			}
-		}]
+		}
+    ]
 	},
 	{
 		path: '/order',
@@ -452,7 +468,15 @@ export const asyncRoutes = [{
 			meta: {
 				title: '实名认证'
 			}
-		}, {
+		},  {
+			path: 'realNameDetail',
+			component: () => import('@/views/User/RealName/realNameDetail'),
+			name: 'realNameDetail',
+      hidden: true,
+			meta: {
+				title: '实名详情'
+			}
+		},{
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
@@ -476,12 +500,19 @@ export const asyncRoutes = [{
 				title: '工人列表'
 
 			}
+		},{
+			path: 'enterprise',
+			component: () => import('@/views/User/Worker/VerifyEnterprise'),
+			name: 'enterprise',
+			meta: {
+				title: '企业认证审核'
+			}
 		}, {
 			path: 'member',
 			component: () => import('@/views/User/Worker/VerifyMember'),
 			name: 'member',
 			meta: {
-				title: '成为会员审核'
+				title: '认证工人审核'
 			}
 		}, {
 			path: 'upgrade',
