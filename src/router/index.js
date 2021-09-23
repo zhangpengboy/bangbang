@@ -237,29 +237,37 @@ export const constantRoutes = [
 		}]
 	},
 	{
-		path: '/animate',
+		path: '/workerManagement',
 		component: Layout,
-		name: 'Animate',
+		name: 'workerManagement',
 		meta: {
-			title: '工人管理系统',
-			isshow: true
+			title: '工人管理系统'
+
 		},
 		children: [{
-				path: 'index',
-				component: () => import('@/views/animate/index'),
-				name: 'AnimateIndex',
+				path: 'workerList',
+        name: 'workerList',
+				component: () => import('@/views/workerManagement/workManage/workerList'),
 				meta: {
-					title: '过渡动画1'
+					title: '工人列表'
 				}
 			},
 			{
-				path: 'loading',
-				component: () => import('@/views/animate/loading'),
-				name: 'LoadingIndex',
+				path: 'signInList',
+				component: () => import('@/views/workerManagement/workManage/signInList'),
+				name: 'signInList',
 				meta: {
-					title: '加载动画'
+					title: '签到列表'
 				}
-			}
+			},
+      {
+      	path: 'userWorkEaluation',
+      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+      	name: 'userWorkEaluation',
+      	meta: {
+      		title: '用工评价'
+      	}
+      }
 		]
 	},
 	{
@@ -532,29 +540,37 @@ export const asyncRoutes = [{
 		}]
 	},
 	{
-		path: '/animate',
+		path: '/workerManagement',
 		component: Layout,
-		name: 'Animate',
+		name: 'workerManagement',
 		meta: {
-			title: '工人管理系统',
-			isshow: true
+			title: '工人管理系统'
 		},
+    noComponent: true,
 		children: [{
-				path: 'index',
-				component: () => import('@/views/animate/index'),
-				name: 'AnimateIndex',
+				path: 'workerList',
+				component: () => import('@/views/workerManagement/workManage/workerList'),
+				name: 'workerList',
 				meta: {
-					title: '过渡动画'
+					title: '工人列表'
 				}
 			},
 			{
-				path: 'loading',
-				component: () => import('@/views/animate/loading'),
-				name: 'LoadingIndex',
+				path: 'signInList',
+				component: () => import('@/views/workerManagement/workManage/signInList'),
+				name: 'signInList',
 				meta: {
-					title: '加载动画'
+					title: '签到列表'
 				}
-			}
+			},
+      {
+      	path: 'userWorkEaluation',
+      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+      	name: 'userWorkEaluation',
+      	meta: {
+      		title: '用工评价'
+      	}
+      }
 		]
 	},
 	{
