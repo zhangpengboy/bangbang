@@ -55,7 +55,7 @@
         <el-table-column prop="phone" label="手机号码" width="120"/>
         <el-table-column label="实名状态">
           <template slot-scope="scope">
-          	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
+          	{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
           </template>
         </el-table-column>
         <el-table-column prop="gender" label="性别">

@@ -1,7 +1,7 @@
 <template>
   <div class="attendance"  v-loading="loading">
     <!-- 头部  -->
-    <div class="top">
+    <div class="top" id="top">
       <div class="top-title ">数据筛选</div>
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
@@ -30,12 +30,12 @@
     <!-- 头部end  -->
 
     <div class="box">
-      <div class="box-top flex fbetween fvertical">
+      <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
         <el-button type="primary" @click="exportTable">导出</el-button>
       </div>
       <!-- 表格  -->
-      <el-table :data="tableData" stripe style="width: 100%" border>
+      <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
         <el-table-column prop="payee" label="ID"  width="120"/>
         <el-table-column prop="collectionAccount" label="名称" />
@@ -61,6 +61,22 @@
         </el-table-column>
       </el-table>
       <!-- 表格end -->
+      <!-- 分页  -->
+      <div class="flex fcenter page" id="page">
+        <el-pagination
+          id="page"
+          class="page"
+          background
+          :current-page="PageIndex"
+          :page-sizes="[10, 20, 30, 40]"
+          :page-size="PageSize"
+          layout="total, prev, pager, next,sizes, jumper"
+          :total="PageCount"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
+      </div>
+      <!-- 分页end -->
 
     </div>
 
@@ -95,10 +111,15 @@
          ],
 
          serach:'',
+         loading:false,
+         PageIndex: 1, // 页码
+         PageSize: 10, // 显示多少条数据
+         PageCount: 0, // 总条数
 
       }
     },
     created() {
+      this.getWebHeing();
       this.loadDate('');
     },
     methods: {
@@ -161,6 +182,36 @@
         }).catch(() => {
 
         })
+      },
+      
+      /** 选择分页 */
+      handleSizeChange(e) {
+        this.PageSize = e
+        this.PageIndex = 1
+        this.loadDate()
+      },
+      /** 点击分页 */
+      handleCurrentChange(e) {
+        this.PageIndex = e
+        this.loadDate()
+      },
+      /** 计算页面高度 */
+      getWebHeing() {
+      	this.$nextTick(() => {
+      		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      			.offsetHeight - document.getElementById('page')
+      			.offsetHeight - document.getElementById('boxTop')
+      			.offsetHeight - 180;
+      	})
+      	window.addEventListener('resize', () => {
+      		if(document.getElementById('top')!=null){
+      		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      		  	.offsetHeight - document.getElementById('page')
+      		  	.offsetHeight - document.getElementById('boxTop')
+      		  	.offsetHeight - 180;
+      		  this.$forceUpdate();
+      		}
+      	})
       },
 
 

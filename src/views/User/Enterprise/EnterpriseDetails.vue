@@ -97,7 +97,7 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">实名认证</p>
-                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth?'已实名':'未实名'" />
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth==1?'已实名':userInfo.realNameAuth==2?'审核中':'未实名'" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
