@@ -261,29 +261,39 @@ export const constantRoutes = [
 
 		},
 		children: [{
-				path: 'workerList',
-        name: 'workerList',
+				path: 'workeredit',
 				component: () => import('@/views/workerManagement/workManage/workerList'),
+        redirect: 'noRedirect',
 				meta: {
-					title: '工人列表'
-				}
-			},
-			{
-				path: 'signInList',
-				component: () => import('@/views/workerManagement/workManage/signInList'),
-				name: 'signInList',
-				meta: {
-					title: '签到列表'
-				}
-			},
-      {
-      	path: 'userWorkEaluation',
-      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
-      	name: 'userWorkEaluation',
-      	meta: {
-      		title: '用工评价'
-      	}
-      }
+					title: '工人管理'
+				},
+        children:[
+          {
+            path: 'workerList',
+            component: () => import('@/views/workerManagement/workManage/workerList'),
+            name: 'workerList',
+            meta: {
+              title: '工人列表'
+            }
+          },{
+            path: 'signInList',
+            component: () => import('@/views/workerManagement/workManage/signInList'),
+            name: 'signInList',
+            meta: {
+              title: '签到列表'
+            }
+          },{
+          	path: 'userWorkEaluation',
+          	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+          	name: 'userWorkEaluation',
+          	meta: {
+          		title: '用工评价'
+          	}
+          }
+        ]
+			}
+
+
 		]
 	},
 	{
@@ -486,7 +496,7 @@ export const asyncRoutes = [{
 			children: [{
 				path: 'enterprisedetails',
 				component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-				name: 'enterpriseList',
+				name: 'enterprisedetails',
 				hidden: true,
 				meta: {
 					title: '企业详情'
@@ -579,29 +589,39 @@ export const asyncRoutes = [{
 		},
     noComponent: true,
 		children: [{
-				path: 'workerList',
+				path: 'workeredit',
 				component: () => import('@/views/workerManagement/workManage/workerList'),
-				name: 'workerList',
+		    redirect: 'noRedirect',
 				meta: {
-					title: '工人列表'
-				}
-			},
-			{
-				path: 'signInList',
-				component: () => import('@/views/workerManagement/workManage/signInList'),
-				name: 'signInList',
-				meta: {
-					title: '签到列表'
-				}
-			},
-      {
-      	path: 'userWorkEaluation',
-      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
-      	name: 'userWorkEaluation',
-      	meta: {
-      		title: '用工评价'
-      	}
-      }
+					title: '工人管理'
+				},
+		    children:[
+		      {
+		        path: 'workerList',
+		        component: () => import('@/views/workerManagement/workManage/workerList'),
+		        name: 'workerList',
+		        meta: {
+		          title: '工人列表'
+		        }
+		      },{
+		        path: 'signInList',
+		        component: () => import('@/views/workerManagement/workManage/signInList'),
+		        name: 'signInList',
+		        meta: {
+		          title: '签到列表'
+		        }
+		      },{
+		      	path: 'userWorkEaluation',
+		      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+		      	name: 'userWorkEaluation',
+		      	meta: {
+		      		title: '用工评价'
+		      	}
+		      }
+		    ]
+			}
+
+
 		]
 	},
 	{

@@ -119,7 +119,8 @@
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
-
+		 clientHeight:0,
+		 
       }
     },
     created() {
