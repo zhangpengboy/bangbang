@@ -11,14 +11,6 @@
 							placeholder="用户ID/账号">
 						</el-input>
 					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>状态：</span>
-						<el-select v-model="status" placeholder="选择状态">
-							<el-option v-for="item in statusList" :key="item.value" :label="item.label"
-								:value="item.value">
-							</el-option>
-						</el-select>
-					</div>
 				</div>
 				
 				<div class="top-content-btn">
@@ -28,44 +20,33 @@
 			</div>
 		</div>
 		<!-- 头部end -->
-		<!-- 表格 -->
+		
+		<!-- 数据列表 -->
 		<div class="box">
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
 				<el-button>导出</el-button>
 			</div>
-			
-			<!-- 表格 -->
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
 				<el-table-column prop="date" label="序号" width="60">
 					<template slot-scope="scope">
 						{{pageSize * (pageIndex -1) +1 + scope.$index}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="id" label="ID " width="200">
+				<el-table-column prop="id" label="ID" width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="名称" >
+				<el-table-column prop="id" label="名称" width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="手机号码" >
+				<el-table-column prop="id" label="手机号码">
 				</el-table-column>
-				<el-table-column prop="id" label="原等级" >
+				<el-table-column prop="id" label="状态">
 				</el-table-column>
-				<el-table-column prop="id" label="当前等级" >
+				<el-table-column prop="id" label="申请时间">
 				</el-table-column>
-				<el-table-column prop="id" label="状态" >
-				</el-table-column>
-				<el-table-column prop="id" label="申请时间" >
-				</el-table-column>
-				<el-table-column prop="id" label="操作人" >
-				</el-table-column>
-				<el-table-column label="操作" >
-					<template slot-scope="scope">
-						<el-button type="primary" size="mini">同意</el-button>
-						<el-button type="danger" size="mini">拒绝</el-button>
-					</template>
+				<el-table-column prop="id" label="操作">
 				</el-table-column>
 			</el-table>
-			<!-- 表格end -->
+			
 			<!-- 分页  -->
 			<div class="flex fcenter page">
 				<el-pagination class="page" id="page" background @size-change="handleSizeChange"
@@ -75,7 +56,7 @@
 			</div>
 			<!-- 分页end -->
 		</div>
-		<!-- 表格end -->
+		<!-- 数据列表end -->
 	</div>
 </template>
 
@@ -83,26 +64,13 @@
 	export default{
 		data(){
 			return{
-				keywords:"", // 搜索
-				status:"", // 状态
-				statusList:[{ // 状态列表
-					label:"全部",
-					value:"",
-				},{ 
-					label:"审核中",
-					value:1,
-				},{
-					label:"审核通过",
-					value:2,
-				},{
-					label:"已驳回",
-					value:3,
-				}],
+				keywords:"",
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				clientHeight:0,
-				tableData:[{}],
+				tableData:[], // 表格列表
+				
 			}
 		},
 		mounted() {
@@ -126,10 +94,12 @@
 				})
 			},
 			/** 查询 */
-			handelSearch(){},
+			handelSearch(){
+				this.pageIndex = 1;
+			},
 			/** 重置 */
 			handleReset(){
-				this.status = '';
+				this.pageIndex = 1;
 				this.keywords = '';
 			},
 			/** 选择分页 */
