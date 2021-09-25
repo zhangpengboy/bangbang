@@ -127,6 +127,14 @@ export const constantRoutes = [
 				title: '实名认证'
 			}
 		}, {
+			path: 'realNameDetail',
+			component: () => import('@/views/User/RealName/realNameDetail'),
+			name: 'realNameDetail',
+      hidden: true,
+			meta: {
+				title: '实名详情'
+			}
+		},{
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
@@ -166,6 +174,13 @@ export const constantRoutes = [
 
 			}
 		}, {
+			path: 'enterprise',
+			component: () => import('@/views/User/Worker/VerifyEnterprise'),
+			name: 'enterprise',
+			meta: {
+				title: '企业认证审核'
+			}
+		}, {
 			path: 'member',
 			component: () => import('@/views/User/Worker/AttestationEnterprise'),
 			name: 'member',
@@ -193,7 +208,8 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人审核记录'
 			}
-		}]
+		}
+    ]
 	},
 	{
 		path: '/order',
@@ -261,29 +277,47 @@ export const constantRoutes = [
 		}]
 	},
 	{
-		path: '/animate',
+		path: '/workerManagement',
 		component: Layout,
-		name: 'Animate',
+		name: 'workerManagement',
 		meta: {
-			title: '工人管理系统',
-			isshow: true
+			title: '工人管理系统'
+
 		},
 		children: [{
-				path: 'index',
-				component: () => import('@/views/animate/index'),
-				name: 'AnimateIndex',
+				path: 'workeredit',
+				component: () => import('@/views/workerManagement/workManage/workerList'),
+        redirect: 'noRedirect',
 				meta: {
-					title: '过渡动画1'
-				}
-			},
-			{
-				path: 'loading',
-				component: () => import('@/views/animate/loading'),
-				name: 'LoadingIndex',
-				meta: {
-					title: '加载动画'
-				}
+					title: '工人管理'
+				},
+        children:[
+          {
+            path: 'workerList',
+            component: () => import('@/views/workerManagement/workManage/workerList'),
+            name: 'workerList',
+            meta: {
+              title: '工人列表'
+            }
+          },{
+            path: 'signInList',
+            component: () => import('@/views/workerManagement/workManage/signInList'),
+            name: 'signInList',
+            meta: {
+              title: '签到列表'
+            }
+          },{
+          	path: 'userWorkEaluation',
+          	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+          	name: 'userWorkEaluation',
+          	meta: {
+          		title: '用工评价'
+          	}
+          }
+        ]
 			}
+
+
 		]
 	},
 	{
@@ -470,7 +504,15 @@ export const asyncRoutes = [{
 			meta: {
 				title: '实名认证'
 			}
-		}, {
+		},  {
+			path: 'realNameDetail',
+			component: () => import('@/views/User/RealName/realNameDetail'),
+			name: 'realNameDetail',
+      hidden: true,
+			meta: {
+				title: '实名详情'
+			}
+		},{
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
@@ -480,7 +522,7 @@ export const asyncRoutes = [{
 			children: [{
 				path: 'enterprisedetails',
 				component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-				name: 'enterpriseList',
+				name: 'enterprisedetails',
 				hidden: true,
 				meta: {
 					title: '企业详情'
@@ -493,6 +535,13 @@ export const asyncRoutes = [{
 			meta: {
 				title: '工人列表'
 
+			}
+		},{
+			path: 'enterprise',
+			component: () => import('@/views/User/Worker/VerifyEnterprise'),
+			name: 'enterprise',
+			meta: {
+				title: '企业认证审核'
 			}
 		}, {
 			path: 'partnerList',
@@ -580,29 +629,47 @@ export const asyncRoutes = [{
 		}]
 	},
 	{
-		path: '/animate',
+		path: '/workerManagement',
 		component: Layout,
-		name: 'Animate',
+		name: 'workerManagement',
 		meta: {
-			title: '工人管理系统',
-			isshow: true
+			title: '工人管理系统'
 		},
+    noComponent: true,
 		children: [{
-				path: 'index',
-				component: () => import('@/views/animate/index'),
-				name: 'AnimateIndex',
+				path: 'workeredit',
+				component: () => import('@/views/workerManagement/workManage/workerList'),
+		    redirect: 'noRedirect',
 				meta: {
-					title: '过渡动画'
-				}
-			},
-			{
-				path: 'loading',
-				component: () => import('@/views/animate/loading'),
-				name: 'LoadingIndex',
-				meta: {
-					title: '加载动画'
-				}
+					title: '工人管理'
+				},
+		    children:[
+		      {
+		        path: 'workerList',
+		        component: () => import('@/views/workerManagement/workManage/workerList'),
+		        name: 'workerList',
+		        meta: {
+		          title: '工人列表'
+		        }
+		      },{
+		        path: 'signInList',
+		        component: () => import('@/views/workerManagement/workManage/signInList'),
+		        name: 'signInList',
+		        meta: {
+		          title: '签到列表'
+		        }
+		      },{
+		      	path: 'userWorkEaluation',
+		      	component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+		      	name: 'userWorkEaluation',
+		      	meta: {
+		      		title: '用工评价'
+		      	}
+		      }
+		    ]
 			}
+
+
 		]
 	},
 	{

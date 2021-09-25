@@ -145,5 +145,24 @@
 	}
 </script>
 
-<style>
+<style lang="scss" scoped="scoped">
+  .attendance{
+    padding-top: 15px;
+  }
+.popList{
+  .item{
+    margin-top: 10px;
+    .tit{
+      width: 150px;
+    }
+    .ipt{
+      height: 40px;
+      flex: 1;
+      border: 1px solid #d9d9d9;
+      padding-left: 8px;
+    }
+
+  }
+}
+
 </style>

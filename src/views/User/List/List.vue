@@ -98,7 +98,7 @@
         </el-table-column>
         <el-table-column prop="realNameAuth" label="实名状态">
           <template slot-scope="scope">
-            	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
+            	{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
             </template>
         </el-table-column>
         <el-table-column prop="enterpriseAuth" label="企业认证">
@@ -119,8 +119,28 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p>工人端：{{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}}</p>
-            <p>企业端：{{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}}</p>
+            <p class="alCen flex">工人端：
+            <!-- {{scope.row.workerStatus == 0 ?'正常':scope.row.workerStatus == 1 ?'冻结':''}} -->
+           <el-switch
+              v-model="scope.row.workerStatus"
+              :active-value="0"
+              :inactive-value="1"
+              @change="workerStatusChange(scope.row)"
+              active-color="#0079fe"
+              inactive-color="#e5dbe5">
+            </el-switch>
+            </p>
+            <p class="alCen flex">企业端：
+            <!-- {{scope.row.enterpriseStatus == 0 ?'正常':scope.row.enterpriseStatus == 1 ?'冻结':''}} -->
+            <el-switch
+              v-model="scope.row.enterpriseStatus"
+              :active-value="0"
+              :inactive-value="1"
+              @change="enterpriseStatusChange(scope.row)"
+              active-color="#0079fe"
+              inactive-color="#e5dbe5">
+            </el-switch>
+            </p>
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="注册时间" />
@@ -129,8 +149,7 @@
         <el-table-column label="操作" width="210">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeUserSte(scope.row)">{{ scope.row.workerStatus==1?'工人端激活':'工人端冻结' }}</el-button>
-            <el-button type="text" size="small" @click="changeEnterSte(scope.row)">{{ scope.row.enterpriseStatus==1?'企业端激活':'企业端冻结' }}</el-button>
+
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
             <el-button v-if="scope.row.enterpriseAuth==0" type="text" size="small" @click="authen(scope.row)">企业认证</el-button>
           </template>
@@ -477,7 +496,7 @@ export default {
       }
       getuserqueryPage(query).then(res => {
         var data = res.data
-        console.log('res', data)
+        console.log('res', data.list)
         this.loading = false;
         this.PageCount = data.total
         this.tableData = data.list
@@ -573,47 +592,19 @@ export default {
       this.realNamePop = true
     },
     // 给工人激活冻结
-    changeUserSte(row) {
-      var that = this;
-      console.log(row)
-      if (row.workerStatus == 1) { // 冻结去激活
-        this.$confirm('是否确定激活用户工人端', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.changeUserStatus(row.id,0,1)
-        }).catch(() => {})
+    workerStatusChange(row){
+      if (row.workerStatus) {
+       this.changeUserStatus(row.id,1,1)
       }else{
-        this.$confirm('是否确定冻结用户工人端', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.changeUserStatus(row.id,1,1)
-        }).catch(() => {})
+        this.changeUserStatus(row.id,0,1)
       }
     },
     // 给企业冻结激活
-    changeEnterSte(row){
-      var that = this;
-      console.log(row)
-      if (row.enterpriseStatus == 1) { // 冻结去激活
-        this.$confirm('是否确定激活用户企业端', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          this.changeUserStatus(row.id,0,0)
-        }).catch(() => {})
+    enterpriseStatusChange(row){
+      if (row.enterpriseStatus) {
+          this.changeUserStatus(row.id,1,0)
       }else{
-        this.$confirm('是否确定冻结用户企业端', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-         this.changeUserStatus(row.id,1,0)
-        }).catch(() => {})
+         this.changeUserStatus(row.id,0,0)
       }
     },
     // 修改用户状态封装
