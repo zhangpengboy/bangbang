@@ -515,6 +515,19 @@ export default {
     reanName(row) {
       console.log(row)
       this.rnUserId = row.id
+      this.idCard = '',
+      this.idCardUp ='',
+      this.idCardBack = '',
+      this.idCardBackUp ='',
+      this.rnName ='',
+      this.rnGender ='',
+      this.rnNation ='',
+      this.rnAge ='',
+      this.rnIdnum ="",
+      this.rnNativePlace ='',
+      this.rnHouse ='',
+      this.rnvalidityStartTime ='',
+      this.rnvalidityEndTime ='',
       this.realNamePop = true
     },
     upIdCard(res, file) {
@@ -609,6 +622,13 @@ export default {
     authen(row) {
       console.log(row)
       this.qyuserId = row.id
+      this.enterpriseName = '',
+      this.businessLicenseRegistrationNo = '',
+      this.legalRepresentativeName = '',
+      this.operatorName = '',
+      this.operatorMobileNo = '',
+      this.operatorIdNo = '',
+      this.fileUris = [],
       this.qiyeRZPop = true
     },
     //图片上传数组
