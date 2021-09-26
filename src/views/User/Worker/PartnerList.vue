@@ -7,8 +7,7 @@
 				<div class="top-content-item flex fvertical f1">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="keywords" 
-							placeholder="用户ID/名称/联系方式">
+						<el-input class="top-content-item-input" v-model="keywords" placeholder="用户ID/名称/联系方式">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -19,7 +18,7 @@
 							</el-option>
 						</el-select>
 					</div>
-			
+
 					<div class="flex fvertical top-content-item-status">
 						<span>地区：</span>
 						<el-select v-model="address" filterable placeholder="选择地区">
@@ -29,7 +28,7 @@
 						</el-select>
 					</div>
 				</div>
-				
+
 				<div class="top-content-btn">
 					<el-button type="primary" @click="handelSearch"> 查询</el-button>
 					<el-button @click="handleReset">重置</el-button>
@@ -59,11 +58,11 @@
 				</el-table-column>
 				<el-table-column prop="id" label="成为合伙人时间 " width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="地区 " >
+				<el-table-column prop="id" label="地区 ">
 				</el-table-column>
 				<el-table-column prop="id" label="申请状态 " width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="操作 " >
+				<el-table-column prop="id" label="操作 ">
 					<template slot-scope="scope">
 						<el-button type="text" size="small" @click="handleOpenLook(scope.row)">
 							查看
@@ -88,37 +87,44 @@
 </template>
 
 <script>
-	export default{
-		data(){
-			return{
-				tableData:[{}],
-				keywords:'', // 搜索
-				status:"",  // 状态
-				statusList:[{ // 状态列表
-					label:"全部",
-					value:""
-				},{
-					label:"正常",
-					value:1
-				},{
-					label:"冻结",
-					value:2
+	import {
+		getPartnerList,
+		getPartnerExport
+	} from '../../../api/user.js'
+	export default {
+		data() {
+			return {
+				tableData: [{}],
+				keywords: '', // 搜索
+				status: "", // 状态
+				statusList: [{ // 状态列表
+					label: "全部",
+					value: ""
+				}, {
+					label: "正常",
+					value: 1
+				}, {
+					label: "冻结",
+					value: 2
 				}],
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
-				clientHeight:0,
-				addressList:[],
-				address:""
+				clientHeight: 0,
+				addressList: [],
+				address: ""
 			}
 		},
 		mounted() {
 			this.getWebHeing();
+			this.getPartnerList();
 		},
-		methods:{
+		methods: {
 			/** 打开详情 */
-			handleOpenLook(row){
-				this.$router.push({ path: '/user/partnerListDetails'})
+			handleOpenLook(row) {
+				this.$router.push({
+					path: '/user/partnerListDetails'
+				})
 			},
 			/** 计算页面高度 */
 			getWebHeing() {
@@ -136,27 +142,41 @@
 					this.$forceUpdate();
 				})
 			},
+			/** 获取合伙人列表 */
+			async getPartnerList() {
+				let param = {};
+				param.pageNum = this.pageIndex;
+				param.pageSize = this.pageSize;
+				param.status = this.status;
+				param.keyword = this.keyword;
+				let res = await getPartnerList(param);
+				console.log('获取合伙人列表', res);
+			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.pageSize = e;
 				this.pageIndex = 1;
+				this.getPartnerList();
 			},
 			/** 点击分页 */
 			handleCurrentChange(e) {
 				this.pageIndex = e;
+				this.getPartnerList();
 			},
 			/** 搜索 */
 			handelSearch() {
 				this.pageIndex = 1;
+				this.getPartnerList();
 			},
 			/** 重置 */
 			handleReset() {
 				this.keywords = '';
 				this.pageIndex = 1;
 				this.status = '';
+				this.getPartnerList();
 			},
 		}
-		
+
 	}
 </script>
 

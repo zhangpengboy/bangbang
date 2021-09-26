@@ -68,7 +68,7 @@
 
 								<div class="demand-service-upload flex fvertical">
 
-									<div v-for="(item,index) in basicForm.images" :key="index" class="demand-service-upload-img"
+									<div v-for="(item,index) in basicForm.images" class="demand-service-upload-img"
 										@mouseover="handleMouseoverImg(item,index)"
 										@mouseout="handleMouseoutImg(item,index)">
 										<el-image :src="item">
@@ -252,7 +252,7 @@
 								<!-- 工种列表数据 -->
 								<div class="demand-service-plan-box-list">
 									<div class="demand-service-plan-box-list-item"
-										v-for="(teamTypes,types_index) in teams.teamTypes" :key="types_index">
+										v-for="(teamTypes,types_index) in teams.teamTypes">
 
 										<el-form :model="teamTypes" :rules="teamTypesRules" ref="typeRuleForm"
 											label-width="110px">
@@ -1562,12 +1562,6 @@
 			handleAddSerice() {
 				if (!this.allAddress.point) {
 					return this.$message.error('请选择地址');
-				}
-				if (!this.basicForm.enterpriseName) {
-					return this.$message.error('请输入公司名称');
-				}
-				if (!this.basicForm.enterpriseAddress) {
-					return this.$message.error('请输入公司联系地址');
 				}
 				let programeLen = this.$refs.programmeForm.length;
 				let typeLen = this.$refs.typeRuleForm.length;

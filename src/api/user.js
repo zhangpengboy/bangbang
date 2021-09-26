@@ -484,7 +484,7 @@ export function exportCsvGongren(params) {
 
 // 工种、考勤、自我介绍、收款信息开始-----------------
 /** 查询所有工种 */
-export function gettypeWorkAllClass(){
+export function gettypeWorkAllClass() {
 	return request({
 		url: `/api/commons/admin/commonsLabel/v1.0/queryAllChild`,
 	})
@@ -742,7 +742,7 @@ export function visitListexportCsv(params) {
 		url: `/api/user/admin/userLoginLog/v1.0/exportCsv`,
 		method: 'get',
 		params,
-    responseType: 'blob'
+		responseType: 'blob'
 	})
 }
 // 访问统计列表折线图
@@ -758,6 +758,55 @@ export function getByOrderAndBrief(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/getByOrderAndBrief`,
 		method: 'get',
+		params
+	})
+}
+
+/** 
+ * 合伙人列表
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {String} provinceName 地省名称
+ * @param {String} provinceCode 地省编码 
+ * @param {String} areaCode 地区编码
+ * @param {String} cityCode 地市编码
+ * @param {String} cityName 地市名称 
+ */
+export function getPartnerList(params) {
+	return request({
+		url: `/api/admin/marketing/partner/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 合伙人导出
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {String} provinceName 地省名称
+ * @param {String} provinceCode 地省编码 
+ * @param {String} areaCode 地区编码
+ * @param {String} cityCode 地市编码
+ * @param {String} cityName 地市名称 
+ */
+export function getPartnerExport(params) {
+	return request({
+		url: `/api/admin/marketing/partner/v1.0.1/export`,
+		params
+	})
+}
+
+/**
+ * 合伙人详情
+ * @param {Number} userId  当前用户ID
+ */
+export function getPartnerDetails(params) {
+	return request({
+		url: `/api/admin/marketing/partner/v1.0.1/get`,
 		params
 	})
 }
