@@ -116,8 +116,10 @@ export const constantRoutes = [
 			path: 'access-statistics',
 			component: () => import('@/views/User/accessStatistics/accessStatistics'),
 			name: 'accessStatistics',
-			meta: {title: '访问统计'}
-		},{
+			meta: {
+				title: '访问统计'
+			}
+		}, {
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),
 			name: 'RealName',
@@ -149,6 +151,21 @@ export const constantRoutes = [
 				affix: false
 			}
 		}, {
+			path: 'partnerList',
+			component: () => import('@/views/User/Worker/PartnerList'),
+			name: 'WorkerList',
+			meta: {
+				title: '合伙人列表'
+			},
+		}, {
+			path: 'partnerListDetails',
+			component: () => import('@/views/User/Worker/PartnerListDetails'),
+			name: 'partnerListDetails',
+			hidden: true, // 不在侧边栏显示
+			meta: {
+				title: '合伙人详情',
+			},
+		}, {
 			path: 'workerList',
 			component: () => import('@/views/User/Worker/WorkerList'),
 			name: 'WorkerList',
@@ -165,8 +182,15 @@ export const constantRoutes = [
 			}
 		}, {
 			path: 'member',
-			component: () => import('@/views/User/Worker/VerifyMember'),
+			component: () => import('@/views/User/Worker/AttestationEnterprise'),
 			name: 'member',
+			meta: {
+				title: '企业认证审核'
+			}
+		}, {
+			path: 'attestationWorker',
+			component: () => import('@/views/User/Worker/AttestationWorker'),
+			name: 'attestationWorker',
 			meta: {
 				title: '认证工人审核'
 			}
@@ -179,10 +203,10 @@ export const constantRoutes = [
 			}
 		}, {
 			path: 'return',
-			component: () => import('@/views/User/Worker/VerifyReturn'),
+			component: () => import('@/views/User/Worker/PartnerRecord'),
 			name: 'return',
 			meta: {
-				title: '退还保证金审核'
+				title: '合伙人审核记录'
 			}
 		}
     ]
@@ -241,6 +265,14 @@ export const constantRoutes = [
 			hidden: true,
 			meta: {
 				title: '安全帽',
+			}
+		}, {
+			path: 'member-details',
+			component: () => import('@/views/Order/Service/MemberDetails'),
+			name: 'OrderMemberDetails',
+			hidden: true,
+			meta: {
+				title: '详细报名数据'
 			}
 		}, {
 			path: 'member-details',
@@ -467,11 +499,13 @@ export const asyncRoutes = [{
 			meta: {
 				title: '用户列表'
 			},
-    }, {
-     	path: 'access-statistics',
-     	component: () => import('@/views/User/accessStatistics/accessStatistics'),
-     	name: 'accessStatistics',
-     	meta: {title: '访问统计'}
+		}, {
+			path: 'access-statistics',
+			component: () => import('@/views/User/accessStatistics/accessStatistics'),
+			name: 'accessStatistics',
+			meta: {
+				title: '访问统计'
+			}
 		}, {
 			path: 'realName',
 			component: () => import('@/views/User/RealName/RealName'),
@@ -519,9 +553,31 @@ export const asyncRoutes = [{
 				title: '企业认证审核'
 			}
 		}, {
+			path: 'partnerList',
+			component: () => import('@/views/User/Worker/PartnerList'),
+			name: 'WorkerList',
+			meta: {
+				title: '合伙人列表'
+			},
+		}, {
+			path: 'partnerListDetails',
+			component: () => import('@/views/User/Worker/PartnerListDetails'),
+			name: 'partnerListDetails',
+			hidden: true, // 不在侧边栏显示
+			meta: {
+				title: '合伙人详情',
+			},
+		}, {
 			path: 'member',
-			component: () => import('@/views/User/Worker/VerifyMember'),
+			component: () => import('@/views/User/Worker/AttestationEnterprise'),
 			name: 'member',
+			meta: {
+				title: '企业认证审核'
+			}
+		}, {
+			path: 'attestationWorker',
+			component: () => import('@/views/User/Worker/AttestationWorker'),
+			name: 'attestationWorker',
 			meta: {
 				title: '认证工人审核'
 			}
@@ -534,10 +590,10 @@ export const asyncRoutes = [{
 			}
 		}, {
 			path: 'return',
-			component: () => import('@/views/User/Worker/VerifyReturn'),
+			component: () => import('@/views/User/Worker/PartnerRecord'),
 			name: 'return',
 			meta: {
-				title: '退还保证金审核'
+				title: '合伙人审核记录'
 			}
 		}]
 	},
@@ -572,7 +628,7 @@ export const asyncRoutes = [{
 			meta: {
 				title: '服务单'
 			}
-		},{
+		}, {
 			path: 'examine',
 			component: () => import('@/views/Order/Service/Examine'),
 			name: 'OrderExamine',
