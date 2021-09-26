@@ -181,13 +181,6 @@ export const constantRoutes = [
 				title: '企业认证审核'
 			}
 		}, {
-			path: 'member',
-			component: () => import('@/views/User/Worker/AttestationEnterprise'),
-			name: 'member',
-			meta: {
-				title: '企业认证审核'
-			}
-		}, {
 			path: 'attestationWorker',
 			component: () => import('@/views/User/Worker/AttestationWorker'),
 			name: 'attestationWorker',
@@ -558,7 +551,7 @@ export const asyncRoutes = [{
 			name: 'WorkerList',
 			meta: {
 				title: '合伙人列表'
-			},
+			}
 		}, {
 			path: 'partnerListDetails',
 			component: () => import('@/views/User/Worker/PartnerListDetails'),
@@ -567,14 +560,7 @@ export const asyncRoutes = [{
 			meta: {
 				title: '合伙人详情',
 			},
-		}, {
-			path: 'member',
-			component: () => import('@/views/User/Worker/AttestationEnterprise'),
-			name: 'member',
-			meta: {
-				title: '企业认证审核'
-			}
-		}, {
+		},{
 			path: 'attestationWorker',
 			component: () => import('@/views/User/Worker/AttestationWorker'),
 			name: 'attestationWorker',

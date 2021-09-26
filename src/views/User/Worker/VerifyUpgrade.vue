@@ -7,7 +7,11 @@
 				<div class="top-content-item flex fvertical f1">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
+<<<<<<< HEAD
 						<el-input class="top-content-item-input" v-model="keywords" 
+=======
+						<el-input class="top-content-item-input" v-model="keywords"
+>>>>>>> dp-dev
 							placeholder="用户ID/账号">
 						</el-input>
 					</div>
@@ -20,7 +24,11 @@
 						</el-select>
 					</div>
 				</div>
+<<<<<<< HEAD
 				
+=======
+
+>>>>>>> dp-dev
 				<div class="top-content-btn">
 					<el-button type="primary" @click="handelSearch"> 查询</el-button>
 					<el-button @click="handleReset">重置</el-button>
@@ -34,7 +42,11 @@
 				<div class="bold">数据列表</div>
 				<el-button>导出</el-button>
 			</div>
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> dp-dev
 			<!-- 表格 -->
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
 				<el-table-column prop="date" label="序号" width="60">
@@ -88,7 +100,7 @@
 				statusList:[{ // 状态列表
 					label:"全部",
 					value:"",
-				},{ 
+				},{
 					label:"审核中",
 					value:1,
 				},{
@@ -102,7 +114,10 @@
 				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				clientHeight:0,
-				tableData:[{}],
+				tableData:[
+          {id:'你好'},
+          {id:'你好a'}
+        ],
 			}
 		},
 		mounted() {
