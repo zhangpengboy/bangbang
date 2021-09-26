@@ -104,15 +104,6 @@ export const constantRoutes = [
 			},
 			hidden: true
 		}, {
-			path: 'workrtDetail',
-			component: () => import('@/views/User/Worker/workrtDetail'),
-			name: 'workrtDetail',
-			meta: {
-				title: '工人详情',
-				activeMenu: '/user/Worker/WorkerList'
-			},
-			hidden: true
-		}, {
 			path: 'access-statistics',
 			component: () => import('@/views/User/accessStatistics/accessStatistics'),
 			name: 'accessStatistics',
@@ -151,6 +142,30 @@ export const constantRoutes = [
 				affix: false
 			}
 		}, {
+			path: 'workerList',
+			component: () => import('@/views/User/Worker/WorkerList'),
+			name: 'partnerList',
+			meta: {
+				title: '工人列表'
+
+			}
+		}, {
+			path: 'workrtDetail',
+			component: () => import('@/views/User/Worker/workrtDetail'),
+			name: 'workrtDetail',
+			meta: {
+				title: '工人详情',
+				activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
+		}, {
+			path: 'enterprise',
+			component: () => import('@/views/User/Worker/VerifyEnterprise'),
+			name: 'enterprise',
+			meta: {
+				title: '企业认证审核'
+			}
+		},{
 			path: 'partnerList',
 			component: () => import('@/views/User/Worker/PartnerList'),
 			name: 'WorkerList',
@@ -165,21 +180,6 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人详情',
 			},
-		}, {
-			path: 'workerList',
-			component: () => import('@/views/User/Worker/WorkerList'),
-			name: 'WorkerList',
-			meta: {
-				title: '工人列表'
-
-			}
-		}, {
-			path: 'enterprise',
-			component: () => import('@/views/User/Worker/VerifyEnterprise'),
-			name: 'enterprise',
-			meta: {
-				title: '企业认证审核'
-			}
 		}, {
 			path: 'attestationWorker',
 			component: () => import('@/views/User/Worker/AttestationWorker'),
@@ -472,6 +472,13 @@ export const constantRoutes = [
 			meta: {
 				title: '收款信息设置'
 			}
+		}, {
+			path: 'systemSetup',
+			component: () => import('@/views/System/systemSetup'),
+			name: 'systemSetup',
+			meta: {
+				title: '系统管理'
+			}
 		}]
 	}
 ]
@@ -493,6 +500,15 @@ export const asyncRoutes = [{
 				title: '用户列表'
 			},
 		}, {
+			path: 'userdetail',
+			component: () => import('@/views/User/List/detail'),
+			name: 'UserDetail',
+			meta: {
+				title: '用户详情',
+				activeMenu: '/user/List/List'
+			},
+			hidden: true
+		},{
 			path: 'access-statistics',
 			component: () => import('@/views/User/accessStatistics/accessStatistics'),
 			name: 'accessStatistics',
@@ -538,6 +554,15 @@ export const asyncRoutes = [{
 				title: '工人列表'
 
 			}
+		}, {
+			path: 'workrtDetail',
+			component: () => import('@/views/User/Worker/workrtDetail'),
+			name: 'workrtDetail',
+			meta: {
+				title: '工人详情',
+				activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
 		},{
 			path: 'enterprise',
 			component: () => import('@/views/User/Worker/VerifyEnterprise'),
@@ -548,7 +573,7 @@ export const asyncRoutes = [{
 		}, {
 			path: 'partnerList',
 			component: () => import('@/views/User/Worker/PartnerList'),
-			name: 'WorkerList',
+			name: 'partnerList',
 			meta: {
 				title: '合伙人列表'
 			}
@@ -817,6 +842,13 @@ export const asyncRoutes = [{
 			name: 'collection',
 			meta: {
 				title: '收款信息设置'
+			}
+		}, {
+			path: 'systemSetup',
+			component: () => import('@/views/System/systemSetup'),
+			name: 'systemSetup',
+			meta: {
+				title: '系统管理'
 			}
 		}]
 	}
