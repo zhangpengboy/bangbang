@@ -274,6 +274,14 @@ export const constantRoutes = [
 			meta: {
 				title: '详细报名数据'
 			}
+		}, {
+			path: 'member-details',
+			component: () => import('@/views/Order/Service/MemberDetails'),
+			name: 'OrderMemberDetails',
+			hidden: true,
+			meta: {
+				title: '详细报名数据'
+			}
 		}]
 	},
 	{
