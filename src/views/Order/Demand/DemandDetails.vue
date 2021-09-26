@@ -1246,11 +1246,17 @@
 					return;
 				};
 				this.handleWorkTime(index, inx, val);
+			
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
-				console.log('上班时间：：', val);
-				this.getDayLen(index, inx, val)
+				console.log('上班时间66：：', val);
+				this.getDayLen(index, inx, val);
+				for(let i = 0 ; i < val.teamTypes.length;i++){
+					if(val.dailyHours && val.teamTypes[i].unitPrice){
+						val.teamTypes[i].dailyFee = val.dailyHours * val.teamTypes[i].unitPrice;  
+					}
+				}
 			},
 			// 计算每日上班时长
 			getDayLen(index, inx, val) {
@@ -1276,7 +1282,11 @@
 					val.restEndTime = 0;
 					this.schemes[index].teams[inx].dailyHours = this.timeFn(stratWorkTime, endWorkTime);
 				}
-
+				this.getGroupTotal({
+					index,
+					inx,
+					val
+				})
 
 			},
 
@@ -1647,7 +1657,9 @@
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
-							schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
+							if(schemes[i].teams[j].teamTypes[k].workType == 1){
+								schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
+							}
 							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].dailyHours
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
