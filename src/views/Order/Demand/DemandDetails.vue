@@ -1093,6 +1093,7 @@
 			// 计算数组的总数
 			getGroupTotal(data) {
 				let teamTypes = this.schemes[data.index].teams[data.inx].teamTypes;
+				console.log('计算数组的总数::',teamTypes)
 				let total = 0;
 				let totalNumber = 0;
 				for (let i = 0; i < teamTypes.length; i++) {
@@ -1257,6 +1258,10 @@
 						val.teamTypes[i].dailyFee = val.dailyHours * val.teamTypes[i].unitPrice;  
 					}
 				}
+				this.getGroupTotal({
+					index,
+					inx
+				})
 			},
 			// 计算每日上班时长
 			getDayLen(index, inx, val) {
@@ -1282,11 +1287,7 @@
 					val.restEndTime = 0;
 					this.schemes[index].teams[inx].dailyHours = this.timeFn(stratWorkTime, endWorkTime);
 				}
-				this.getGroupTotal({
-					index,
-					inx,
-					val
-				})
+			
 
 			},
 
