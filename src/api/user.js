@@ -129,6 +129,38 @@ export function getBriefPay(params) {
 }
 
 /**
+ * 开票列表
+ * @param {String} keywords 搜索内容
+ * @param {Number} status 状态
+ * @param {Number} pageIndex 当前页码数
+ * @param {Number} pageSize 页面大小
+ */
+ export function getInvoice(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice`,
+		params
+	})
+}
+/**
+ * 发票状态修改
+ */
+ export function postInvoiceStatus(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice/update`,
+		method: 'post',
+		data
+	})
+}
+/**
+ * 发票详情
+ */
+ export function getInvoiceDetail(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice/detail`,
+		params
+	})
+}
+/**
  * 修改充值状态
  * @param {Number} id 要修改的字段
  * @param {String} reason 拒绝理由

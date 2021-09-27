@@ -23,7 +23,14 @@
 						</el-option>
 					</el-select>
 				</el-form-item>
-
+				<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
+					<el-input :disabled="true"  v-model="editFrom.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
+					</el-input>
+				</el-form-item>
+				<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
+					<el-input :disabled="true"  v-model="editFrom.enterpriseAddress " placeholder="请输入联系地址">
+					</el-input>
+				</el-form-item>
 				<!-- 	<el-form-item label="项目简称" >
 					<el-input v-model="ruleForm.name"></el-input>
 				</el-form-item> -->

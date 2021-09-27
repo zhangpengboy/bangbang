@@ -4,6 +4,7 @@
 		<el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
 			<el-radio-button label="top">需求单</el-radio-button>
 			<el-radio-button label="order">服务单详情</el-radio-button>
+			<el-radio-button label="reward">任务奖励</el-radio-button>
 			<el-radio-button label="member">成员名单</el-radio-button>
 			<el-radio-button label="recharge">充值</el-radio-button>
 			<el-radio-button label="invoicing">开票</el-radio-button>
@@ -19,7 +20,92 @@
 		<editService ref="editFrom" v-show="tabPosition == 'order'" @handleEditSuccess="handleEditSuccess" />
 		
 		<!-- 服务单end -->
+		<!-- 任务奖励 -->
+		<div v-if="tabPosition == 'reward'">
+			<div class="top">
+				<div class="top-title ">数据筛选</div>
+				<div class="top-content flex fvertical fbetween">
+					<div class="top-content-item flex fvertical">
+						<div class="flex fvertical top-content-item-status">
+							<span>输入查询：</span>
+							<el-input class="top-content-item-input" v-model="teamTypeName" placeholder="任务名称/班组名称">
+								
+							</el-input>
+						</div>
+						<div class="flex fvertical top-content-item-status">
+							<span>类型：</span>
+							<el-select v-model="rewardType" placeholder="选择类型">
+								<el-option v-for="item in rewardTypeList" :key="item.value" :label="item.label"
+									:value="item.value">
+								</el-option>
+							</el-select>
+						</div>
+						<div class="flex fvertical top-content-item-status">
+							<span>状态：</span>
+							<el-select v-model="rewardStatus" placeholder="选择状态">
+								<el-option v-for="item in rewardStatusList" :key="item.value" :label="item.label"
+									:value="item.value">
+								</el-option>
+							</el-select>
+						</div>
+					</div>
 
+
+					<div class="top-content-btn">
+						<el-button type="primary" @click="handelSeracMember">查询</el-button>
+						<el-button @click="handleResetMember">重置</el-button>
+					</div>
+				</div>
+			</div>
+
+			<el-table :data="rewardTableData" border style="width: 100%" :height="clientHeight+'px'">
+				<el-table-column type="index" width="50" label="序号">
+				</el-table-column>
+				<el-table-column prop="orderId" label="班组名称" width="170">
+					木工班组
+				</el-table-column>
+				<el-table-column prop="title" label="任务名称" width="180">
+					广州市·天河区·招木工小工·6人
+				</el-table-column>
+				<el-table-column prop="createName" label="类型">
+					一次性
+				</el-table-column>
+				<el-table-column prop="phone" label="条件">
+					入场满15天
+				</el-table-column>
+				<el-table-column prop="reason" label="奖励">
+					100元/人
+				</el-table-column>
+				<el-table-column label="状态">
+					<template slot-scope="scope">
+					<el-switch
+					v-model="rewardValue"
+					active-color="#13ce66"
+					inactive-color="#cac3c3">
+					</el-switch>
+					</template>
+				</el-table-column>
+				<el-table-column prop="updateName" label="操作人">
+					客服A
+				</el-table-column>
+				<el-table-column prop="address" label="操作时间">
+					<template slot-scope="scope">
+						2017-07-24 17:25:38
+						<!-- <p>{{formatDate(scope.row.updateTime)}}</p> -->
+					</template>
+				</el-table-column>
+				<el-table-column label="操作">
+					<template slot-scope="scope">
+						<template >
+						<el-button size="mini" type="primary" @click="handleRewardEdit(scope.$index, scope.row)">编辑</el-button>
+						<el-button  size="mini"  type="primary"  @click="handleRewardDelete(scope.$index, scope.row)">历史</el-button>
+						</template>
+
+					</template>
+				</el-table-column>
+			</el-table>
+
+		</div>
 
 
 		<!--  成员名单 -->
@@ -170,7 +256,7 @@
 
 
 						<div class="service-details-member-box-list-item flex fvertical "
-							v-for="(items,inx) in item.teamTypes">
+							v-for="(items,inx) in item.teamTypes" :key="inx">
 
 							<div class="service-details-member-box-list-item-main flex fvertical">
 								<span>工种</span>
@@ -335,7 +421,7 @@
 										class="service-details-member-box-list-worker-name">{{items.matchNum == items.number?'完成匹配':'匹配中'}}（{{items.matchNum+'/'+items.number}}）</span>
 									<div class="service-details-member-box-list-worker-user flex fvertical">
 										<div class="service-details-member-box-list-worker-user-item flex fvertical fbetween"
-											v-for="(res,list_index) in items.list">
+											v-for="(res,list_index) in items.list" :key="list_index">
 											<span>{{res.name}} {{res.phone}}</span>
 											<i class="el-icon-error"
 												@click="handleDeteleUser(res,index,inx,list_index)"></i>
@@ -405,11 +491,11 @@
 				<div class="top-title ">数据筛选</div>
 				<div class="top-content flex fvertical fbetween">
 					<div class="top-content-item flex fvertical">
-						<div class="flex fvertical top-content-item-status">
+						<!-- <div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
 							<el-input class="top-content-item-input" v-model="keywords" placeholder="ID/项目名称">
 							</el-input>
-						</div>
+						</div> -->
 						<div class="flex fvertical top-content-item-status">
 							<span>状态：</span>
 							<el-select v-model="status" placeholder="请选择">
@@ -492,12 +578,139 @@
 
 		</div>
 		<!-- 充值页面end  -->
+		<!-- 开票页面start -->
+		<div v-if="tabPosition == 'invoicing'">
+		<!-- 头部  -->
+		<div class="top" id="top">
+			<div class="top-title ">数据筛选</div>
+			<div class="top-content flex fvertical fbetween">
+				<div class="top-content-item flex fvertical">
+					<div class="flex fvertical top-content-item-status">
+						<span>状态：</span>
+						<el-select v-model="InvoiceStatus" placeholder="请选择状态">
+							<el-option v-for="item in statusList" :key="item.value" :label="item.label"
+								:value="item.value">
+							</el-option>
+						</el-select>
+					</div>
+				</div>
+				<div class="top-content-btn">
+					<el-button type="primary" @click="InvoiceSearch">查询</el-button>
+					<el-button @click="handleReset">重置</el-button>
+				</div>
+			</div>
+			<!-- 头部end  -->
+		<div class="box">
+			<div class="Invoice-box flex fvertical fbetween" id="boxTop">
+				<div class="Invoice-box-title bold ">数据筛选</div>
+			</div>
 
+			<el-table :data="InvoicetableData" border style="width: 100%" :height="'400px'">
+				<el-table-column prop="id" label="Id" width="170">
+				</el-table-column>
+				<el-table-column prop="title" label="项目名称" width="180">
+				</el-table-column>
+				<el-table-column prop="header" label="姓名">
+				</el-table-column>
+				<el-table-column prop="phone" label="联系方式">
+				</el-table-column>
+				<el-table-column prop="fee" label="开票金额">
+				</el-table-column>
+				<el-table-column prop="type" label="开票类型">
+					<template slot-scope="scope">
+					{{scope.row.type == 1?"个人":"企业"}}	
+					</template>		
+				</el-table-column>
+				<el-table-column label="状态">
+					<template slot-scope="scope">
+						<p v-if="scope.row.status == 0" class="color-warning">代开票</p>
+						<p v-if="scope.row.status == 1" class="color-success">已完成</p>
+						<p v-if="scope.row.status == 2" class="color-error">已驳回</p>
+					</template>
+				</el-table-column>
+				<el-table-column prop="createTime" label="申请时间">
+					<template slot-scope="scope">
+						<p>{{formatDate(scope.row.createTime)}}</p>
+					</template>
+				</el-table-column>
+				<el-table-column prop="updateName" label="操作人">
+				</el-table-column>
+				<el-table-column prop="updateTime" label="操作时间">
+					<template slot-scope="scope">
+						<p>{{formatDate(scope.row.updateTime)}}</p>
+					</template>
+				</el-table-column>
+				<el-table-column prop="id" label="信息">
+					<template slot-scope="scope">
+						<p class="dateiltxt" @click="checkDetail(scope.row)">查看详情</p>
+					</template>
+				</el-table-column>
+			</el-table>
+
+
+			<!-- 分页  -->
+			<div class="flex fcenter page">
+				<el-pagination class="page" id="page" background @size-change="handleSizeChange"
+					@current-change="handleCurrentChange" :current-page="PageIndex" :page-sizes="[10, 20, 30, 40]"
+					:page-size="PageSize" layout="total, prev, pager, next,sizes, jumper" :total="PageCount">
+				</el-pagination>
+			</div>
+			<!-- 分页end -->
+
+
+		</div>
+		</div>
+		<!-- 头部end  -->
+		</div>
+		<!-- 开票页面end  -->
 		<!--  拒绝理由 -->
 		<el-dialog title="拒绝理由" :visible.sync="isLook" width="30%" :before-close="handleCloseLookReason">
 			<span>{{reason}}</span>
 			<span slot="footer" class="dialog-footer ">
 				<el-button type="primary" @click="isLook = false">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!--  拒绝理由end -->
+
+		<!-- 发票详情弹窗 -->
+		<el-dialog
+		title="开票信息"
+		:visible.sync="InvoiceDetailDialog"
+		width="30%"
+		:before-close="InvoiceDetailclose">
+		<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 开票类型：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.type == 1?"个人":"企业"}}	</div></div>
+		<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 发票抬头：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.header}}</div></div>
+		<div class="InvoiceDetailDialog" v-show="InvoiceDetail.type ==2"> <p class="InvoiceDetailDialog-txt" > 纳税人识别号：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.tin}}</div></div>
+		<div class="InvoiceDetailDialog" v-show="InvoiceDetail.type ==2"> <p class="InvoiceDetailDialog-txt" > 公司地址：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.address}}</div></div>
+		<div class="InvoiceDetailDialog" v-show="InvoiceDetail.type ==2"> <p class="InvoiceDetailDialog-txt" > 公司电话：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.phone}}</div></div>
+		<div class="InvoiceDetailDialog" v-show="InvoiceDetail.type ==2"> <p class="InvoiceDetailDialog-txt" > 开户银行：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.bank}}</div></div>
+		<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 接收方式：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.email}}</div></div>
+		<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 开票金额：</p> <div class="InvoiceDetailDialog-inp">{{InvoiceDetail.fee}}元</div></div>
+		<span slot="footer" class="dialog-footer">
+			<el-button type="primary" @click="InvoiceDetailDialog = false">确 定</el-button>
+		</span>
+		</el-dialog>
+		
+		<!--  任务奖励编辑弹窗 -->
+		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloseLookReason">
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
+				<el-select v-model="rewardValue" placeholder="请选择">
+					<el-option
+					v-for="item in rewardTypeList"
+					:key="item.value"
+					:label="item.label"
+					:value="item.value">
+					</el-option>
+				</el-select>
+				</div>
+				</div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入天数"></el-input>天</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>元</div></div>
+			<span slot="footer" class="dialog-footer ">
+				<el-button @click="rewardEditDialog = false">取 消</el-button>
+				<el-button type="primary" @click="rewardEditDialog = false">确 定</el-button>
 			</span>
 		</el-dialog>
 		<!--  拒绝理由end -->
@@ -516,7 +729,9 @@
 		getMembers,
 		getMembersEnrollCancel,
 		gettypeWorkClass,
-		getBriefDetail
+		getBriefDetail,
+		getInvoice,
+		getInvoiceDetail,
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -656,7 +871,54 @@
 					value: 2,
 				}],
 				memberLoading: false,
-				loading: false
+				loading: false,
+				//开票状态
+				statusList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "代开票",
+					value: 0
+				}, {
+					label: "已驳回",
+					value: 2
+				}, {
+					label: "已完成",
+					value: 1
+				}],
+				InvoiceStatus:'', //开票查询状态
+				InvoicetableData:[], // 开票列表数据
+				InvoiceDetail:[] ,// 当前行发票详情数据
+				InvoiceDetailDialog:false, //发票详情界面 
+				//任务奖励
+				//任务奖励status
+				rewardStatusList:[{
+					label: "全部",
+					value: ""
+				}, {
+					label: "开启",
+					value: 1
+				}, {
+					label: "关闭",
+					value: 2
+				},], 
+				rewardStatus:'', //任务状态
+				//任务奖励type
+				rewardTypeList:[{
+					label: "全部",
+					value: ""
+				}, {
+					label: "一次性",
+					value: 1
+				}, {
+					label: "周期",
+					value: 2
+				}],
+				rewardType:'', // 任务类型
+				rewardTableData:[{}], // 任务列表数据
+				rewardEditDialog:false, // 任务奖励编辑弹窗
+				rewardInput:'',// 任务编辑
+				rewardValue:'',// 任务编辑
 			}
 		},
 		watch: {
@@ -705,7 +967,8 @@
 			
 			console.log('获取百度地图地址：',window)
 			console.log(this.basicForm)
-			
+			//发票列表
+			this.getDataList()
 		},
 		methods: {
 			handleEditSuccess(){
@@ -984,6 +1247,46 @@
 			handleCloseLookReason() {
 				this.isLook = false
 			},
+			//开票 搜索
+			InvoiceSearch(){
+				console.log('开票查询')
+			this.PageIndex = 1;
+			this.getDataList()
+			},
+			/** 获取发票列表 */
+			async getDataList() {
+				let param = {};
+				param.pageIndex = this.PageIndex;
+				param.pageSize = this.PageSize;
+				param.status = this.InvoiceStatus;
+				param.type = this.type;
+				param.orderId = this.orderId
+				this.loading = true;
+				try{
+					let res = await getInvoice(param);
+					this.loading = false;
+					this.PageCount = res.data.total;
+					this.InvoicetableData = res.data.records;
+				}catch(e){
+					this.loading = false;
+				}
+				
+			},
+			// 查看发票详情
+			checkDetail(row){
+				getInvoiceDetail({id:row.id}).then(res=>{
+					this.InvoiceDetail = res.data
+					this.InvoiceDetailDialog = true
+				})
+			},
+			// 开票取消弹窗
+			InvoiceDetailclose(){
+				this.InvoiceDetailDialog = false
+			},
+			//任务奖励 编辑
+			handleRewardEdit(row){
+				this.rewardEditDialog = true
+			}
 		}
 	}
 </script>
@@ -1394,5 +1697,38 @@
 
 
 
+	}
+	
+	.InvoiceDetailDialog{
+		width: 100%;
+		display: flex;
+		justify-content: start;
+		height: 40px;
+		line-height: 40px;
+		margin-top: 20px;
+	}
+	.InvoiceDetailDialog-txt{
+		width: 20%;
+		font-size: 17px;
+		color: #333333;
+	}
+	.InvoiceDetailDialog-inp{
+		width: 80%;
+		border-radius: 5px;
+		height: 40px;
+		background: #F2F2F2;
+		border: 1px solid #adadad;
+		font-size: 17px;
+		color: #333333;
+		padding-left: 10px;
+	}
+	.rewardEditDialog-inp{
+		width: 80%;
+		border-radius: 5px;
+		height: 40px;
+	}
+	.rewardEditDialog-right{
+		display: flex;
+		justify-content: start;
 	}
 </style>
