@@ -79,7 +79,7 @@
 				<el-table-column label="状态">
 					<template slot-scope="scope">
 					<el-switch
-					v-model="value"
+					v-model="rewardValue"
 					active-color="#13ce66"
 					inactive-color="#cac3c3">
 					</el-switch>
@@ -694,7 +694,7 @@
 		<!--  任务奖励编辑弹窗 -->
 		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloseLookReason">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
-				<el-select v-model="value" placeholder="请选择">
+				<el-select v-model="rewardValue" placeholder="请选择">
 					<el-option
 					v-for="item in rewardTypeList"
 					:key="item.value"
@@ -705,9 +705,9 @@
 				</div>
 				</div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="input" type="number" placeholder="请输入天数"></el-input>天</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入天数"></el-input>天</div></div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="input" type="number" placeholder="请输入奖励"></el-input>元</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>元</div></div>
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="rewardEditDialog = false">取 消</el-button>
 				<el-button type="primary" @click="rewardEditDialog = false">确 定</el-button>
@@ -916,7 +916,9 @@
 				}],
 				rewardType:'', // 任务类型
 				rewardTableData:[{}], // 任务列表数据
-				rewardEditDialog:false // 任务奖励编辑弹窗
+				rewardEditDialog:false, // 任务奖励编辑弹窗
+				rewardInput:'',// 任务编辑
+				rewardValue:'',// 任务编辑
 			}
 		},
 		watch: {
