@@ -75,7 +75,7 @@
 			<template v-if="radio=='查看记录'">
 				<!-- 表格数据  -->
 				<el-table :data="tableData" border style="width: 100%">
-					<el-table-column prop="id" label="ID" >
+					<el-table-column prop="userId" label="用户ID" >
 					</el-table-column>
 					<el-table-column prop="createName" label="名称" >
 					</el-table-column>
@@ -104,7 +104,7 @@
 			<template v-else>
 				<!-- 表格数据  -->
 				<el-table :data="recordList" border style="width: 100%">
-					<el-table-column prop="id" label="ID" >
+					<el-table-column prop="userId" label="用户ID" >
 					</el-table-column>
 					<el-table-column prop="createName" label="名称" >
 					</el-table-column>
