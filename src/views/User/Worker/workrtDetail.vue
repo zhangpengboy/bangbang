@@ -33,7 +33,7 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">手机号码</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.phone" />
+                <input  class="desc flex1 col666" type="number" name="" :disabled="isEdit" v-model="basicInfo.phone" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">现住址</p>
@@ -53,15 +53,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
+                <!-- <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
                   <el-option
                     v-for="item in genderoptions"
                     :key="item.id"
                     :label="item.labelName"
                     :value="item.id">
                   </el-option>
-                </el-select>
-                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/> -->
+                </el-select> -->
+                <input  class="desc flex1 col666" type="" name="" disabled v-model="basicInfo.gender==1?'女':basicInfo.gender==0?'男':'未知'"/>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">工人等级</p>
@@ -254,7 +254,7 @@
                   <p class="backgroud tit">状态</p>
                   <p class="desc flex1 col666 flex alCen js-sb">
                     <span>{{bizCardInfo.workStatus==1?'工作中':'找工中'}}</span>
-                    <el-button type="text" size="small" v-if="isEditUserInfo" @click="changeStatus">切换状态</el-button>
+                    <!-- <el-button type="text" size="small" v-if="isEditUserInfo" @click="changeStatus">切换状态</el-button> -->
                   </p>
                 </div>
                 <div class="item flex">
@@ -432,12 +432,12 @@
 
       </div>
       <!-- 提现end -->
-      
+
       <!-- 图片预览 -->
       <el-dialog :visible.sync="dialogVisible1" append-to-body>
         <img width="100%" fit="contain" :src="yulanImg" alt="">
       </el-dialog>
-      
+
     </div>
 
   </div>
@@ -659,33 +659,25 @@ export default {
 
     // 基本信息编辑
     edit() {
-      if(this.isEdit==false){
-        if(this.basicInfo.phone==''){
-          this.$message({
-            message: '请输入电话号码',
-            type: 'warning'
-          });
-        }else{
-          var params = {
-            id:this.userIdOrType.id,
-            address :this.basicInfo.adr,
-            gender:this.basicInfo.gender,
-            phone :this.basicInfo.phone,
-            realName :this.basicInfo.realName
-          }
-          gongrenupdateInfo(params).then(res => {
-            var data = res.data
-            console.log(res)
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.isEdit = true
-            this.loadDate(this.userIdOrType)
-          })
+      if(this.isEdit==false){     
+        var params = {
+          id:this.userIdOrType.id,
+          address :this.basicInfo.adr,
+          gender:this.basicInfo.gender,
+          phone :this.basicInfo.phone,
+          realName :this.basicInfo.realName
         }
-
-
+        gongrenupdateInfo(params).then(res => {
+          var data = res.data
+          console.log(res)
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.isEdit = true
+          this.loadDate(this.userIdOrType)
+        })
+        
       }else{
         this.isEdit = false
       }

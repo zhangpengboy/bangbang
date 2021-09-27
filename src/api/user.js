@@ -49,8 +49,8 @@ export function gongRenQueryPage(params) {
  * @param {String} updator 跟进人ID/账号
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
- * @param {Number} type   劳务派遣 -> 1 劳务分包 -> 2 
- * @param {String} address 地区 
+ * @param {Number} type   劳务派遣 -> 1 劳务分包 -> 2
+ * @param {String} address 地区
  */
 export function getBriel(params) {
 	return request({
@@ -762,17 +762,17 @@ export function getByOrderAndBrief(params) {
 	})
 }
 
-/** 
+/**
  * 合伙人列表
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
  * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {String} provinceName 地省名称
- * @param {String} provinceCode 地省编码 
+ * @param {String} provinceCode 地省编码
  * @param {String} areaCode 地区编码
  * @param {String} cityCode 地市编码
- * @param {String} cityName 地市名称 
+ * @param {String} cityName 地市名称
  */
 export function getPartnerList(params) {
 	return request({
@@ -788,10 +788,10 @@ export function getPartnerList(params) {
  * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {String} provinceName 地省名称
- * @param {String} provinceCode 地省编码 
+ * @param {String} provinceCode 地省编码
  * @param {String} areaCode 地区编码
  * @param {String} cityCode 地市编码
- * @param {String} cityName 地市名称 
+ * @param {String} cityName 地市名称
  */
 export function getPartnerExport(params) {
 	return request({
@@ -808,5 +808,97 @@ export function getPartnerDetails(params) {
 	return request({
 		url: `/api/admin/marketing/partner/v1.0.1/get`,
 		params
+	})
+}
+
+// 实名认证申请列表
+export function userRealNameApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/page`,
+		method: 'get',
+		params
+	})
+}
+// 实名认证申请导出
+export function userRealNameApplyexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/exportCsv`,
+		method: 'get',
+		params,
+    responseType: 'blob'
+	})
+}
+// 实名认证申请修改状态
+export function userRealNameApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+// 实名认证申请详情
+export function userRealNameApplyone(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/one`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员升级-审计审核-列表
+export function userUpgradeApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userUpgradeApply/v1.0/page`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员升级-审计审核-审核
+export function userUpgradeApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userUpgradeApply/v1.0/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+// 用户会员申请表-认证工人审核-列表
+export function userMemberApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/page`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员申请表-认证工人审核-导出
+export function userMemberApplyexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/exportCsv`,
+		method: 'get',
+		params,
+    responseType: 'blob'
+	})
+}
+// 用户会员申请表-认证工人审核-审核
+export function userMemberApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+// 系统设置-获取奖励设置信息接口
+export function awardSettingGet(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/get`,
+		method: 'get',
+		params
+	})
+}
+// 系统设置-邀请奖励设置信息接口
+export function awardSettingupdateOne(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/updateOne`,
+		method: 'post',
+		data
 	})
 }
