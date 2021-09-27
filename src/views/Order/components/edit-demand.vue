@@ -45,7 +45,7 @@
 					<el-input type="textarea" :disabled="isShowEdit" v-model="editFrom.description" :rows="4">
 					</el-input>
 					<div class="demand-service-upload flex">
-						<div v-for="(item,index) in editFrom.images" class="demand-service-upload-img"
+						<div v-for="(item,index) in editFrom.images" :key="index" class="demand-service-upload-img"
 							@mouseover="handleMouseoverImg(item,index)" @mouseout="handleMouseoutImg(item,index)">
 							<el-image :src="item">
 							</el-image>
@@ -223,7 +223,7 @@
 					<!-- 工种列表数据 -->
 					<div class="demand-service-plan-box-list">
 						<div class="demand-service-plan-box-list-item"
-							v-for="(teamTypes,types_index) in teams.teamTypes">
+							v-for="(teamTypes,types_index) in teams.teamTypes" :key="types_index">
 
 							<el-form :model="teamTypes" ref="ruleForm" label-width="100px">
 								<!-- 固定基本工种  -->
@@ -773,8 +773,14 @@
 			//  取消编辑
 			handleCloseEdit() {
 				// console.log(this.recordFrom)
+				this.$confirm('是否取消编辑？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				this.isShowEdit = !this.isShowEdit;
 				this.editFrom = this.recordFrom
+				})
 			},
 			// 添加组
 			handleAddGroup(index) {
@@ -1469,6 +1475,11 @@
 			},
 			// 提交方案
 			async handleAddSerice() {
+				this.$confirm('是否提交服务单？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				let param = this.deepClone(this.editFrom);
 				let schemes = param.schemes;
 				for (let i = 0; i < schemes.length; i++) {
@@ -1490,9 +1501,12 @@
 						}
 					}
 				};
-				let res = await getUpdateOrder(param);
+				getUpdateOrder(param).then(res=>{
 				this.$message.success('修改成功');
 				this.isShowEdit = true;
+				 })
+				}).catch(() => {});
+			
 			},
 			deepClone(obj) {
 				let _obj = JSON.stringify(obj),

@@ -20,12 +20,12 @@
 							</el-option>
 						</el-select>
 					</div>
-					<div class="flex fvertical top-content-item-status">
+					<!-- <div class="flex fvertical top-content-item-status">
 						<span>跟进人：</span>
 						<el-input class="top-content-item-input" v-model="updator" @keyup.enter.native="handelSearch"
 							placeholder="请输入跟进人">
 						</el-input>
-					</div>
+					</div> -->
 					<div class="flex fvertical top-content-item-status">
 						<span>地区：</span>
 						<el-select v-model="address" filterable placeholder="选择地区">
@@ -66,7 +66,7 @@
 				</el-table-column>
 				<el-table-column  label="类型">
 					<template slot-scope="scope">
-						{{scope.row.type == 1?'劳务派遣':'劳务分包'}}
+						{{scope.row.type == 1?'工人推荐':'劳务分包'}}
 					</template>
 				</el-table-column>
 				<el-table-column label="语音" width="140">
@@ -82,9 +82,12 @@
 				</el-table-column>
 				<el-table-column prop="city" label="地区">
 				</el-table-column>
-				<el-table-column prop="address" label="服务单">
+				<el-table-column prop="address" label="报价单">
+					<template slot-scope="scope">
+					<el-button @click="handleLook(scope.row)" type="text" size="small">查看详情</el-button>
+					</template>
 				</el-table-column>
-				<el-table-column prop="updateName" label="跟进人">
+				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
 				<el-table-column label="创建时间" width="120">
 					<template slot-scope="scope">
@@ -156,7 +159,7 @@
 					label: "全部"
 				},{
 					value: 1,
-					label: "劳务派遣"
+					label: "工人推荐"
 				},{
 					value: 2,
 					label: "劳务分包"

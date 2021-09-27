@@ -7,7 +7,7 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="keywords" placeholder="项目名称">
+						<el-input class="top-content-item-input" v-model="keywords" placeholder="服务单ID/项目名称/姓名/手机号码">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -41,11 +41,11 @@
 			</div>
 
 			<el-table :data="tableData" border style="width: 100%" :height="clientHeight+'px'">
-				<el-table-column prop="id" label="Id" width="170">
+				<el-table-column prop="orderId" label="服务单Id" width="170">
 				</el-table-column>
 				<el-table-column prop="title" label="项目名称" width="180">
 				</el-table-column>
-				<el-table-column prop="header" label="姓名">
+				<el-table-column prop="createName" label="姓名">
 				</el-table-column>
 				<el-table-column prop="phone" label="联系方式">
 				</el-table-column>
@@ -58,7 +58,7 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-						<p v-if="scope.row.status == 0" class="color-warning">代开票</p>
+						<p v-if="scope.row.status == 0" class="color-warning">待开票</p>
 						<p v-if="scope.row.status == 1" class="color-success">已完成</p>
 						<p v-if="scope.row.status == 2" class="color-error">已驳回</p>
 					</template>
@@ -153,7 +153,7 @@
 					label: "全部",
 					value: ""
 				}, {
-					label: "代开票",
+					label: "待开票",
 					value: 0
 				}, {
 					label: "已驳回",

@@ -58,7 +58,7 @@
 				</div>
 			</div>
 
-			<el-table :data="rewardTableData" border style="width: 100%" :height="clientHeight+'px'">
+			<el-table :data="rewardTableData" border style="width: 100%" height="300px">
 				<el-table-column type="index" width="50" label="序号">
 				</el-table-column>
 				<el-table-column prop="orderId" label="班组名称" width="170">
@@ -98,7 +98,7 @@
 					<template slot-scope="scope">
 						<template >
 						<el-button size="mini" type="primary" @click="handleRewardEdit(scope.$index, scope.row)">编辑</el-button>
-						<el-button  size="mini"  type="primary"  @click="handleRewardDelete(scope.$index, scope.row)">历史</el-button>
+						<el-button  size="mini"  type="primary"  @click="handleRewardHistory(scope.$index, scope.row)">历史</el-button>
 						</template>
 
 					</template>
@@ -416,15 +416,20 @@
 							<!-- 匹配员工 -->
 							<div class="service-details-member-box-list-worker flex fvertical">
 								<span class="service-details-member-box-list-worker-title">招工人员</span>
-								<div class="f1">
+								<div class="f1" style="position: relative;">
 									<span
 										class="service-details-member-box-list-worker-name">{{items.matchNum == items.number?'完成匹配':'匹配中'}}（{{items.matchNum+'/'+items.number}}）</span>
 									<div class="service-details-member-box-list-worker-user flex fvertical">
-										<div class="service-details-member-box-list-worker-user-item flex fvertical fbetween"
+										<div class="service-details-member-box-list-worker-user-item "
 											v-for="(res,list_index) in items.list" :key="list_index">
+											<div> 
 											<span>{{res.name}} {{res.phone}}</span>
-											<i class="el-icon-error"
-												@click="handleDeteleUser(res,index,inx,list_index)"></i>
+											<i class="el-icon-error" @click="handleDeteleUser(res,index,inx,list_index)" v-if="res.enrollStatus == 1"></i>
+											<span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 1">已离场</span>
+											<!-- 下个版本需要 -->
+											<!-- <span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 0">已结束</span> -->
+											</div>
+											<div class="service-details-member-box-list-worker-user-item-sign">{{formatDate(res.enrollTime)}}报名</div>
 										</div>
 
 										<!-- 	<div class="service-details-member-box-list-worker-user-add flex fvertical fbetween fcenter"
@@ -433,6 +438,8 @@
 										</div> -->
 
 									</div>
+									<!-- 进行中订单 1->未招工，2->报名中,3->进行中，4->已结束,5->已关闭 -->
+									<div class="service-details-member-box-list-worke-btn" v-if="memberInfo.orderStatus == 3"> <el-button type="primary" v-if="items.matchNum != items.number" @click="Republish(items)">重新发布招工</el-button></div>
 								</div>
 							</div>
 							<!-- 匹配员工end -->
@@ -696,7 +703,7 @@
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
 				<el-select v-model="rewardValue" placeholder="请选择">
 					<el-option
-					v-for="item in rewardTypeList"
+					v-for="item in rewardTypeList1"
 					:key="item.value"
 					:label="item.label"
 					:value="item.value">
@@ -706,14 +713,63 @@
 				</div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入天数"></el-input>天</div></div>
+			<div v-if="rewardValue == 1">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>元</div></div>
+			</div>
+			<div v-if="rewardValue == 2">
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后，获得被分享工人验收产值的百分比金额</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>%</div></div>
+			</div>
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="rewardEditDialog = false">取 消</el-button>
 				<el-button type="primary" @click="rewardEditDialog = false">确 定</el-button>
 			</span>
 		</el-dialog>
-		<!--  拒绝理由end -->
+		<!--  任务奖励编辑弹窗end -->
+		<!--  任务奖励历史弹窗 -->
+		<el-dialog title="历史设置" :visible.sync="rewardHistoryDialog" width="50%" :before-close="handleCloserewardHistory">
+			  <el-table :data="rewardHistoryTableData" style="width: 100%" :stripe="true" height="300px">
+				<el-table-column type="index" width="50" label="序号"></el-table-column>
+			<el-table-column
+				prop="date"
+				label="类型"
+				width="180">
+				一次性
+			</el-table-column>
+			<el-table-column
+				prop="name"
+				label="条件"
+				width="180">
+				入场满15天
+			</el-table-column>
+			<el-table-column
+				prop="address"
+				label="奖励">
+				100元/人
+			</el-table-column>
+			<el-table-column
+				prop="address"
+				label="变更">
+				开启
+			</el-table-column>
+			<el-table-column
+				prop="address"
+				label="操作人">
+				客服A
+			</el-table-column>
+			<el-table-column
+				prop="address"
+				label="操作时间">
+				2017-07-24 17:25:38
+			</el-table-column>
+			</el-table>
+			<span slot="footer" class="dialog-footer ">
+				<el-button type="primary" @click="rewardHistoryDialog = false">确 定</el-button>
+			</span>
+		</el-dialog>
+
+		<!--  任务奖励历史弹窗end -->
 
 	</div>
 </template>
@@ -732,6 +788,7 @@
 		getBriefDetail,
 		getInvoice,
 		getInvoiceDetail,
+		getServiceUpdateStatus,
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -810,7 +867,7 @@
 					value: 1,
 					label: "对账通过"
 				}], // 状态列表
-				orderId: "",
+				// orderId: "",
 				loadingRecharge: false,
 				basicForm: {}, // 服务单详情
 				dialogImageUrl: [],
@@ -914,11 +971,21 @@
 					label: "周期",
 					value: 2
 				}],
+				//任务奖励type
+				rewardTypeList1:[ {
+					label: "一次性",
+					value: 1
+				}, {
+					label: "周期",
+					value: 2
+				}],
 				rewardType:'', // 任务类型
 				rewardTableData:[{}], // 任务列表数据
 				rewardEditDialog:false, // 任务奖励编辑弹窗
 				rewardInput:'',// 任务编辑
 				rewardValue:'',// 任务编辑
+				rewardHistoryTableData:[], //任务历史
+				rewardHistoryDialog:false // 任务历史弹窗
 			}
 		},
 		watch: {
@@ -1286,6 +1353,23 @@
 			//任务奖励 编辑
 			handleRewardEdit(row){
 				this.rewardEditDialog = true
+			},
+			//任务奖励 历史弹窗
+			handleRewardHistory(row){
+				this.rewardHistoryDialog = true
+			},
+			// 任务奖励 历史弹窗
+			handleCloserewardHistory(){
+				this.rewardHistoryDialog = false
+			},
+			//重新发布招工
+			Republish(item){
+				getServiceUpdateStatus({id:this.orderId,status:2}).then(res=>{
+					if(res.code == 200){
+					this.$message.success('发布招工成功')
+					this.getOrderdetail(this.orderId);
+					}
+				})
 			}
 		}
 	}
@@ -1414,11 +1498,15 @@
 
 	.service-details-member-box-list-worker {
 		margin-top: 20px;
-
+		width: 100%;
 		.service-details-member-box-list-worker-title {
 			width: 100px;
 		}
-
+		.service-details-member-box-list-worke-btn{
+			position: absolute;
+			right: 0;
+			top: 10px;
+		}
 		.service-details-member-box-list-worker-name {
 			color: #0079FE;
 			margin-bottom: 20px;
@@ -1434,6 +1522,18 @@
 			i {
 				margin-left: 20px;
 				cursor: pointer;
+			}
+			.service-details-member-box-list-worker-user-item-sign{
+				color: green;
+				margin-top: 5px;
+			}
+			.service-details-member-box-list-worker-user-item-go{
+				    padding: 5px;
+					border-radius: 20px;
+					font-size: 12px;
+					background: #636161;
+					color: #FFFFFF;
+					margin-left: 5px;
 			}
 		}
 
