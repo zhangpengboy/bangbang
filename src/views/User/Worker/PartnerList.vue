@@ -1,5 +1,5 @@
 <template>
-	<div class="main">
+	<div class="main" v-loading="loading">
 		<!-- 头部  -->
 		<div class="top" id="top">
 			<div class="top-title ">数据筛选</div>
@@ -39,7 +39,7 @@
 		<div class="box">
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
-				<el-button>导出</el-button>
+				<el-button @click="handleExport">导出</el-button>
 			</div>
 			<!-- 表格 -->
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
@@ -48,19 +48,27 @@
 						{{pageSize * (pageIndex -1) +1 + scope.$index}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="id" label="用户ID " width="200">
+				<el-table-column prop="userId" label="用户ID " width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="名称 " width="200">
+				<el-table-column prop="userName" label="名称 " width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="联系方式 " width="200">
+				<el-table-column prop="phone" label="联系方式 " width="200">
 				</el-table-column>
-				<el-table-column prop="id" label="邀请人数 " width="200">
+				<el-table-column prop="invitationNum" label="邀请人数 " width="80">
 				</el-table-column>
-				<el-table-column prop="id" label="成为合伙人时间 " width="200">
+				<el-table-column prop="id" label="成为合伙人时间 ">
+					<template slot-scope="scope">
+						{{formatDateTime(scope.row.approvedTime)}}
+					</template>
 				</el-table-column>
-				<el-table-column prop="id" label="地区 ">
+				<el-table-column prop="cityName" label="地区 ">
 				</el-table-column>
-				<el-table-column prop="id" label="申请状态 " width="200">
+				<el-table-column label="申请状态 ">
+					<template slot-scope="scope">
+						{{scope.row.status == 0 ?'正常':'禁用'}}
+					</template>
+				</el-table-column>
+				<el-table-column prop="reason" label="理由 " width="200">
 				</el-table-column>
 				<el-table-column prop="id" label="操作 ">
 					<template slot-scope="scope">
@@ -68,7 +76,7 @@
 							查看
 						</el-button>
 						<el-button type="text" size="small" @click="handleSumbitRelationship(scope.row)">
-							{{scope.row.contactStatus == 0?'禁用合伙人':' 恢复合伙人'}}
+							{{scope.row.status == 0?'禁用合伙人':' 恢复合伙人'}}
 						</el-button>
 					</template>
 				</el-table-column>
@@ -89,8 +97,10 @@
 <script>
 	import {
 		getPartnerList,
-		getPartnerExport
+		getPartnerExport,
+		getPartnerUpdateStatus
 	} from '../../../api/user.js'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
@@ -102,17 +112,18 @@
 					value: ""
 				}, {
 					label: "正常",
-					value: 1
+					value: 0
 				}, {
 					label: "冻结",
-					value: 2
+					value: 1
 				}],
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				clientHeight: 0,
-				addressList: [],
-				address: ""
+				addressList: [], // 地区列表
+				address: "", // 地址
+				loading: false, // 
 			}
 		},
 		mounted() {
@@ -120,10 +131,82 @@
 			this.getPartnerList();
 		},
 		methods: {
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			/** 修改当前列表状态 */
+			handleSumbitRelationship(row) {
+				console.log(row)
+				let param = {};
+				param.id = row.id;
+				param.status = row.status == 0 ? 1 : 0;
+				if (row.status == 0) {
+					this.$prompt('是否禁用当前合伙人', '确认提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						inputPlaceholder: "请填写禁用理由（选填）"
+					}).then(({
+						value
+					}) => {
+						console.log(value);
+						param.reason = value;
+						this.getPartnerUpdateStatus(param);
+					}).catch(() => {});
+				} else {
+					this.$confirm('是否恢复当前合伙人', '确认提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(() => {
+						this.getPartnerUpdateStatus(param);
+					}).catch(() => {
+					});
+				}
+
+			},
+			
+			/** 修改当前状态 */
+			async getPartnerUpdateStatus(data){
+				this.loading = true;
+				try{
+					let res = await getPartnerUpdateStatus(data);
+					this.$message.success('编辑成功');
+					this.loading = false;
+					this.getPartnerList();
+					
+				}catch(e){
+					this.loading = false;
+					//TODO handle the exception
+				}
+				
+			},
+			/** 导出 */
+			async handleExport() {
+				// return;
+				let param = {};
+				param.pageNum = this.pageIndex;
+				param.pageSize = this.pageSize;
+				param.status = this.status;
+				param.keyword = this.keyword;
+				param.cityName = this.address;
+				this.loading = true;
+				try {
+					let res = await getPartnerExport(param);
+					console.log('导出', res);
+				} catch (e) {
+					//TODO handle the exception
+					this.loading = false;
+					console.log(e)
+				}
+
+				// this.$message.success('导出成功')
+
+			},
 			/** 打开详情 */
 			handleOpenLook(row) {
 				this.$router.push({
-					path: '/user/partnerListDetails'
+					path: '/user/partnerListDetails',
+					query:{userId:row.userId}
 				})
 			},
 			/** 计算页面高度 */
@@ -149,8 +232,17 @@
 				param.pageSize = this.pageSize;
 				param.status = this.status;
 				param.keyword = this.keyword;
-				let res = await getPartnerList(param);
-				console.log('获取合伙人列表', res);
+				param.cityName = this.address;
+				this.loading = true;
+				try{
+					let res = await getPartnerList(param);
+					this.PageCount = res.data.total;
+					this.tableData = res.data.list
+					this.loading = false;
+				}catch(e){
+					this.loading = false;
+					//TODO handle the exception
+				}
 			},
 			/** 选择分页 */
 			handleSizeChange(e) {
@@ -173,6 +265,7 @@
 				this.keywords = '';
 				this.pageIndex = 1;
 				this.status = '';
+				this.address = '';
 				this.getPartnerList();
 			},
 		}

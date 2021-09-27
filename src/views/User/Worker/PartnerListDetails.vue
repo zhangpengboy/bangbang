@@ -1,40 +1,42 @@
 <template>
 	<div class="main">
 		<!-- 用户信息 -->
-		<div class="details-top flex fvertical">
+		<div class="details-top flex fvertical" v-loading="userLoading">
 			<div class="details-top-img">
 				<div class="details-top-icon flex fvertical fcenter">
-					<i class="el-icon-s-custom"></i>
+					<img v-if="info.headPortrait" :src="info.headPortrait" alt="">
+					<i class="el-icon-s-custom" v-else></i>
 				</div>
-				<p>张三</p>
+				<p>{{info.userName?info.userName:''}}</p>
 			</div>
 			<div class="details-top-info f1 flex fvertical">
 				<div class="details-top-info-list">
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">ID</span>
-						<span class="details-top-info-list-item-date">8447466</span>
+						<span class="details-top-info-list-item-date">{{info.userId?info.userId:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">手机号码</span>
-						<span class="details-top-info-list-item-date">18888888888</span>
+						<span class="details-top-info-list-item-date">{{info.phone?info.phone:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">地区</span>
-						<span class="details-top-info-list-item-date">广州市</span>
+						<span class="details-top-info-list-item-date">{{info.cityName?info.cityName:''}}</span>
 					</div>
 				</div>
 				<div class="details-top-info-list">
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">名称</span>
-						<span class="details-top-info-list-item-date">张三</span>
+						<span class="details-top-info-list-item-date">{{info.userName?info.userName:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">邀请人数</span>
-						<span class="details-top-info-list-item-date">180人</span>
+						<span
+							class="details-top-info-list-item-date">{{info.invitationNum?info.invitationNum:0}}人</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">成为合伙人时间</span>
-						<span class="details-top-info-list-item-date">2017-07-24 17:25:38</span>
+						<span class="details-top-info-list-item-date">{{formatDateTime(info.approvedTime)}}</span>
 					</div>
 				</div>
 			</div>
@@ -106,7 +108,7 @@
 			</div>
 		</div>
 		<!-- 数据统计end -->
-		
+
 		<!-- 账单详情 -->
 		<div class="partne-bill main" v-show="radio1 == '账单详情'">
 			<!-- 头部  -->
@@ -116,13 +118,14 @@
 					<div class="top-content-item flex fvertical ">
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
-							<el-input class="top-content-item-input" v-model="keywords" placeholder="用户ID/账号">
+							<el-input class="top-content-item-input" v-model="keyword" placeholder="用户ID/名称/手机号码">
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>状态：</span>
-							<el-select v-model="status" placeholder="选择状态">
-								<el-option v-for="item in statusList" :key="item.value" :label="item.label" :value="item.value">
+							<el-select v-model="type" placeholder="选择状态">
+								<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+									:value="item.value">
 								</el-option>
 							</el-select>
 						</div>
@@ -132,76 +135,207 @@
 						<el-button @click="handleReset">重置</el-button>
 					</div>
 				</div>
-				
+
 				<div class="partne-bill-radio">
-					<el-radio-group v-model="billRadio">
+					<el-radio-group v-model="billRadio" @change="handleBillRoadio">
 						<el-radio-button label="已获得收入"></el-radio-button>
 						<el-radio-button label="未结算收入"></el-radio-button>
 						<el-radio-button label="提现记录"></el-radio-button>
 					</el-radio-group>
 				</div>
-				<!-- 表格  -->
-				<div class="partne-bill-table">
-					<el-table :data="tableData" stripe style="width: 100%" border >
-						<el-table-column  label="序号" width="60">
-							<template slot-scope="scope">
-								{{pageSize * (pageIndex -1) +1 + scope.$index}}
-							</template>
-						</el-table-column>
-						<el-table-column prop="id" label="ID" width="200">
-						</el-table-column>
-						<el-table-column prop="id" label="名称" >
-						</el-table-column>
-						<el-table-column prop="id" label="联系方式" >
-						</el-table-column>
-						<el-table-column prop="id" label="收益类型" >
-						</el-table-column>
-						<el-table-column prop="id" label="收益金额" >
-						</el-table-column>
-						<el-table-column prop="id" label="时间" >
-						</el-table-column>
-						<el-table-column prop="id" label="操作" >
-						</el-table-column>
-					</el-table>
-				</div>
-				<!-- 表格end -->
-			
-				<!-- 分页  -->
-				<div class="flex fcenter page">
-					<el-pagination class="page" id="page" background @size-change="handleSizeChange"
-						@current-change="handleCurrentChange" :current-page="pageIndex" :page-sizes="[10, 20, 30, 40]"
-						:page-size="pageSize" layout="total, prev, pager, next,sizes, jumper" :total="PageCount">
-					</el-pagination>
-				</div>
-				<!-- 分页end -->
-				
+				<!--  已获得收入 -->
+				<billList v-loading="loading" :show="billRadio== '已获得收入'?true:false" :tableData="tableData"
+					:pageIndex="pageIndex" :pageSize="pageSize" :pageCount="pageCount"
+					@handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange" />
+				<!--  已获得收入end -->
+
 			</div>
 			<!-- 头部end -->
-			
+
 		</div>
 		<!-- 账单详情end -->
 	</div>
-		
+
 </template>
 
 <script>
+	import {
+		getPartnerDetails,
+		getIncomeDetail,
+		getInvitationTeam,
+		getInvitationIncome
+	} from '../../../api/user.js'
+	import billList from '../components/partner/bill-list.vue'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
-				billRadio:"已获得收入", 
+				notTableData: [], // 未获取收入列表
+				notPageIndex: 1,
+				notPageSize: 10,
+				notPageCount: 0,
+				billRadio: "已获得收入",
 				radio1: "账单详情",
-				keywords:"",
-				statusList:[],
+				keyword: "",
+				type: "",
+				typeList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "完成认证奖励",
+					value: 0
+				}, {
+					label: "施工费用分佣",
+					value: 1
+				}, {
+					label: "完成施工奖励",
+					value: 2
+				}],
+				blliTypeList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "未成为认证工人",
+					value: 0
+				}, {
+					label: "未结施工费用分佣",
+					value: 1
+				}, {
+					label: "未完成施工奖励",
+					value: 2
+				}],
+				status: 0,
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
-				PageCount: 0, // 总条数
-				tableData:[]
+				pageCount: 0, // 总条数
+				tableData: [],
+				info: {}, // 用户信息
+				userLoading: false, // 是否加载用户
+				loading: false
+
 			}
 		},
+		watch: {
+			radio1(val) {
+				if (val == '数据统计') {
+					this.$nextTick(() => {
+						this.setChart();
+					})
+				}
+			}
+		},
+		components: {
+			billList
+		},
 		mounted() {
-			this.setChart();
+			// console.log('this.$route',this.$route.query.userId)
+			this.userId = this.$route.query.userId;
+			this.getPartnerDetails();
+			this.getIncomeDetail();
+			console.log('-----')
+			this.getInvitationTeam();
+			this.getInvitationIncome();
 		},
 		methods: {
+			/** 获取数据统计-团队 */
+			async getInvitationTeam(){
+				let res = await getInvitationTeam(this.userId);
+				console.log('获取数据统计-团队',res);
+			},
+			/** 获取数据统计-收益 */
+			async getInvitationIncome(){
+				let res = await getInvitationIncome(this.userId);
+				console.log('获取数据统计-收益',res);
+			},
+			/** 切换账单 */
+			handleBillRoadio(e) {
+				console.log(e)
+				switch (e) {
+					case '已获得收入':
+						this.pageIndex = 1;
+						this.type = '';
+						this.status = 0;
+						this.keyword = '';
+						this.getIncomeDetail();
+						break;
+					case '未结算收入':
+						this.pageIndex = 1;
+						this.type = '';
+						this.status = 1;
+						this.keyword = '';
+						this.getIncomeDetail();
+						break;
+					case '提现记录':
+						break;
+				}
+			},
+			/** 查询 */
+			handelSearch() {
+				if (this.billRadio == '提现记录') {
+					return
+				}
+				this.getIncomeDetail();
+			},
+			/** 重置 */
+			handleReset() {
+				this.type = '';
+				this.pageIndex = 1;
+				this.keyword = '';
+				if (this.billRadio == '提现记录') {
+					return
+				}
+				this.getIncomeDetail();
+
+			},
+			/** 选择分页 */
+			handleSizeChange(e) {
+				this.pageSize = e;
+				this.pageIndex = 1;
+				this.getIncomeDetail();
+			},
+			/** 点击分页 */
+			handleCurrentChange(e) {
+				this.pageIndex = e;
+				this.getIncomeDetail();
+			},
+			/** 获取账号详情列表 */
+			async getIncomeDetail() {
+				let param = {};
+				param.pageNum = this.pageIndex;
+				param.pageSize = this.pageSize;
+				param.keyword = this.keyword;
+				param.status = this.status;
+				param.type = this.type;
+				this.loading = true;
+				try {
+					let res = await getIncomeDetail(param);
+					this.tableData = res.data.list
+					this.pageCount = res.data.total
+					this.loading = false;
+				} catch (e) {
+					//TODO handle the exception
+					this.loading = false;
+				}
+			},
+
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			/** 获取合伙人信息 */
+			async getPartnerDetails() {
+				this.userLoading = true;
+				try {
+					let res = await getPartnerDetails(this.userId);
+					console.log(res);
+					this.userLoading = false;
+					this.info = res.data;
+				} catch (e) {
+					this.userLoading = false;
+					//TODO handle the exception
+				}
+
+
+			},
 			/** 图表 */
 			setChart() {
 				let myChart = this.$echarts.init(document.getElementById('partneChart'))
@@ -213,7 +347,7 @@
 						top: '5%',
 						left: 'center'
 					},
-					color:['#35CBCB','#3AA0FF'],
+					color: ['#35CBCB', '#3AA0FF'],
 					series: [{
 						type: 'pie',
 						radius: ['40%', '70%'],
@@ -280,10 +414,17 @@
 				background-color: #ccc;
 				border-radius: 50%;
 				margin: 20px auto 0;
+				overflow: hidden;
 
 				i {
 					color: #fff;
 					font-size: 60px;
+				}
+
+				img {
+					width: 70px;
+					height: 70px;
+					border-radius: 50%;
 				}
 			}
 		}
@@ -332,7 +473,7 @@
 
 		.partne-data-info {
 			.partne-data-info-nav {
-				width: 300px;
+				width: 240px;
 				height: 110px;
 				background-color: rgb(254, 192, 61);
 				margin-right: 20px;
@@ -384,20 +525,21 @@
 		}
 
 		.partne-data-chart {
-			width: 700px;
+			width: 650px;
 			height: 510px;
 			margin-left: 50px;
 			border: 1px solid #CCCCCC;
 		}
 	}
 
-	.partne-bill{
-		.partne-bill-radio{
+	.partne-bill {
+		.partne-bill-radio {
 			border-top: 1px solid #f1f1f1;
 			border-bottom: 1px solid #f1f1f1;
-			padding: 20px ;
+			padding: 20px;
 		}
-		.partne-bill-table{
+
+		.partne-bill-table {
 			// margin-top: 20px;
 			margin: 20px 20px 0;
 		}

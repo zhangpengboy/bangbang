@@ -135,7 +135,7 @@ export function getBriefPay(params) {
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
  */
- export function getInvoice(params) {
+export function getInvoice(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/invoice`,
 		params
@@ -144,7 +144,7 @@ export function getBriefPay(params) {
 /**
  * 发票状态修改
  */
- export function postInvoiceStatus(data) {
+export function postInvoiceStatus(data) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/invoice/update`,
 		method: 'post',
@@ -154,7 +154,7 @@ export function getBriefPay(params) {
 /**
  * 发票详情
  */
- export function getInvoiceDetail(params) {
+export function getInvoiceDetail(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/invoice/detail`,
 		params
@@ -808,7 +808,7 @@ export function getByOrderAndBrief(params) {
  */
 export function getPartnerList(params) {
 	return request({
-		url: `/api/admin/marketing/partner/v1.0.1/page`,
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/page`,
 		params
 	})
 }
@@ -827,8 +827,9 @@ export function getPartnerList(params) {
  */
 export function getPartnerExport(params) {
 	return request({
-		url: `/api/admin/marketing/partner/v1.0.1/export`,
-		params
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/export`,
+		params,
+		responseType: 'blob'
 	})
 }
 
@@ -836,9 +837,38 @@ export function getPartnerExport(params) {
  * 合伙人详情
  * @param {Number} userId  当前用户ID
  */
-export function getPartnerDetails(params) {
+export function getPartnerDetails(userId) {
 	return request({
-		url: `/api/admin/marketing/partner/v1.0.1/get`,
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/get/${userId}`,		
+	})
+}
+
+/** 
+ * 修改合伙人状态
+ * @param {Number} id 当前列表id
+ * @param {Number} status 状态  
+ * @param {String} reason 理由 
+ *  */
+export function getPartnerUpdateStatus(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+
+/** 
+ * 合伙人-账单详情（已获得收入，未结算收入）
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
+ *  */
+export function getIncomeDetail(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/page`,
 		params
 	})
 }
@@ -932,5 +962,42 @@ export function awardSettingupdateOne(data) {
 		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/updateOne`,
 		method: 'post',
 		data
+	})
+}
+/** 
+ * 合伙人-账单详情-导出（已获得收入，未结算收入）
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
+ *  */
+export function getIncomeDetailExport(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/export`,
+		params
+	})
+}
+
+/**  
+ * 合伙人-数据统计团队
+ * @param {Number} userId  用户ID
+ *  */
+export function getInvitationTeam(userId){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/statistics/${userId}`,
+		params
+	})
+}
+
+
+/**  
+ * 合伙人-数据统计收益
+ * @param {Number} userId  用户ID
+ *  */
+export function getInvitationIncome(userId){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/Income/v1.0.1/statistics/${userId}`,
+		params
 	})
 }
