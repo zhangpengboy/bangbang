@@ -46,7 +46,7 @@
 				</el-table-column>
 				<el-table-column  label="类型" width="120">
 					<template slot-scope="scope">
-						<p v-if="scope.row.type == 1">劳务派遣</p>
+						<p v-if="scope.row.type == 1">工人推荐</p>
 						<p v-if="scope.row.type == 2">劳务分包</p>
 					</template>
 				</el-table-column>
