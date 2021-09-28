@@ -160,50 +160,83 @@
 				</div>
 				<div class="partne-bill-title flex fbetween fvertical">
 					<div class="bold">数据列表</div>
-					<el-button @click="handleExport">导出</el-button>
+					<!-- <el-button @click="handleExport">导出</el-button> -->
 				</div>
 
 				<!--  已获得收入 / 未结算收入 -->
-				<billList v-loading="loading" v-if="billRadio!= '提现记录'" :show="billRadio== '已获得收入'?true:false" :tableData="tableData"
-					:pageIndex="pageIndex" :pageSize="pageSize" :pageCount="pageCount"
+				<billList v-loading="loading" v-if="billRadio!= '提现记录'" :show="billRadio== '已获得收入'?true:false"
+					:tableData="tableData" :pageIndex="pageIndex" :pageSize="pageSize" :pageCount="pageCount"
 					@handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange" />
 				<!--  已获得收入 / 未结算收入 end -->
+
 				<!-- 提现记录 -->
-				<div class="partne-bill-record" v-else>
-					<el-table   :data="tableData" stripe style="width: 100%" border >
-						<el-table-column  label="序号" width="60">
-							<template slot-scope="scope">
-								{{pageSize * (pageIndex -1) +1 + scope.$index}}
-							</template>
-						</el-table-column>
-						<el-table-column prop="userId" label="订单ID " width="200">
-						</el-table-column>
-						<el-table-column prop="userName" label="提现金额" >
-						</el-table-column>
-						<el-table-column prop="inviteePhone" label="到账微信" >
-						</el-table-column>
-						<el-table-column  label="申请时间" >
-						
-						</el-table-column>
-						<el-table-column prop="fee" label="状态" >
-						</el-table-column>
-						<el-table-column prop="fee" label="操作人">
-						</el-table-column>
-						<el-table-column  label="操作时间" >
-							<template slot-scope="scope">
-								{{formatDateTime(scope.row.incomeTime)}}
-							</template>
-						</el-table-column>
-						<el-table-column label="操作" >
-						</el-table-column>
-					</el-table>
-				</div>
+				<recordList v-else :recordTable="recordTable" :recordCount="recordCount" :recordSize="recordSize"
+					:recordIndex="recordIndex" v-loading="recordLoading"
+					@handleSizeChangeRecord="handleSizeChangeRecord"
+					@handleCurrentChangeRecord="handleCurrentChangeRecord" />
 				<!-- 提现记录end -->
 			</div>
 			<!-- 头部end -->
 
 		</div>
 		<!-- 账单详情end -->
+		<!-- 邀请列表 -->
+		<div class="partne-invite main" v-show="radio1 == '邀请列表'">
+			<div class="top">
+				<p class="bold top-content">数据筛选</p>
+				<div class="top-content flex fvertical fbetween">
+					<div class="top-content-item flex fvertical ">
+						<div class="flex fvertical top-content-item-status">
+							<span>输入查询：</span>
+							<!--  -->
+							<el-input class="top-content-item-input" v-model="inviteKeyWord" placeholder="用户ID/名称/手机号码">
+							</el-input>
+						</div>
+						<div class="flex fvertical top-content-item-status">
+							<span>认证状态：</span>
+
+							<el-select v-model="inviteStatus" placeholder="选择状态">
+
+								<el-option v-if="inviteRadio == '邀请注册'" v-for="item in inviteList" :key="item.value"
+									:label="item.label" :value="item.value">
+								</el-option>
+
+								<el-option v-if="inviteRadio == '工作分享'" v-for="item in taskList" :key="item.value"
+									:label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</div>
+					</div>
+					<div class="top-content-btn">
+						<el-button type="primary" @click="handelInviteSearch"> 查询</el-button>
+						<el-button @click="handleInviteReset">重置</el-button>
+					</div>
+
+				</div>
+
+				<div class="invite-tables">
+					<el-radio-group v-model="inviteRadio" @change="handleInviteRadio">
+						<el-radio-button label="邀请注册"></el-radio-button>
+						<el-radio-button label="工作分享"></el-radio-button>
+					</el-radio-group>
+				</div>
+
+				<!-- 邀请注册列表 -->
+				<inviteList v-loading="inviteLoading" v-if="inviteRadio == '邀请注册'" :tableData="inviteTables"
+					:pageIndex="inviteIndex" :pageSize="inviteSize" :pageCount="inviteCount"
+					@handleSizeChange="handleSizeChangeInvite" @handleCurrentChange="handleCurrentChangeInvite" />
+				<!-- 邀请注册列表end -->
+
+				<!-- 任务分享 -->
+				<inviteTask v-else v-loading="taskLoading" :tableData="taskTables" :pageIndex="taskIndex"
+					:pageSize="taskSize" :pageCount="taskCount" @handleSizeChange="handleSizeChangeTask"
+					@handleCurrentChange="handleCurrentChangeTask" />
+				<!-- 任务分享end -->
+
+			</div>
+
+		</div>
+		<!-- 邀请列表end -->
 	</div>
 
 </template>
@@ -213,21 +246,42 @@
 		getPartnerDetails,
 		getIncomeDetail,
 		getInvitationTeam,
-		getInvitationIncome
+		getInvitationIncome,
+		getRecordList,
+		getRecordExport,
+		getInviteList,
+		getTaskList,
+		getTaskExport,
+		getIncomeDetailExport
 	} from '../../../api/user.js'
 	import billList from '../components/partner/bill-list.vue'
+	import recordList from '../components/partner/record-list.vue'
+	import inviteList from '../components/partner/invite-list.vue'
+	import inviteTask from '../components/partner/invite-task.vue'
 	import moment from 'moment'
 	export default {
 		data() {
 			return {
+				taskIndex: 1,
+				taskSize: 10,
+				taskCount: 0,
+				taskLoading: false, // 工作任务
+				taskTables: [],
+				inviteLoading: false, // 邀请注册正在加载
+				inviteKeyWord: "", // 邀请注册-搜索
+				inviteIndex: 1,
+				inviteSize: 10,
+				inviteCount: 0,
+				inviteTables: [],
 				notTableData: [], // 未获取收入列表
 				notPageIndex: 1,
 				notPageSize: 10,
 				notPageCount: 0,
 				billRadio: "已获得收入",
-				radio1: "账单详情",
+				radio1: "数据统计",
 				keyword: "",
 				type: "",
+				inviteRadio: "邀请注册",
 				typeList: [{
 					label: "全部",
 					value: ""
@@ -254,21 +308,42 @@
 					label: "未完成施工奖励",
 					value: 2
 				}],
-				recordList:[
+				recordList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "审核中",
+					value: 0
+				}, {
+					label: "已到账",
+					value: 2
+				}, {
+					label: "到账失败",
+					value: 1
+				}],
+				inviteList: [ // 邀请注册
 					{
 						label: "全部",
 						value: ""
 					}, {
-						label: "审核中",
+						label: "未认证",
 						value: 0
 					}, {
-						label: "已到账",
+						label: "已认证",
 						value: 1
-					}, {
-						label: "到账失败",
-						value: 2
 					}
 				],
+				taskList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "工作中",
+					value: 1
+				}, {
+					label: "已完成",
+					value: 2
+				}],
+				inviteStatus: "",
 				status: 0,
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
@@ -277,9 +352,13 @@
 				info: {}, // 用户信息
 				userLoading: false, // 是否加载用户
 				loading: false,
-				incomeInfo:{} ,// 统计合伙人收益
-				teamInfo:{}, // 统计
-
+				incomeInfo: {}, // 统计合伙人收益
+				teamInfo: {}, // 统计
+				recordIndex: 1, // 页码
+				recordSize: 10, // 显示多少条数据
+				recordCount: 0, // 总条数
+				recordTable: [], // 提现记录
+				recordLoading: false, // 是否加载提现记录列表
 			}
 		},
 		watch: {
@@ -292,7 +371,10 @@
 			}
 		},
 		components: {
-			billList
+			billList,
+			recordList,
+			inviteList,
+			inviteTask
 		},
 		mounted() {
 			// console.log('this.$route',this.$route.query.userId)
@@ -301,17 +383,127 @@
 			this.getIncomeDetail();
 			this.getInvitationTeam();
 			this.getInvitationIncome();
+			this.getInviteList();
+			this.getTaskList();
+			this.setChart();
 		},
 		methods: {
+			/** 邀请列表-搜索 */
+			handelInviteSearch() {
+				if (this.inviteRadio == '邀请注册') {
+					this.getInviteList();
+					return;
+				}
+				this.getTaskList();
+			},
+			/** 邀请列表-重置 */
+			handleInviteReset() {
+				this.inviteKeyWord = '';
+				this.inviteStatus = '';
+				if (this.inviteRadio == '邀请注册') {
+					this.inviteIndex = 1;
+					this.getInviteList();
+					return;
+				}
+				this.taskIndex = 1;
+				this.getTaskList();
+			},
+			/** 获取工作分享列表 */
+			async getTaskList() {
+				let param = {};
+				param.pageNum = this.taskIndex;
+				param.pageSize = this.taskSize;
+				param.userId = this.userId;
+				param.keyword = this.inviteKeyWord;
+				param.workStatus = this.inviteStatus;
+				this.taskLoading = true;
+				try {
+					let res = await getTaskList(param);
+					this.taskSize = res.data.total;
+					this.taskTables = res.data.list;
+					this.taskLoading = false;
+				} catch (e) {
+					this.taskLoading = false;
+					//TODO handle the exception
+				}
+			},
+
+			/** 切换-邀请列表 */
+			handleInviteRadio(e) {
+				this.inviteKeyWord = '';
+				this.inviteStatus = '';
+				if (e == '邀请注册') {
+					this.inviteIndex = 1;
+					this.getInviteList();
+					return;
+				}
+				this.taskIndex = 1;
+				this.getTaskList();
+
+			},
+			/** 获取邀请注册列表 */
+			async getInviteList() {
+				try {
+					let param = {};
+					param.pageNum = this.inviteIndex;
+					param.pageSize = this.inviteSize;
+					param.userId = this.userId;
+					param.authStatus = this.inviteStatus;
+					param.keyword = this.inviteKeyWord;
+					this.inviteLoading = true;
+					let res = await getInviteList(param);
+					this.inviteLoading = false;
+					this.inviteCount = res.data.total;
+					this.inviteTables = res.data.list;
+				} catch (e) {
+					this.inviteLoading = false;
+					//TODO handle the exception
+				}
+			},
+
+			/** 获取账单详情-提现记录 */
+			async getRecordList() {
+				let param = {};
+				param.pageNum = this.recordIndex;
+				param.pageSize = this.recordSize;
+				param.userId = this.userId;
+				param.keyword = this.keyword;
+				param.status = this.type;
+				this.recordLoading = true;
+				try {
+					let res = await getRecordList(param);
+					this.recordTable = res.data.list;
+					this.recordCount = res.data.total
+					this.recordLoading = false;
+				} catch (e) {
+					//TODO handle the exception
+					this.recordLoading = false;
+				}
+
+			},
 			/** 导出账单 */
-			handleExport() {
-				console.log('导出')
+			async handleExport() {
+				let param = {};
+				param.pageNum = this.recordIndex;
+				param.pageSize = this.recordSize;
+				param.userId = this.userId;
+				param.keyword = this.keyword;
+				param.status = this.type;
+				try {
+					let res = await getIncomeDetailExport(param);
+				} catch (e) {
+					//TODO handle the exception
+					console.log(e);
+				}
+
+
 			},
 			/** 获取数据统计-团队 */
 			async getInvitationTeam() {
 				try {
 					let res = await getInvitationTeam(this.userId);
 					this.teamInfo = res.data;
+					console.log('获取数据统计-团队', res.data);
 				} catch (e) {
 					console.log(e)
 					//TODO handle the exception
@@ -342,12 +534,17 @@
 						this.getIncomeDetail();
 						break;
 					case '提现记录':
+						this.recordIndex = 1;
+						this.keyword = '';
+						this.type = '';
+						this.getRecordList();
 						break;
 				}
 			},
 			/** 查询 */
 			handelSearch() {
 				if (this.billRadio == '提现记录') {
+					this.getRecordList();
 					return
 				}
 				this.getIncomeDetail();
@@ -358,10 +555,11 @@
 				this.pageIndex = 1;
 				this.keyword = '';
 				if (this.billRadio == '提现记录') {
+					this.recordIndex = 1;
+					this.getRecordList();
 					return
 				}
 				this.getIncomeDetail();
-
 			},
 			/** 选择分页 */
 			handleSizeChange(e) {
@@ -369,10 +567,37 @@
 				this.pageIndex = 1;
 				this.getIncomeDetail();
 			},
+			handleSizeChangeRecord(e) {
+				this.recordSize = e;
+				this.recordIndex = 1;
+				this.getRecordList();
+			},
+			handleSizeChangeInvite(e) {
+				this.inviteSize = e;
+				this.inviteIndex = 1;
+				this.getInviteList();
+			},
+			handleSizeChangeTask(e) {
+				this.taskSize = e;
+				this.taskIndex = 1;
+				this.getTaskList();
+			},
 			/** 点击分页 */
 			handleCurrentChange(e) {
 				this.pageIndex = e;
 				this.getIncomeDetail();
+			},
+			handleCurrentChangeRecord(e) {
+				this.recordIndex = e;
+				this.getRecordList();
+			},
+			handleCurrentChangeInvite(e) {
+				this.inviteIndex = e
+				this.getInviteList();
+			},
+			handleCurrentChangeTask(e) {
+				this.taskIndex = e;
+				this.getTaskList();
 			},
 			/** 获取账号详情列表 */
 			async getIncomeDetail() {
@@ -415,13 +640,26 @@
 			/** 图表 */
 			setChart() {
 				let myChart = this.$echarts.init(document.getElementById('partneChart'))
+				let data = [{
+						value: 1048,
+						name: '认证工人'
+					},
+					{
+						value: 735,
+						name: '未认证工人'
+					}]
 				let option = {
 					tooltip: {
-						trigger: 'item'
+						trigger: 'item',
+						formatter: '{b}: {c}({d}%)'
 					},
 					legend: {
 						top: '5%',
-						left: 'center'
+						left: 'center',
+						formatter: function(name) {
+							// if ()
+						}
+
 					},
 					color: ['#35CBCB', '#3AA0FF'],
 					series: [{
@@ -447,15 +685,7 @@
 						labelLine: {
 							show: false
 						},
-						data: [{
-								value: 1048,
-								name: '认证工人'
-							},
-							{
-								value: 735,
-								name: '未认证工人'
-							},
-						]
+						data: data
 					}]
 				};
 				myChart.setOption(option)
@@ -540,10 +770,16 @@
 		}
 	}
 
+	.invite-tables {
+		border-top: 1px solid #f1f1f1;
+		padding: 20px;
+	}
+
 	.partne-radio {
 		margin: 15px 0;
 	}
-	.partne-bill-title{
+
+	.partne-bill-title {
 		padding: 20px 20px 10px;
 	}
 

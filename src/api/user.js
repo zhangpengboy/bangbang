@@ -839,7 +839,7 @@ export function getPartnerExport(params) {
  */
 export function getPartnerDetails(userId) {
 	return request({
-		url: `/api/marketing/admin/marketing/partner/v1.0.1/get/${userId}`,		
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/get/${userId}`,
 	})
 }
 
@@ -866,7 +866,7 @@ export function getPartnerUpdateStatus(data) {
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
  *  */
-export function getIncomeDetail(params){
+export function getIncomeDetail(params) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/page`,
 		params
@@ -887,7 +887,7 @@ export function userRealNameApplyexportCsv(params) {
 		url: `/api/user/admin/userRealNameApply/v1.0/exportCsv`,
 		method: 'get',
 		params,
-    responseType: 'blob'
+		responseType: 'blob'
 	})
 }
 // 实名认证申请修改状态
@@ -937,7 +937,7 @@ export function userMemberApplyexportCsv(params) {
 		url: `/api/user/admin/userMemberApply/v1.0.1/exportCsv`,
 		method: 'get',
 		params,
-    responseType: 'blob'
+		responseType: 'blob'
 	})
 }
 // 用户会员申请表-认证工人审核-审核
@@ -972,10 +972,12 @@ export function awardSettingupdateOne(data) {
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
  *  */
-export function getIncomeDetailExport(params){
+export function getIncomeDetailExport(params) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/export`,
-		params
+		params,
+		method: 'get',
+		responseType: 'blob'
 	})
 }
 
@@ -983,7 +985,7 @@ export function getIncomeDetailExport(params){
  * 合伙人-数据统计团队
  * @param {Number} userId  用户ID
  *  */
-export function getInvitationTeam(userId){
+export function getInvitationTeam(userId) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/statistics/${userId}`
 	})
@@ -994,8 +996,84 @@ export function getInvitationTeam(userId){
  * 合伙人-数据统计收益
  * @param {Number} userId  用户ID
  *  */
-export function getInvitationIncome(userId){
+export function getInvitationIncome(userId) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/Income/v1.0.1/statistics/${userId}`
+	})
+}
+
+/** 
+ * 合伙人-提现记录
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID 
+ * @param {String} keyword  搜索关键字（订单ID）
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
+ *   */
+export function getRecordList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/page`,
+		params
+	})
+}
+
+/** 
+ * 合伙人-导出提现记录
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID 
+ * @param {String} keyword  搜索关键字（订单ID）
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
+ *   */
+export function getRecordExport(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/export`,
+		params,
+		responseType: 'blob'
+	})
+}
+
+/**
+ * 邀请注册列表
+ * @param {Number} authStatus 认证状态 0：未认证 1：已认证 
+ * @param {String} keyword 搜索关键字 
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID 
+ * */
+export function getInviteList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 工作分享列表
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成 
+ * @param {String} keyword 搜索关键字 
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID 
+ * */
+export function getTaskList(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 工作分享列表-导出
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成 
+ * @param {String} keyword 搜索关键字 
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID 
+ * */
+export function getTaskExport(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/export`,
+		params
 	})
 }

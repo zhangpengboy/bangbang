@@ -7,7 +7,7 @@
 				<div class="top-content-item flex fvertical f1">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="keywords" placeholder="用户ID/名称/联系方式">
+						<el-input class="top-content-item-input" v-model="keyword" placeholder="用户ID/名称/联系方式">
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
@@ -105,7 +105,7 @@
 		data() {
 			return {
 				tableData: [{}],
-				keywords: '', // 搜索
+				keyword: '', // 搜索
 				status: "", // 状态
 				statusList: [{ // 状态列表
 					label: "全部",
@@ -159,26 +159,25 @@
 						type: 'warning'
 					}).then(() => {
 						this.getPartnerUpdateStatus(param);
-					}).catch(() => {
-					});
+					}).catch(() => {});
 				}
 
 			},
-			
+
 			/** 修改当前状态 */
-			async getPartnerUpdateStatus(data){
+			async getPartnerUpdateStatus(data) {
 				this.loading = true;
-				try{
+				try {
 					let res = await getPartnerUpdateStatus(data);
 					this.$message.success('编辑成功');
 					this.loading = false;
 					this.getPartnerList();
-					
-				}catch(e){
+
+				} catch (e) {
 					this.loading = false;
 					//TODO handle the exception
 				}
-				
+
 			},
 			/** 导出 */
 			async handleExport() {
@@ -189,15 +188,20 @@
 				param.status = this.status;
 				param.keyword = this.keyword;
 				param.cityName = this.address;
-				this.loading = true;
-				try {
-					let res = await getPartnerExport(param);
-					console.log('导出', res);
-				} catch (e) {
-					//TODO handle the exception
-					this.loading = false;
-					console.log(e)
-				}
+				let url =
+					`/api/marketing/admin/marketing/partner/v1.0.1/export?status=${this.status}&keyword=${this.keyword}&cityName=${this.address}`
+				console.log(url)
+				window.open(url);
+				// return;
+				// this.loading = true;
+				// try {
+				// 	let res = await getPartnerExport(param);
+				// 	console.log('导出', res);
+				// } catch (e) {
+				// 	//TODO handle the exception
+				// 	this.loading = false;
+				// 	console.log(e)
+				// }
 
 				// this.$message.success('导出成功')
 
@@ -206,7 +210,9 @@
 			handleOpenLook(row) {
 				this.$router.push({
 					path: '/user/partnerListDetails',
-					query:{userId:row.userId}
+					query: {
+						userId: row.userId
+					}
 				})
 			},
 			/** 计算页面高度 */
@@ -234,12 +240,12 @@
 				param.keyword = this.keyword;
 				param.cityName = this.address;
 				this.loading = true;
-				try{
+				try {
 					let res = await getPartnerList(param);
 					this.PageCount = res.data.total;
 					this.tableData = res.data.list
 					this.loading = false;
-				}catch(e){
+				} catch (e) {
 					this.loading = false;
 					//TODO handle the exception
 				}
