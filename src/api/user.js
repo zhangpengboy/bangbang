@@ -219,6 +219,38 @@ export function getMembers(params) {
 		params
 	})
 }
+/**
+ * 任务奖励列表
+ * 
+ * */
+ export function getReward(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/order/reward`,
+		params
+	})
+}
+
+/**
+ * 任务奖励列表 -- 提交数据
+ * 
+ * */
+ export function postReward(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/order/reward`,
+		method: 'post',
+		data
+	})
+}
+/**
+ * 任务奖励列表 -- 历史数据
+ * 
+ * */
+ export function getRewardlog(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/order/reward/log`,
+		params
+	})
+}
 
 /**
  * 详细报名数据

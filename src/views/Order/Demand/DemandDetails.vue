@@ -36,7 +36,7 @@
 							<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
 								<el-input v-model="basicForm.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
 								</el-input>
-								<span>已输入{{basicForm.title.length}}/30</span>
+								<span>已输入{{basicForm.enterpriseName.length}}/30</span>
 							</el-form-item>
 							<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
 								<el-input v-model="basicForm.enterpriseAddress " placeholder="请输入联系地址">
@@ -168,7 +168,7 @@
 							</div>
 						<div class="flex demand-service-plan-box-item">
 								<el-form-item label="方案进场时间">
-									<el-input v-model="item.enterStartTime" :disabled="true"></el-input>
+									<el-input :value="formatDate(item.enterStartTime)" :disabled="true"></el-input>
 								</el-form-item>
 								<el-form-item class="" label="方案工期">
 									<div class="flex">
@@ -366,19 +366,22 @@
 														<span style="padding-left: 20px;">小时</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费" prop="leaderFee">
-													<div class="flex">
-														<el-input style="width: 200px;" v-model="teamTypes.leaderFee">
-														</el-input>
-														<span style="padding-left: 20px;">元</span>
-													</div>
-												</el-form-item>
 												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
 														<span style="padding-left: 20px;">人</span>
+													</div>
+												</el-form-item>
+												
+												<el-form-item label="带班服务费" prop="leaderFee">
+													<div class="flex">
+														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number"  v-model="teamTypes.leaderRate">
+														</el-input>
+														<span style="padding:0 10px;">%</span>
+														<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"
+														></el-input>元
 													</div>
 												</el-form-item>
 											</div>
@@ -444,11 +447,13 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费" prop="leaderFee">
+												<el-form-item label="带班服务费" prop="leaderFee">
 													<div class="flex">
-														<el-input style="width: 150px;" v-model="teamTypes.leaderFee">
+														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
 														</el-input>
-														<span style="padding-left: 20px;">元/天</span>
+														<span style="padding:0 10px;">%</span>
+														<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"
+														></el-input>元
 													</div>
 												</el-form-item>
 											</div>
@@ -498,12 +503,14 @@
 														<span style="padding-left: 20px;">元/小时</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="带班管理费" prop="leaderFee"
+												<el-form-item label="带班服务费" prop="leaderFee"
 													v-if="teamTypes.tag == '班组长'">
 													<div class="flex">
-														<el-input style="width: 150px;" v-model="teamTypes.leaderFee">
+														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
 														</el-input>
-														<span style="padding-left: 20px;">元/天</span>
+														<span style="padding:0 10px;">%</span>
+														<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"
+														:value="teamTypes.leaderFee "></el-input>元
 													</div>
 												</el-form-item>
 											</div>
@@ -682,7 +689,7 @@
 					}],
 					leaderFee: [{
 						required: true,
-						message: '请输入带班管理费',
+						message: '请输入带班服务费',
 						trigger: 'blur'
 					}],
 					enterStartTime: [{
@@ -885,6 +892,7 @@
 								unitPrice: '', //单价 
 								number: "", // 人数
 								leaderFee: "", // 带班费
+								leaderRate:'',// 带班费%
 								description: "", // 描述
 								overtimeFee: "", // 加班费
 								dailyFee: "", //  每日收入
@@ -1509,6 +1517,19 @@
 					val
 				})
 			},
+			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
+			handleServiceFee(index, inx, types_index, val){
+				if(val.workType == 1 ){
+				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
+				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				}else if(val.workType == 2){
+				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
+				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				} else {
+				// 纯管理 方案总费用*带班服务费百分比
+				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				}
+			},
 			/** 当用户工种工期输入时 */
 			handleDuration(index, inx, types_index, val) {
 				let teamTypes = this.schemes[index].teams[inx].teamTypes
@@ -1889,6 +1910,8 @@
 					totalUnit: "", // 总工程量
 					serviceFeeRate: "", // 信息服务率
 					serviceFeeRateNum: "", //  信息服务费
+					enterStartTime: "", //方案进场时间
+					enterEndTime: "", // 方案退场时间
 					taxRate: "", // 税率
 					taxRateNum: "", // 税费
 					serverTotal: "", // 施工服务费
@@ -1925,6 +1948,7 @@
 								unitPrice: '', //单价 
 								number: "", // 人数
 								leaderFee: "", // 带班费
+								leaderRate:'',// 带班费%
 								description: "", // 描述
 								overtimeFee: "", // 加班费
 								dailyFee: "", //  每日收入
@@ -2159,7 +2183,7 @@
 
 		.demand-service-plan-box-foot {
 			margin: 0 60px;
-
+			margin-bottom: 80px;
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
