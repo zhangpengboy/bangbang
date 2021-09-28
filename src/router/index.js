@@ -294,6 +294,14 @@ export const constantRoutes = [
               title: '工人列表'
             }
           },{
+		        path: 'worker-detail',
+            name: 'workerDetail',
+		        component: () => import('@/views/workerManagement/workManage/workerDetail'),
+            hidden:true,
+		        meta: {
+		          title: '工人详情'
+		        }
+		      },{
             path: 'signIn-list',
             name: 'signInList',
             component: () => import('@/views/workerManagement/workManage/signInList'),
@@ -307,9 +315,60 @@ export const constantRoutes = [
           	meta: {
           		title: '用工评价'
           	}
-          }
+          },
         // ]
 			// }
+        {
+        	path: 'project-list',
+          name: 'projectList',
+        	component: () => import('@/views/workerManagement/projectManage/projectList'),
+        	meta: {
+        		title: '项目列表'
+        	}
+        },{
+        	path: 'project-detail',
+          name: 'projectDetail',
+        	component: () => import('@/views/workerManagement/projectManage/projectDetail'),
+          hidden: true,
+        	meta: {
+        		title: '项目详情'
+        	}
+        },{
+        	path: 'workbench',
+          name: 'workbench',
+        	component: () => import('@/views/workerManagement/projectManage/workbench'),
+        	meta: {
+        		title: '工作台'
+        	}
+        },{
+        	path: 'work-agreement',
+          name: 'workAgreement',
+        	component: () => import('@/views/workerManagement/projectManage/workAgreement'),
+        	meta: {
+        		title: '用工协议'
+        	}
+        },{
+        	path: 'leave-appove',
+          name: 'leaveAppove',
+        	component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
+        	meta: {
+        		title: '离队审批'
+        	}
+        },{
+        	path: 'work-overtime',
+          name: 'workOvertime',
+        	component: () => import('@/views/workerManagement/projectManage/workOvertime'),
+        	meta: {
+        		title: '加班申请'
+        	}
+        },{
+        	path: 'management-edit',
+          name: 'managementEdit',
+        	component: () => import('@/views/workerManagement/projectManage/managementEdit'),
+        	meta: {
+        		title: '协议管理'
+        	}
+        }
 
 
 		]
@@ -665,6 +724,14 @@ export const asyncRoutes = [{
 		          title: '工人列表'
 		        }
 		      },{
+		        path: 'worker-detail',
+            name: 'workerDetail',
+		        component: () => import('@/views/workerManagement/workManage/workerDetail'),
+            hidden:true,
+		        meta: {
+		          title: '工人详情'
+		        }
+		      },{
 		        path: 'signIn-list',
             name: 'signInList',
 		        component: () => import('@/views/workerManagement/workManage/signInList'),
@@ -678,10 +745,60 @@ export const asyncRoutes = [{
 		      	meta: {
 		      		title: '用工评价'
 		      	}
-		      }
+		      },
 		 //    ]
 			// }
-
+          {
+          	path: 'project-list',
+            name: 'projectList',
+          	component: () => import('@/views/workerManagement/projectManage/projectList'),
+          	meta: {
+          		title: '项目列表'
+          	}
+          },{
+          	path: 'project-detail',
+            name: 'projectDetail',
+          	component: () => import('@/views/workerManagement/projectManage/projectDetail'),
+            hidden: true,
+          	meta: {
+          		title: '项目详情'
+          	}
+          },{
+          	path: 'workbench',
+            name: 'workbench',
+          	component: () => import('@/views/workerManagement/projectManage/workbench'),
+          	meta: {
+          		title: '工作台'
+          	}
+          },{
+          	path: 'work-agreement',
+            name: 'workAgreement',
+          	component: () => import('@/views/workerManagement/projectManage/workAgreement'),
+          	meta: {
+          		title: '用工协议'
+          	}
+          },{
+          	path: 'leave-appove',
+            name: 'leaveAppove',
+          	component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
+          	meta: {
+          		title: '离队审批'
+          	}
+          },{
+          	path: 'work-overtime',
+            name: 'workOvertime',
+          	component: () => import('@/views/workerManagement/projectManage/workOvertime'),
+          	meta: {
+          		title: '加班申请'
+          	}
+          },{
+          	path: 'management-edit',
+            name: 'managementEdit',
+          	component: () => import('@/views/workerManagement/projectManage/managementEdit'),
+          	meta: {
+          		title: '协议管理'
+          	}
+          }
 
 		]
 	},
