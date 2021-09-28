@@ -985,8 +985,7 @@ export function getIncomeDetailExport(params){
  *  */
 export function getInvitationTeam(userId){
 	return request({
-		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/statistics/${userId}`,
-		params
+		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/statistics/${userId}`
 	})
 }
 
@@ -997,7 +996,6 @@ export function getInvitationTeam(userId){
  *  */
 export function getInvitationIncome(userId){
 	return request({
-		url: `/api/marketing/admin/marketing/partner/Income/v1.0.1/statistics/${userId}`,
-		params
+		url: `/api/marketing/admin/marketing/partner/Income/v1.0.1/statistics/${userId}`
 	})
 }

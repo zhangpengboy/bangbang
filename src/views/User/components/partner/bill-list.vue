@@ -1,15 +1,15 @@
 <template>
 	<div>
 		<!-- 已获取收入 -->
-		<el-table v-if="show" :data="tableData" stripe style="width: 100%" border >
+		<el-table  v-if="show"   :data="tableData" stripe style="width: 100%" border >
 			<el-table-column  label="序号" width="60">
 				<template slot-scope="scope">
 					{{pageSize * (pageIndex -1) +1 + scope.$index}}
 				</template>
 			</el-table-column>
-			<el-table-column prop="userId" label="用户ID " width="200">
+			<el-table-column prop="inviteeUserId" label="用户ID " width="200">
 			</el-table-column>
-			<el-table-column prop="userName" label="名称" >
+			<el-table-column prop="inviteeUserName" label="名称" >
 			</el-table-column>
 			<el-table-column prop="inviteePhone" label="手机号码" >
 			</el-table-column>
@@ -32,7 +32,7 @@
 		</el-table>
 		<!-- 已获取收入end -->
 		<!-- 未结算收入 -->
-		<el-table v-else :data="tableData" stripe style="width: 100%" border >
+		<el-table v-else :data="tableData"  stripe style="width: 100%" border >
 			<el-table-column  label="序号" width="60">
 				<template slot-scope="scope">
 					{{pageSize * (pageIndex -1) +1 + scope.$index}}

@@ -59,30 +59,30 @@
 				<div class="flex fvertical">
 					<div class="partne-data-info-nav">
 						<p class="partne-data-info-nav-title">认证工人（人）</p>
-						<p class="partne-data-info-nav-number">10</p>
+						<p class="partne-data-info-nav-number">{{teamInfo.authNum || 0}}</p>
 					</div>
 					<div class="partne-data-info-nav">
 						<p class="partne-data-info-nav-title">未认证工人（人）</p>
-						<p class="partne-data-info-nav-number">12</p>
+						<p class="partne-data-info-nav-number">{{teamInfo.unAuthNum || 0}}</p>
 					</div>
 					<div class="partne-data-info-nav">
 						<p class="partne-data-info-nav-title">工作中工人（人）</p>
-						<p class="partne-data-info-nav-number">30</p>
+						<p class="partne-data-info-nav-number">{{teamInfo.workingNum || 0}}</p>
 					</div>
 				</div>
 
 				<div class="partne-data-info-list flex fvertical">
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">已提现金额（元）</p>
-						<p class="partne-data-info-list-item-number">1000</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.withdrawTotalFee || 0}}</p>
 					</div>
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">可提现金额（元）</p>
-						<p class="partne-data-info-list-item-number">2000</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.canWithdrawFee || 0}}</p>
 					</div>
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">已获得收入（元）</p>
-						<p class="partne-data-info-list-item-number">3000</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.balanceTotalIncome || 0}}</p>
 					</div>
 				</div>
 
@@ -90,15 +90,15 @@
 				<div class="partne-data-info-list flex fvertical">
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">未结算收入（元）</p>
-						<p class="partne-data-info-list-item-number">10000</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.unBalanceTotalIncome || 0}}</p>
 					</div>
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">累计提现笔数（元）</p>
-						<p class="partne-data-info-list-item-number">12</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.withdrawTotalOrder || 0}}</p>
 					</div>
 					<div class="partne-data-info-list-item">
 						<p class="partne-data-info-list-item-title">待处理提现（元）</p>
-						<p class="partne-data-info-list-item-number">2</p>
+						<p class="partne-data-info-list-item-number">{{incomeInfo.pendingWithdrawOrder || 0}}</p>
 					</div>
 				</div>
 
@@ -118,15 +118,30 @@
 					<div class="top-content-item flex fvertical ">
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
-							<el-input class="top-content-item-input" v-model="keyword" placeholder="用户ID/名称/手机号码">
+							<!--  -->
+							<el-input class="top-content-item-input" v-model="keyword"
+								:placeholder="billRadio=='提现记录'?'订单ID':'用户ID/名称/手机号码'">
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>状态：</span>
+
 							<el-select v-model="type" placeholder="选择状态">
-								<el-option v-for="item in typeList" :key="item.value" :label="item.label"
-									:value="item.value">
-								</el-option>
+								<template v-if="billRadio=='已获得收入'">
+									<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+										:value="item.value">
+									</el-option>
+								</template>
+								<template v-if="billRadio=='未结算收入'">
+									<el-option v-for="item in blliTypeList" :key="item.value" :label="item.label"
+										:value="item.value">
+									</el-option>
+								</template>
+								<template v-if="billRadio=='提现记录'">
+									<el-option v-for="item in recordList" :key="item.value" :label="item.label"
+										:value="item.value">
+									</el-option>
+								</template>
 							</el-select>
 						</div>
 					</div>
@@ -143,12 +158,47 @@
 						<el-radio-button label="提现记录"></el-radio-button>
 					</el-radio-group>
 				</div>
-				<!--  已获得收入 -->
-				<billList v-loading="loading" :show="billRadio== '已获得收入'?true:false" :tableData="tableData"
+				<div class="partne-bill-title flex fbetween fvertical">
+					<div class="bold">数据列表</div>
+					<el-button @click="handleExport">导出</el-button>
+				</div>
+
+				<!--  已获得收入 / 未结算收入 -->
+				<billList v-loading="loading" v-if="billRadio!= '提现记录'" :show="billRadio== '已获得收入'?true:false" :tableData="tableData"
 					:pageIndex="pageIndex" :pageSize="pageSize" :pageCount="pageCount"
 					@handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange" />
-				<!--  已获得收入end -->
-
+				<!--  已获得收入 / 未结算收入 end -->
+				<!-- 提现记录 -->
+				<div class="partne-bill-record" v-else>
+					<el-table   :data="tableData" stripe style="width: 100%" border >
+						<el-table-column  label="序号" width="60">
+							<template slot-scope="scope">
+								{{pageSize * (pageIndex -1) +1 + scope.$index}}
+							</template>
+						</el-table-column>
+						<el-table-column prop="userId" label="订单ID " width="200">
+						</el-table-column>
+						<el-table-column prop="userName" label="提现金额" >
+						</el-table-column>
+						<el-table-column prop="inviteePhone" label="到账微信" >
+						</el-table-column>
+						<el-table-column  label="申请时间" >
+						
+						</el-table-column>
+						<el-table-column prop="fee" label="状态" >
+						</el-table-column>
+						<el-table-column prop="fee" label="操作人">
+						</el-table-column>
+						<el-table-column  label="操作时间" >
+							<template slot-scope="scope">
+								{{formatDateTime(scope.row.incomeTime)}}
+							</template>
+						</el-table-column>
+						<el-table-column label="操作" >
+						</el-table-column>
+					</el-table>
+				</div>
+				<!-- 提现记录end -->
 			</div>
 			<!-- 头部end -->
 
@@ -204,6 +254,21 @@
 					label: "未完成施工奖励",
 					value: 2
 				}],
+				recordList:[
+					{
+						label: "全部",
+						value: ""
+					}, {
+						label: "审核中",
+						value: 0
+					}, {
+						label: "已到账",
+						value: 1
+					}, {
+						label: "到账失败",
+						value: 2
+					}
+				],
 				status: 0,
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
@@ -211,7 +276,9 @@
 				tableData: [],
 				info: {}, // 用户信息
 				userLoading: false, // 是否加载用户
-				loading: false
+				loading: false,
+				incomeInfo:{} ,// 统计合伙人收益
+				teamInfo:{}, // 统计
 
 			}
 		},
@@ -232,20 +299,29 @@
 			this.userId = this.$route.query.userId;
 			this.getPartnerDetails();
 			this.getIncomeDetail();
-			console.log('-----')
 			this.getInvitationTeam();
 			this.getInvitationIncome();
 		},
 		methods: {
+			/** 导出账单 */
+			handleExport() {
+				console.log('导出')
+			},
 			/** 获取数据统计-团队 */
-			async getInvitationTeam(){
-				let res = await getInvitationTeam(this.userId);
-				console.log('获取数据统计-团队',res);
+			async getInvitationTeam() {
+				try {
+					let res = await getInvitationTeam(this.userId);
+					this.teamInfo = res.data;
+				} catch (e) {
+					console.log(e)
+					//TODO handle the exception
+				}
+
 			},
 			/** 获取数据统计-收益 */
-			async getInvitationIncome(){
+			async getInvitationIncome() {
 				let res = await getInvitationIncome(this.userId);
-				console.log('获取数据统计-收益',res);
+				this.incomeInfo = res.data;
 			},
 			/** 切换账单 */
 			handleBillRoadio(e) {
@@ -466,6 +542,9 @@
 
 	.partne-radio {
 		margin: 15px 0;
+	}
+	.partne-bill-title{
+		padding: 20px 20px 10px;
 	}
 
 	.partne-data {
