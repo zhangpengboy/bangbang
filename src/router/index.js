@@ -168,7 +168,7 @@ export const constantRoutes = [
 		},{
 			path: 'partnerList',
 			component: () => import('@/views/User/Worker/PartnerList'),
-			name: 'WorkerList',
+			name: 'partnerList',
 			meta: {
 				title: '合伙人列表'
 			},
