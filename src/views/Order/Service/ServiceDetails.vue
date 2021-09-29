@@ -93,12 +93,10 @@
 					</template>
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
-					客服A
 				</el-table-column>
-				<el-table-column prop="address" label="操作时间">
+				<el-table-column prop="updateTime" label="操作时间">
 					<template slot-scope="scope">
-						2017-07-24 17:25:38
-						<!-- <p>{{formatDate(scope.row.updateTime)}}</p> -->
+						<p>{{formatDate(scope.row.updateTime)}}</p>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作">
@@ -111,7 +109,14 @@
 					</template>
 				</el-table-column>
 			</el-table>
-
+			<!-- 分页  -->
+				<div class="flex fcenter page">
+					<el-pagination class="page" id="page" background @size-change="handleRewrdSizeChange"
+						@current-change="handleRewrdCurrentChange" :current-page="rewardPage.PageIndex" :page-sizes="[10, 20, 30, 40]"
+						:page-size="rewardPage.PageSize" layout="total, prev, pager, next,sizes, jumper" :total="rewardPage.PageCount">
+					</el-pagination>
+				</div>
+				<!-- 分页end -->
 		</div>
 
 
@@ -706,7 +711,7 @@
 		</el-dialog>
 		
 		<!--  任务奖励编辑弹窗 -->
-		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloseLookReason">
+		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloserewardEditDialog">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
 				<el-select v-model="rewardValue" placeholder="请选择">
 					<el-option
@@ -738,10 +743,6 @@
 		<el-dialog title="历史设置" :visible.sync="rewardHistoryDialog" width="50%" :before-close="handleCloserewardHistory">
 			  <el-table :data="rewardHistoryTableData" style="width: 100%" :stripe="true" height="300px">
 				<el-table-column type="index" width="50" label="序号">
-				</el-table-column>
-				<el-table-column prop="teamName" label="班组名称" width="170">
-				</el-table-column>
-				<el-table-column prop="title" label="任务名称" width="180">
 				</el-table-column>
 				<el-table-column prop="type" label="类型">
 					<template slot-scope="scope">
@@ -1395,14 +1396,25 @@
 				getReward(param).then(res=>{
 					this.rewardKey = Math.random()
 					this.rewardtableData = res.data.records;
-					// this.rewrdPage.PageCount = res.data.total;
+					this.rewardPage.PageCount = res.data.total;
 				})
 				
+			},
+				/** 任务列表选择分页 */
+			handleRewrdSizeChange(e) {
+				this.rewardPage.PageSize = e;
+				this.rewardPage.PageIndex = 1;
+				this.getReward()
+			},
+			/** 任务列表点击分页 */
+			handleRewrdCurrentChange(e) {
+				this.rewardPage.PageIndex = e;
+				this.getReward()
 			},
 			//任务奖励编辑
 			postreward(){
 				postReward({
-				condition: '5' ,
+				condition:  this.rewardInputday,
 				fee: this.rewardInputprice ,
 				rate:this.rewardInputrate,
 				status:1 ,
@@ -1418,6 +1430,10 @@
 			handleRewardEdit(row){
 				this.rewardRow = row
 				this.rewardEditDialog = true
+			},
+			//任务奖励 关闭
+			handleCloserewardEditDialog(){
+			this.rewardEditDialog = false
 			},
 			//任务奖励搜索
 			handelSeracReward(){
