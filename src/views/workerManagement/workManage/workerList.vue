@@ -121,7 +121,6 @@
            }
          ],
          statusvalue: '',
-         PageIndex:1,
          tableData:[
            {name:'你好',status:0},
            {name:'你好a',status:1}

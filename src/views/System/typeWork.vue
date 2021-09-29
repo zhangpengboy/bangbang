@@ -66,7 +66,7 @@
       getList() {
         this.loading = true;
         var params = {
-          pageSize:20,
+          pageSize:1000,
           pageNum:1,
           type:0,
           parentId:0
