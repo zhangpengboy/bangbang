@@ -335,12 +335,13 @@
 											<span style="padding-left: 20px;">小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班管理费">
+									<el-form-item label="带班服务费">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderFee">
+											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+												v-model="teamTypes.leaderRate">
 											</el-input>
-											<span style="padding-left: 20px;">元</span>
+											<span style="padding:0 10px;">%</span>
+											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -415,12 +416,13 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班管理费">
+									<el-form-item label="带班服务费">
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderFee">
+												v-model="teamTypes.leaderRate">
 											</el-input>
-											<span style="padding-left: 20px;">元/天</span>
+											<span style="padding:0 10px;">%</span>
+											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
 										</div>
 									</el-form-item>
 								</div>
@@ -473,12 +475,13 @@
 											<span style="padding-left: 20px;">元/小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班管理费" v-if="teamTypes.tag == '班组长'">
+									<el-form-item label="带班服务费">
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderFee">
+												v-model="teamTypes.leaderRate">
 											</el-input>
-											<span style="padding-left: 20px;">元/天</span>
+											<span style="padding:0 10px;">%</span>
+											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
 										</div>
 									</el-form-item>
 								</div>
