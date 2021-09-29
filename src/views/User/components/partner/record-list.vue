@@ -34,6 +34,7 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="操作">
+				
 			</el-table-column>
 		</el-table>
 		<!-- 分页  -->

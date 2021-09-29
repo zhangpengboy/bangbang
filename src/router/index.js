@@ -169,6 +169,15 @@ export const constantRoutes = [
         	hidden: true
         }
       ]
+		},{
+			path: 'taskDetail',
+			component: () => import('@/views/User/Worker/TaskDetail'),
+			name: 'taskDetail',
+			meta: {
+				title: '任务详情',
+				// activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
 		}, {
 			path: 'enterprise',
 			component: () => import('@/views/User/Worker/VerifyEnterprise'),

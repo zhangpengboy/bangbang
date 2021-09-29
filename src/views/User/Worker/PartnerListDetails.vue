@@ -4,7 +4,7 @@
 		<div class="details-top flex fvertical" v-loading="userLoading">
 			<div class="details-top-img">
 				<div class="details-top-icon flex fvertical fcenter">
-					<img v-if="info.headPortrait" :src="info.headPortrait" alt="">
+					<img v-if="info && info.headPortrait" :src="info.headPortrait" alt="">
 					<i class="el-icon-s-custom" v-else></i>
 				</div>
 				<p>{{info.userName?info.userName:''}}</p>
@@ -104,6 +104,7 @@
 
 			</div>
 			<div class="partne-data-chart">
+				<p class="flex fcenter bold" style="margin: 20px; 0">邀请人数：{{teamInfo.totalNum || 0}}人</p>
 				<div id="partneChart" style="width: 100%;height: 100%;"></div>
 			</div>
 		</div>
@@ -362,13 +363,7 @@
 			}
 		},
 		watch: {
-			radio1(val) {
-				if (val == '数据统计') {
-					this.$nextTick(() => {
-						this.setChart();
-					})
-				}
-			}
+		
 		},
 		components: {
 			billList,
@@ -385,7 +380,7 @@
 			this.getInvitationIncome();
 			this.getInviteList();
 			this.getTaskList();
-			this.setChart();
+			
 		},
 		methods: {
 			/** 邀请列表-搜索 */
@@ -504,6 +499,7 @@
 					let res = await getInvitationTeam(this.userId);
 					this.teamInfo = res.data;
 					console.log('获取数据统计-团队', res.data);
+					this.setChart();
 				} catch (e) {
 					console.log(e)
 					//TODO handle the exception
@@ -627,7 +623,6 @@
 				this.userLoading = true;
 				try {
 					let res = await getPartnerDetails(this.userId);
-					console.log(res);
 					this.userLoading = false;
 					this.info = res.data;
 				} catch (e) {
@@ -637,16 +632,31 @@
 
 
 			},
+			/** 计算百分比 */
+			getPercent(curNum, totalNum, isHasPercentStr = true) {
+			        curNum = parseFloat(curNum);
+			        totalNum = parseFloat(totalNum);
+			
+			        if (isNaN(curNum) || isNaN(totalNum)) {
+			            return '-';
+			        }
+			
+			        return isHasPercentStr ?
+			            totalNum <= 0 ? '0%' : (Math.round(curNum / totalNum * 10000) / 100.00 + '%') :
+			            totalNum <= 0 ? 0 : (Math.round(curNum / totalNum * 10000) / 100.00);
+			    },
 			/** 图表 */
 			setChart() {
 				let myChart = this.$echarts.init(document.getElementById('partneChart'))
 				let data = [{
-						value: 1048,
-						name: '认证工人'
+						value: this.teamInfo.authNum,
+						name: '认证工人',
+						percent:this.getPercent(this.teamInfo.authNum,(this.teamInfo.authNum+this.teamInfo.unAuthNum))
 					},
 					{
-						value: 735,
-						name: '未认证工人'
+						value: this.teamInfo.unAuthNum,
+						name: '未认证工人',
+						percent:this.getPercent(this.teamInfo.unAuthNum,(this.teamInfo.authNum+this.teamInfo.unAuthNum))
 					}]
 				let option = {
 					tooltip: {
@@ -658,6 +668,16 @@
 						left: 'center',
 						formatter: function(name) {
 							// if ()
+							let num = 0;
+							let percent = 0;
+							// console.log('data',data)
+							for(let i = 0 ; i < data.length ; i++){
+								if(data[i].name == name){
+									num = data[i].value
+									percent = data[i].percent
+								}
+							}
+							return name + '   ' + num + '     '+percent
 						}
 
 					},

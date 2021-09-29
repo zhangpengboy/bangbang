@@ -30,6 +30,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="操作">
+				<template slot-scope="scope">
+					<el-button type="text" @click="handleLook(scope.row)">查看</el-button>
+				</template>
 			</el-table-column>
 		</el-table>
 		<!-- 分页  -->
@@ -71,6 +74,10 @@
 			},
 			formatDateTime(value) {
 				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			handleLook(row){
+				console.log(row)
+				this.$router.push({ path: '/User/userdetail', query: { id: row.inviteeUserId ,joinType:1 }})
 			},
 		}
 	}
