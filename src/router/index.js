@@ -147,7 +147,6 @@ export const constantRoutes = [
 			name: 'partnerList',
 			meta: {
 				title: '工人列表'
-
 			}
 		}, {
 			path: 'workrtDetail',
@@ -155,7 +154,16 @@ export const constantRoutes = [
 			name: 'workrtDetail',
 			meta: {
 				title: '工人详情',
-				activeMenu: '/user/Worker/WorkerList'
+				// activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
+		},{
+			path: 'taskDetail',
+			component: () => import('@/views/User/Worker/TaskDetail'),
+			name: 'taskDetail',
+			meta: {
+				title: '任务详情',
+				// activeMenu: '/user/Worker/WorkerList'
 			},
 			hidden: true
 		}, {
