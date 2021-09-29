@@ -93,20 +93,17 @@ export const constantRoutes = [
 			name: 'UserIndex',
 			meta: {
 				title: '用户列表'
-			},
-      children:[
-        {
-        	path: 'userdetail',
-        	component: () => import('@/views/User/List/detail'),
-        	name: 'UserDetail',
-        	meta: {
-        		title: '用户详情',
-        		activeMenu: '/user/List/List'
-        	},
-        	hidden: true
-        }
-      ]
-		}, {
+			}
+    }, {
+      path: 'userdetail',
+      component: () => import('@/views/User/List/detail'),
+      name: 'UserDetail',
+      meta: {
+        title: '用户详情',
+        activeMenu: '/user/List/List'
+      },
+      hidden: true
+    },{
 			path: 'access-statistics',
 			component: () => import('@/views/User/accessStatistics/accessStatistics'),
 			name: 'accessStatistics',
@@ -119,57 +116,48 @@ export const constantRoutes = [
 			name: 'RealName',
 			meta: {
 				title: '实名认证'
-			},
-      children:[
-        {
-        	path: 'realNameDetail',
-        	component: () => import('@/views/User/RealName/realNameDetail'),
-        	name: 'realNameDetail',
-          hidden: true,
-        	meta: {
-        		title: '实名详情'
-        	}
-        }
-      ]
+			}
 		},{
+      path: 'realNameDetail',
+      component: () => import('@/views/User/RealName/realNameDetail'),
+      name: 'realNameDetail',
+      hidden: true,
+      meta: {
+        title: '实名详情'
+      }
+    },{
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
 			meta: {
 				title: '企业列表'
-			},
-      children:[
-        {
-        	path: 'enterprisedetails',
-        	component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-        	name: 'enterprisedetails',
-        	hidden: true,
-        	meta: {
-        		title: '企业详情',
-        		affix: false
-        	}
-        }
-      ]
-		}, {
+			}
+		},{
+      path: 'enterprisedetails',
+      component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
+      name: 'enterprisedetails',
+      hidden: true,
+      meta: {
+        title: '企业详情',
+        affix: false
+      }
+    }, {
 			path: 'workerList',
 			component: () => import('@/views/User/Worker/WorkerList'),
 			name: 'partnerList',
 			meta: {
 				title: '工人列表'
-			},
-      children:[
-        {
-        	path: 'workrtDetail',
-        	component: () => import('@/views/User/Worker/workrtDetail'),
-        	name: 'workrtDetail',
-        	meta: {
-        		title: '工人详情',
-        		activeMenu: '/user/Worker/WorkerList'
-        	},
-        	hidden: true
-        }
-      ]
+			}
 		},{
+      path: 'workrtDetail',
+      component: () => import('@/views/User/Worker/workrtDetail'),
+      name: 'workrtDetail',
+      meta: {
+        title: '工人详情',
+        activeMenu: '/user/Worker/WorkerList'
+      },
+      hidden: true
+    },{
 			path: 'taskDetail',
 			component: () => import('@/views/User/Worker/TaskDetail'),
 			name: 'taskDetail',
@@ -191,19 +179,16 @@ export const constantRoutes = [
 			name: 'partnerList',
 			meta: {
 				title: '合伙人列表'
-			},
-      children:[
-        {
-        	path: 'partnerListDetails',
-        	component: () => import('@/views/User/Worker/PartnerListDetails'),
-        	name: 'partnerListDetails',
-        	hidden: true, // 不在侧边栏显示
-        	meta: {
-        		title: '合伙人详情',
-        	},
-        }
-      ]
+			}
 		}, {
+      path: 'partnerListDetails',
+      component: () => import('@/views/User/Worker/PartnerListDetails'),
+      name: 'partnerListDetails',
+      hidden: true, // 不在侧边栏显示
+      meta: {
+        title: '合伙人详情',
+      },
+    },{
 			path: 'attestationWorker',
 			component: () => import('@/views/User/Worker/AttestationWorker'),
 			name: 'attestationWorker',
@@ -306,18 +291,16 @@ export const constantRoutes = [
           component: () => import('@/views/workerManagement/workManage/workerList'),
           meta: {
             title: '工人列表'
-          },
-          children:[
-            {
-              path: 'worker-detail',
-              name: 'workerDetail',
-              component: () => import('@/views/workerManagement/workManage/workerDetail'),
-              hidden:true,
-              meta: {
-                title: '工人详情'
-              }
-            }
-          ]
+          }
+        },{
+          path: 'worker-detail',
+          name: 'workerDetail',
+          component: () => import('@/views/workerManagement/workManage/workerDetail'),
+          hidden:true,
+          meta: {
+            title: '工人详情',
+            affix: false
+          }
         },{
           path: 'signIn-list',
           name: 'signInList',
@@ -338,18 +321,15 @@ export const constantRoutes = [
         	component: () => import('@/views/workerManagement/projectManage/projectList'),
         	meta: {
         		title: '项目列表'
-        	},
-          children:[
-            {
-            	path: 'project-detail',
-              name: 'projectDetail',
-            	component: () => import('@/views/workerManagement/projectManage/projectDetail'),
-              hidden: true,
-            	meta: {
-            		title: '项目详情'
-            	}
-            }
-          ]
+        	}
+        },{
+          path: 'project-detail',
+          name: 'projectDetail',
+          component: () => import('@/views/workerManagement/projectManage/projectDetail'),
+          hidden: true,
+          meta: {
+            title: '项目详情'
+          }
         },{
         	path: 'workbench',
           name: 'workbench',
