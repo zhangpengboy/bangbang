@@ -19,6 +19,9 @@
 				</template>
 			</el-table-column>
 			<el-table-column label="工作名称" prop="title">
+				<template slot-scope="scope">
+					<el-button type="text" @click="handleOpenDetails(scope.row)">{{scope.row.title}}</el-button>
+				</template>
 			</el-table-column>
 			<el-table-column  label="类型">
 				<template slot-scope="scope">
@@ -87,8 +90,15 @@
 			},
 			/** 查看 */
 			handleLook(row){
+				this.$router.push({ path: '/User/userdetail', query: { id: row.inviteeUserId ,joinType:1 }})
+			},
+			/** 打开详情 */
+			handleOpenDetails(row){
 				console.log(row)
-			}
+				this.$router.push({path:'/User/TaskDetail',query:{orderId:row.orderId}})
+				
+			
+			},
 		}
 	}
 </script>
