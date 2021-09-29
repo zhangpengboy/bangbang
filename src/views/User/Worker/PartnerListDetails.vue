@@ -7,36 +7,36 @@
 					<img v-if="info && info.headPortrait" :src="info.headPortrait" alt="">
 					<i class="el-icon-s-custom" v-else></i>
 				</div>
-				<p>{{info.userName?info.userName:''}}</p>
+				<p >{{info&&info.userName?info.userName:''}}</p>
 			</div>
 			<div class="details-top-info f1 flex fvertical">
 				<div class="details-top-info-list">
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">ID</span>
-						<span class="details-top-info-list-item-date">{{info.userId?info.userId:''}}</span>
+						<span class="details-top-info-list-item-date">{{info&&info.userId?info.userId:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">手机号码</span>
-						<span class="details-top-info-list-item-date">{{info.phone?info.phone:''}}</span>
+						<span class="details-top-info-list-item-date">{{info&&info.phone?info.phone:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">地区</span>
-						<span class="details-top-info-list-item-date">{{info.cityName?info.cityName:''}}</span>
+						<span class="details-top-info-list-item-date">{{info&&info.cityName?info.cityName:''}}</span>
 					</div>
 				</div>
 				<div class="details-top-info-list">
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">名称</span>
-						<span class="details-top-info-list-item-date">{{info.userName?info.userName:''}}</span>
+						<span class="details-top-info-list-item-date">{{info&&info.userName?info.userName:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">邀请人数</span>
 						<span
-							class="details-top-info-list-item-date">{{info.invitationNum?info.invitationNum:0}}人</span>
+							class="details-top-info-list-item-date">{{info&&info.invitationNum?info.invitationNum:0}}人</span>
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">成为合伙人时间</span>
-						<span class="details-top-info-list-item-date">{{formatDateTime(info.approvedTime)}}</span>
+						<span class="details-top-info-list-item-date">{{info && info.approvedTime ? formatDateTime(info.approvedTime):''}}</span>
 					</div>
 				</div>
 			</div>
@@ -291,10 +291,10 @@
 					value: 0
 				}, {
 					label: "施工费用分佣",
-					value: 1
+					value: 2
 				}, {
 					label: "完成施工奖励",
-					value: 2
+					value: 1
 				}],
 				blliTypeList: [{
 					label: "全部",
