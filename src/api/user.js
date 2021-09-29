@@ -843,11 +843,11 @@ export function getPartnerDetails(userId) {
 	})
 }
 
-/** 
+/**
  * 修改合伙人状态
  * @param {Number} id 当前列表id
- * @param {Number} status 状态  
- * @param {String} reason 理由 
+ * @param {Number} status 状态
+ * @param {String} reason 理由
  *  */
 export function getPartnerUpdateStatus(data) {
 	return request({
@@ -858,13 +858,13 @@ export function getPartnerUpdateStatus(data) {
 }
 
 
-/** 
+/**
  * 合伙人-账单详情（已获得收入，未结算收入）
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
  * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
- * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
  *  */
 export function getIncomeDetail(params) {
 	return request({
@@ -964,13 +964,13 @@ export function awardSettingupdateOne(data) {
 		data
 	})
 }
-/** 
+/**
  * 合伙人-账单详情-导出（已获得收入，未结算收入）
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
  * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
- * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型） 
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
  *  */
 export function getIncomeDetailExport(params) {
 	return request({
@@ -981,7 +981,7 @@ export function getIncomeDetailExport(params) {
 	})
 }
 
-/**  
+/**
  * 合伙人-数据统计团队
  * @param {Number} userId  用户ID
  *  */
@@ -992,7 +992,7 @@ export function getInvitationTeam(userId) {
 }
 
 
-/**  
+/**
  * 合伙人-数据统计收益
  * @param {Number} userId  用户ID
  *  */
@@ -1002,13 +1002,13 @@ export function getInvitationIncome(userId) {
 	})
 }
 
-/** 
+/**
  * 合伙人-提现记录
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
- * @param {Number} userId 合伙人ID 
+ * @param {Number} userId 合伙人ID
  * @param {String} keyword  搜索关键字（订单ID）
- * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态）
  *   */
 export function getRecordList(params) {
 	return request({
@@ -1017,13 +1017,13 @@ export function getRecordList(params) {
 	})
 }
 
-/** 
+/**
  * 合伙人-导出提现记录
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
- * @param {Number} userId 合伙人ID 
+ * @param {Number} userId 合伙人ID
  * @param {String} keyword  搜索关键字（订单ID）
- * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态）
  *   */
 export function getRecordExport(params) {
 	return request({
@@ -1035,11 +1035,11 @@ export function getRecordExport(params) {
 
 /**
  * 邀请注册列表
- * @param {Number} authStatus 认证状态 0：未认证 1：已认证 
- * @param {String} keyword 搜索关键字 
+ * @param {Number} authStatus 认证状态 0：未认证 1：已认证
+ * @param {String} keyword 搜索关键字
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
- * @param {Number} userId 合伙人ID 
+ * @param {Number} userId 合伙人ID
  * */
 export function getInviteList(params) {
 	return request({
@@ -1050,11 +1050,11 @@ export function getInviteList(params) {
 
 /**
  * 工作分享列表
- * @param {Number} workStatus 认证状态 1：工作中 2：已完成 
- * @param {String} keyword 搜索关键字 
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成
+ * @param {String} keyword 搜索关键字
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
- * @param {Number} userId 合伙人ID 
+ * @param {Number} userId 合伙人ID
  * */
 export function getTaskList(params){
 	return request({
@@ -1065,11 +1065,11 @@ export function getTaskList(params){
 
 /**
  * 工作分享列表-导出
- * @param {Number} workStatus 认证状态 1：工作中 2：已完成 
- * @param {String} keyword 搜索关键字 
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成
+ * @param {String} keyword 搜索关键字
  * @param {Number} pageNum 页码
  * @param {Number} pageSize  页面大小
- * @param {Number} userId 合伙人ID 
+ * @param {Number} userId 合伙人ID
  * */
 export function getTaskExport(params){
 	return request({
@@ -1077,3 +1077,4 @@ export function getTaskExport(params){
 		params
 	})
 }
+
