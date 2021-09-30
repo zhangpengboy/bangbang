@@ -190,21 +190,7 @@
 				param.cityName = this.address;
 				let url =
 					`/api/marketing/admin/marketing/partner/v1.0.1/export?status=${this.status}&keyword=${this.keyword}&cityName=${this.address}`
-				console.log(url)
 				window.open(url);
-				// return;
-				// this.loading = true;
-				// try {
-				// 	let res = await getPartnerExport(param);
-				// 	console.log('导出', res);
-				// } catch (e) {
-				// 	//TODO handle the exception
-				// 	this.loading = false;
-				// 	console.log(e)
-				// }
-
-				// this.$message.success('导出成功')
-
 			},
 			/** 打开详情 */
 			handleOpenLook(row) {
