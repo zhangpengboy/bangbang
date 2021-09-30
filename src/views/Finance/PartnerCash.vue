@@ -74,7 +74,7 @@
 				</el-table-column>
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">
-						<el-button type="text" v-if="scope.row.status == 1">查看理由</el-button>
+						<el-button type="text" v-if="scope.row.status == 1" @click="handleLook(scope.row)">查看理由</el-button>
 						<div v-else>
 							<el-button type="primary" @click="handleSumbit(scope.row)">通过</el-button>
 							<el-button type="danger" @click="handleError(scope.row)">拒绝</el-button>
@@ -93,6 +93,17 @@
 			</div>
 			<!-- 分页end -->
 		</div>
+		
+		<el-dialog
+		  title="拒绝理由"
+		  :visible.sync="dialogVisible"
+		  width="500px"
+		  >
+		  {{reason}}
+		  <span slot="footer" class="dialog-footer">
+		    <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+		  </span>
+		</el-dialog>
 
 	</div>
 </template>
@@ -106,6 +117,7 @@
 	export default {
 		data() {
 			return {
+				dialogVisible:false,
 				keyword: "",
 				status: "",
 				statusList: [{
@@ -126,6 +138,7 @@
 				pageSize: 10,
 				pageIndex: 1,
 				loading: false,
+				reason:"",
 			}
 		},
 		mounted() {
@@ -135,6 +148,12 @@
 
 			formatDate(value) {
 				return value ? moment(value).format('YYYY-MM-DD') : ''
+			},
+			/** 查看理由 */
+			handleLook(row){
+				console.log(row);
+				this.dialogVisible = true;
+				this.reason = row.reason;
 			},
 			/** 搜索 */
 			handelSearch() {
@@ -152,7 +171,7 @@
 			handleError(row) {
 				let param = {};
 				param.id = row.id;
-				param.status = 2;
+				param.status = 1;
 				this.$prompt('是否拒绝提现申请', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
