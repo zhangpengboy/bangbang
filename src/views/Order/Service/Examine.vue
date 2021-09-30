@@ -153,7 +153,9 @@
 				})
 			},
 			/** 导出 */
-			getExport() {},
+			getExport() {
+				window.open(`/api/bill/v1.0/admin/brief/cancel/export?keywords=${this.keywords}&status=${this.status}`)
+			},
 			/** 通过 */
 			goRecruit(row) {
 				this.$confirm('是否通过取消报名申请', '提示', {
