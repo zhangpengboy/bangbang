@@ -12,8 +12,8 @@
         <el-table-column prop="name" label="功能名称" width="280"/>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">正常</p>
-            <p style="color: #03BF16;" v-if="scope.row.status == 1">停用</p>
+            <p style="color: #03BF16;" v-if="scope.row.status == 0">正常</p>
+            <p style="color: #D9001B;" v-if="scope.row.status == 1">停用</p>
           </template>
          </el-table-column>
         <el-table-column label="操作" width="160">
@@ -89,7 +89,7 @@
     data() {
       return {
          tableData:[
-           {id:0,name:'合伙人',status:1},
+           {id:0,name:'合伙人',status:0},
            {id:1,name:'邀请好友',status:0}
          ],
          loading:false,

@@ -25,14 +25,14 @@
 			</div>
 			<div class="demand-deltails-box-item flex">
 				<div class="demand-deltails-box-item-title">类型</div>
-				<div class="demand-deltails-box-item-conter">{{info.type == 1 ?'劳务派遣':'劳务分包'}}</div>
+				<div class="demand-deltails-box-item-conter">{{info.type == 1 ?'工人推荐':'劳务分包'}}</div>
 			</div>
 	
 			<div class="demand-deltails-box-item flex">
 				<div class="demand-deltails-box-item-title">语音</div>
 				<div class="demand-deltails-box-item-conter">
 					<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点这里播放"
-						v-for="(item,index) in info.voices ">
+						v-for="(item,index) in info.voices " :key="index">
 					</m-audio>
 				</div>
 			</div>

@@ -6,14 +6,18 @@
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
-            <span>输入查询：</span>
-            <el-input v-model="serach" clearable class="top-content-item-input" placeholder="用户ID/账号" />
+            <span>项目名称：</span>
+            <el-input v-model="project" clearable class="top-content-item-input" placeholder="输入项目名称/服务单号" />
           </div>
           <div class="flex fvertical top-content-item-status">
-            <span>项目来源：</span>
-            <el-select v-model="sourcevalue" placeholder="全部">
+            <span>项目联系人：</span>
+            <el-input v-model="concat" clearable class="top-content-item-input" placeholder="用户ID/账号/手机号" />
+          </div>
+          <div class="flex fvertical top-content-item-status">
+            <span>项目类型：</span>
+            <el-select v-model="proTypevalue" placeholder="全部" clearable>
               <el-option
-                v-for="item in allsource"
+                v-for="item in allproType"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -21,10 +25,10 @@
             </el-select>
           </div>
           <div class="flex fvertical top-content-item-status">
-            <span>工种类型：</span>
-            <el-select v-model="typeWorkvalue" placeholder="全部">
+            <span>劳务模式：</span>
+            <el-select v-model="laowuvalue" placeholder="全部" clearable>
               <el-option
-                v-for="item in alltypeWork"
+                v-for="item in allLaowu"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -32,10 +36,10 @@
             </el-select>
           </div>
           <div class="flex fvertical top-content-item-status">
-            <span>签到状态：</span>
-            <el-select v-model="signInvalue" placeholder="全部">
+            <span>状态：</span>
+            <el-select v-model="statusvalue" placeholder="全部" clearable>
               <el-option
-                v-for="item in allsignIn"
+                v-for="item in allstatus"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -45,31 +49,12 @@
 
         </div>
 
+
+      </div>
+      <div class="top-content flex fvertical fbetween">
         <div class="top-content-btn">
           <el-button type="primary" @click="search">查询</el-button>
           <el-button @click='raLoad'>重置</el-button>
-        </div>
-      </div>
-      <div class="top-content flex fvertical fbetween">
-        <div class="top-content-item flex fvertical">
-          <div class="flex fvertical top-content-item-status">
-            <span>查询时间：</span>
-            <div class="flex alCen flex1">
-              <el-date-picker
-              clearable
-                v-model="startDate"
-                type="date"
-                placeholder="选择开始日期">
-              </el-date-picker>
-              <div style="margin: 0 10px;">至</div>
-              <el-date-picker
-              clearable
-                v-model="endDate"
-                type="date"
-                placeholder="选择结束日期">
-              </el-date-picker>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -84,7 +69,8 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'" :cell-style="cellStyle">
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column label="项目来源"  width="120">
+        <el-table-column prop="name" label="项目ID" />
+        <el-table-column label="项目名称"  width="120">
           <template slot-scope="scope">
             <p>{{scope.row.name}}</p>
             <p class="label" v-if="scope.row.status == 0">
@@ -92,39 +78,31 @@
             </p>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="所属项目" />
-        <el-table-column prop="name" label="所属班组"/>
-        <el-table-column prop="name" label="工种类型">
+        <el-table-column prop="name" label="项目人数" />
+        <el-table-column prop="name" label="所属服务单"/>
+        <el-table-column prop="name" label="项目联系人"/>
+        <el-table-column prop="name" label="进场时间"/>
+        <el-table-column prop="name" label="竣工时间"/>
+        <el-table-column prop="name" label="服务周期"/>
+        <el-table-column prop="name" label="延期天数">
           <template slot-scope="scope">
-            <p v-if="scope.row.status == 1">计时</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">计件</p>
+            <p :style="scope.row.status == 1?'color: #D9001B;':''">30天</p>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="签到用户"/>
-        <el-table-column prop="name" label="手机号"/>
-        <el-table-column prop="name" label="签到日期"/>
-        <el-table-column prop="name" label="班组考勤时间"/>
-        <el-table-column prop="name" label="签到地点" width="200"/>
-        <el-table-column prop="name" label="上班签到">
+        <el-table-column prop="name" label="项目地点" width="200"/>
+        <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p :style="scope.row.status == 1?'color: #D9001B;':''">8:00</p>
+            <p v-if="scope.row.status == 1" style="color: #D9001B">延期中</p>
+            <p v-if="scope.row.status == 0" style="color: #0079FE;">进行中</p>
+            <p v-if="scope.row.status == 2">已竣工</p>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="下班签到">
+        <el-table-column label="操作" width="240">
           <template slot-scope="scope">
-            <p :style="scope.row.status == 1?'color: #D9001B;':''">16:00</p>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="当日工时"/>
-        <el-table-column label="签到状态" width="120">
-          <template slot-scope="scope">
-            <p>{{scope.row.status == 0?'正常':scope.row.status == 1?'早退':''}}</p>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="确认状态">
-          <template slot-scope="scope">
-            <p style="color: #0079FE;" v-if="scope.row.status == 1">待确认</p>
-            <p v-if="scope.row.status == 0">已确认</p>
+            <el-button type="text" size="small" @click="edit(scope.row)">编辑</el-button>
+            <el-button type="text" size="small" @click="seeDetail(scope.row)">项目详情</el-button>
+            <el-button type="text" size="small" @click="toWorkbench(scope.row)">工作台</el-button>
+            <el-button type="text" size="small" @click="userWork(scope.row)">用工协议</el-button>
           </template>
         </el-table-column>
 
@@ -147,6 +125,48 @@
       </div>
       <!-- 分页end -->
 
+      <!-- 编辑弹窗 -->
+      <el-dialog
+        title="编辑项目"
+        :visible.sync="dialogVisible"
+        width="30%">
+        <div class="popList">
+          <div class="item flex alCen">
+            <p class="tit">项目名称</p>
+            <input type="text" name="" class="ipt" placeholder="请输入项目名称" v-model="proName" value="" />
+          </div>
+          <div class="item flex alCen">
+            <p class="tit">项目联系人</p>
+            <input type="text" name="" class="ipt" placeholder="请输入项目联系人" v-model="concatPeople" value="" />
+          </div>
+          <div class="item flex alCen">
+            <p class="tit">项目进场时间</p>
+            <el-date-picker
+             clearable
+             class="flex1"
+              v-model="startDate"
+              type="date"
+              placeholder="选择开始日期">
+            </el-date-picker>
+          </div>
+          <div class="item flex alCen">
+            <p class="tit">项目竣工时间</p>
+            <el-date-picker
+              clearable
+              class="flex1"
+              v-model="endDate"
+              type="date"
+              placeholder="选择结束日期">
+            </el-date-picker>
+          </div>
+        </div>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editPro">确 定</el-button>
+        </span>
+      </el-dialog>
+
     </div>
 
   </div>
@@ -161,60 +181,53 @@
     data() {
       return {
         clientHeight:0,
-         allsource: [
+         allproType: [
            {
-             label: '邦宁',
+             label: '邦宁项目',
              value: '0'
            }, {
-             label: '用户',
+             label: '用户自建',
              value: '1'
            }
          ],
-         sourcevalue: '',
-         alltypeWork:[
+         proTypevalue: '',
+         allLaowu:[
            {
-             label: '计时',
+             label: '计时工',
              value: '0'
            }, {
-             label: '计件',
+             label: '计件工',
              value: '1'
            }
          ],
-         typeWorkvalue:'',
-         allsignIn:[
+         laowuvalue:'',
+         allstatus:[
            {
-             label: '迟到',
+             label: '进行中',
              value: '0'
            }, {
-             label: '早退',
+             label: '已完工',
              value: '1'
-           }, {
-             label: '正常',
-             value: '2'
-           }, {
-             label: '未签到',
-             value: '3'
-           }, {
-             label: '未签退',
-             value: '4'
-           }, {
-             label: '缺卡',
-             value: '5'
            }
          ],
-         signInvalue:'',
-         startDate:'',
-         endDate:'',
+         statusvalue:'',
+         project:'',
+         concat:'',
          tableData:[
            {name:'你好',status:0},
            {name:'你好a',status:1}
          ],
-
-         serach:'',
          loading:false,
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
+         dialogVisible:false,
+         proName:'',
+         concatPeople:'',
+         startDate:'',
+         endDate:'',
+
+
 
       }
     },
@@ -244,11 +257,11 @@
       },
       // 重置
       raLoad(){
-        this.sourcevalue = '';
-        this.typeWorkvalue = '';
-        this.signInvalue = '';
-        this.startDate = '';
-        this.endDate = '';
+        this.proTypevalue = '';
+        this.laowuvalue = '';
+        this.statusvalue = '';
+        this.project = '';
+        this.concat = '';
         this.PageIndex = 1;
         this.loadDate();
       },
@@ -256,37 +269,53 @@
       exportTable(){
 
       },
-      agree(row){
-        console.log(row)
-        this.$confirm('是否同意申请?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-        }).catch(() => {
-
-        })
+      // 编辑
+      edit(){
+        this.dialogVisible = true
       },
-      refuse(row){
-        console.log(row)
-        this.$confirm('是否拒绝申请?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-
+      editPro(){
+          if(this.proName==''){
             this.$message({
-              type: 'success',
-              message: '操作成功!'
+              type: 'warning',
+              message: '请输入项目名称'
             })
-        }).catch(() => {
+          }else if(this.concatPeople==''){
+            this.$message({
+              type: 'warning',
+              message: '请输入项目联系人'
+            })
+          }else if(this.startDate==''){
+            this.$message({
+              type: 'warning',
+              message: '请选择进场时间'
+            })
+          }else if(this.endDate==''){
+            this.$message({
+              type: 'warning',
+              message: '请选择结束时间'
+            })
+          }else{
+            console.log(this.proName)
+            console.log(this.concatPeople)
+            console.log(this.startDate)
+            console.log(this.endDate)
 
-        })
+          }
       },
+      // 项目详情
+      seeDetail(row){
+        
+        this.$router.push({ path: '/workerManagement/project-detail', query: { id: row.id }})
+      },
+      // 工作台
+      toWorkbench(){
+
+      },
+      // 用工协议
+      userWork(){
+
+      },
+
       /** 选择分页 */
       handleSizeChange(e) {
         this.PageSize = e
@@ -346,7 +375,9 @@
       border: 1px solid #d9d9d9;
       padding-left: 8px;
     }
-
+    .flex1{
+      flex: 1;
+    }
   }
 }
 
