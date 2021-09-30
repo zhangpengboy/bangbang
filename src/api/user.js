@@ -825,3 +825,11 @@ export function getByOrderAndBrief(params) {
 		params
 	})
 }
+// 获取省市区
+export function getregion(params) {
+	return request({
+		url: `/api/commons/common/region/v1.0.1/`,
+		method: 'get',
+		params
+	})
+}
