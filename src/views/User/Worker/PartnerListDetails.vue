@@ -458,6 +458,7 @@
 
 			/** 获取账单详情-提现记录 */
 			async getRecordList() {
+				console.log('获取账单详情-提现记录')
 				let param = {};
 				param.pageNum = this.recordIndex;
 				param.pageSize = this.recordSize;
@@ -603,6 +604,7 @@
 				param.keyword = this.keyword;
 				param.status = this.status;
 				param.type = this.type;
+				param.userId = this.userId
 				this.loading = true;
 				try {
 					let res = await getIncomeDetail(param);

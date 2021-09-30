@@ -223,7 +223,7 @@ export function getMembers(params) {
  * 任务奖励列表
  * 
  * */
- export function getReward(params) {
+export function getReward(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/order/reward`,
 		params
@@ -234,7 +234,7 @@ export function getMembers(params) {
  * 任务奖励列表 -- 提交数据
  * 
  * */
- export function postReward(data) {
+export function postReward(data) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/order/reward`,
 		method: 'post',
@@ -245,7 +245,7 @@ export function getMembers(params) {
  * 任务奖励列表 -- 历史数据
  * 
  * */
- export function getRewardlog(params) {
+export function getRewardlog(params) {
 	return request({
 		url: `/api/bill/v1.0/admin/brief/order/reward/log`,
 		params
@@ -897,6 +897,7 @@ export function getPartnerUpdateStatus(data) {
  * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
+ * @param {Number} userId 用户ID 
  *  */
 export function getIncomeDetail(params) {
 	return request({
@@ -1003,6 +1004,7 @@ export function awardSettingupdateOne(data) {
  * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
  * @param {String} keyword  搜索关键字（用户ID/账号）
  * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
+ * @param {Number} userId 用户ID 
  *  */
 export function getIncomeDetailExport(params) {
 	return request({
@@ -1088,7 +1090,7 @@ export function getInviteList(params) {
  * @param {Number} pageSize  页面大小
  * @param {Number} userId 合伙人ID
  * */
-export function getTaskList(params){
+export function getTaskList(params) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/page`,
 		params
@@ -1103,10 +1105,109 @@ export function getTaskList(params){
  * @param {Number} pageSize  页面大小
  * @param {Number} userId 合伙人ID
  * */
-export function getTaskExport(params){
+export function getTaskExport(params) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/export`,
 		params
+	})
+}
+
+/**
+ * 查询单个工种信息
+ * @param {String} teamTypeId 工种ID
+ *  */
+export function getTeamType(teamTypeId) {
+	return request({
+		url: `/api/bill/v1.0/admin/teamType/detail`,
+		params: {
+			teamTypeId
+		}
+	})
+}
+
+/** 
+ * 合伙人审核列表 
+ * @param {String} keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 状态
+ * */
+export function getApplyRecord(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/apply/v1.0.1/page`,
+		params
+	})
+}
+
+
+/**
+ * 合伙人审核导出 
+ * @param {String} keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 状态
+ * */
+export function getExportApplyRecord(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/apply/v1.0.1/export`,
+		params
+	})
+}
+
+/** 
+ * 分享列表
+ * @param {String} keyword1 接单人输入查询 (模糊搜索用户ID/接单人/手机号码）
+ * @param {String} keyword2 合伙人输入查询 (模糊搜索分享合伙人/合伙人手机号码)
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} conditionStatus 奖励的前提条件状态 （0：未达标 1：达标）
+ * @param {Number} type 类型（0：一次性 1：周期） 
+ * */
+export function getShartList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/page`,
+		params
+	})
+}
+
+
+/** 
+ * 分享列表
+ * @param {String} id 当前列表主键id
+ * @param {Number} conditionStatus 奖励的前提条件状态 （0：未达标 1：达标） 
+ * */
+export function getSbumitShart(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/updateConditionStatus`,
+		method: 'post',
+		params
+	})
+}
+
+
+/** 合伙人提现
+ * @param {String} keyword  keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
+ * */
+export function getPartnerCash(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/page`,
+		params
+	})
+}
+
+/** 修改合伙人提现
+ * @param {String} reason  已驳回状态的理由
+ * @param {Number} id  主键id
+ * @param {Number} status  状态（0：审核中, 1：已驳回, 2：已到账）
+ * */
+export function getPartnerCashUpdateStatus(data){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/updateStatus`,
+		method: 'post',
+		data
 	})
 }
 
