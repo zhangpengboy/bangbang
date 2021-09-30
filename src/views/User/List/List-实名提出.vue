@@ -98,7 +98,7 @@
         </el-table-column>
         <el-table-column prop="realNameAuth" label="实名状态">
           <template slot-scope="scope">
-            	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
+            	{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
             </template>
         </el-table-column>
         <el-table-column prop="enterpriseAuth" label="企业认证">

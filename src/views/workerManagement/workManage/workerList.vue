@@ -7,11 +7,15 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="用户ID/账号" />
+            <el-input v-model="serach" clearable class="top-content-item-input" placeholder="用户ID/账号" />
           </div>
           <div class="flex fvertical top-content-item-status">
-            <span>状态：</span>
-            <el-select v-model="statusvalue" placeholder="全部">
+            <span>工种：</span>
+            <el-input v-model="workType" clearable class="top-content-item-input" placeholder="输入工种" />
+          </div>
+          <div class="flex fvertical top-content-item-status">
+            <span>工人来源：</span>
+            <el-select v-model="statusvalue" clearable placeholder="全部">
               <el-option
                 v-for="item in allStatus"
                 :key="item.value"
@@ -19,6 +23,10 @@
                 :value="item.value"
               />
             </el-select>
+          </div>
+          <div class="flex fvertical top-content-item-status">
+            <span>所属项目：</span>
+            <el-input v-model="project" clearable class="top-content-item-input" placeholder="输入项目名称/服务单号" />
           </div>
         </div>
         <div class="top-content-btn">
@@ -37,24 +45,36 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="payee" label="ID"  width="120"/>
-        <el-table-column prop="collectionAccount" label="名称" />
-        <el-table-column prop="bankName" label="手机号码" width="120"/>
-        <el-table-column label="状态" width="120">
+        <el-table-column prop="name" label="ID"  width="120"/>
+        <el-table-column prop="name" label="姓名" />
+        <el-table-column prop="name" label="手机号码" width="120"/>
+        <el-table-column prop="name" label="性别" width="60"/>
+        <el-table-column prop="name" label="工种"/>
+        <el-table-column prop="name" label="所属项目"/>
+        <el-table-column prop="name" label="工种类型"/>
+        <el-table-column prop="name" label="所属班组"/>
+        <el-table-column prop="name" label="考勤时间"/>
+        <el-table-column prop="name" label="工资标准"/>
+        <el-table-column label="工人类型" width="120">
           <template slot-scope="scope">
-            <p style="color:#F59A23 ;" v-if="scope.row.status == 1">审核中</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">已驳回</p>
-            <p style="color: #03BF16;" v-if="scope.row.status == 3">审核通过</p>
+            <p style="color:#0076FF ;" v-if="scope.row.status == 1">邦宁认证工人</p>
+            <p style="color:#D9001B;" v-if="scope.row.status == 0">普通工人</p>
           </template>
          </el-table-column>
-         <el-table-column prop="updateTime" label="申请时间" width="200"/>
-        <el-table-column prop="updater" label="操作人"/>
-        <el-table-column prop="updateTime" label="操作时间" width="200"/>
-        <el-table-column label="操作" width="160">
+        <el-table-column label="工作状态" width="120">
           <template slot-scope="scope">
-            <template v-if="scope.row.status == 1">
-              <el-button type="success" size="small" @click="agree(scope.row)">同意</el-button>
-              <el-button type="danger" size="small" @click="refuse(scope.row)">拒绝</el-button>
+              {{scope.row.status == 1?'工作中':'休息中'}}
+          </template>
+         </el-table-column>
+         <el-table-column label="账号状态" width="120">
+           <template slot-scope="scope">
+               {{scope.row.status == 1?'正常':'禁用'}}
+           </template>
+          </el-table-column>
+        <el-table-column label="操作" width="100">
+          <template slot-scope="scope">
+            <template>
+              <el-button type="text" size="small" @click="seeDetail(scope.row)">查看详情</el-button>
             </template>
 
           </template>
@@ -93,35 +113,33 @@
       return {
          allStatus: [
            {
-             label: '审核中',
+             label: '邦宁劳务',
              value: '0'
            }, {
-             label: '审核通过',
+             label: '用户自有',
              value: '1'
-           }, {
-             label: '已驳回',
-             value: '2'
            }
          ],
          statusvalue: '',
-         PageIndex:1,
          tableData:[
-           {name:'你好'},
-           {name:'你好a'}
+           {name:'你好',status:0},
+           {name:'你好a',status:1}
          ],
 
          serach:'',
+         workType:'', //工种
+         project:'', //所属项目
          loading:false,
+         clientHeight:0,
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
-		 clientHeight:0,
 
       }
     },
     created() {
       this.getWebHeing();
-      this.loadDate('');
+      // this.loadDate('');
     },
     methods: {
       loadDate(status){
@@ -145,6 +163,9 @@
       },
       // 重置
       raLoad(){
+        this.serach = '';
+        this.workType = '';
+        this.project = '';
         this.statusvalue = '';
         this.PageIndex = 1;
         this.loadDate(this.statusvalue);
@@ -153,38 +174,10 @@
       exportTable(){
 
       },
-      agree(row){
-        console.log(row)
-        this.$confirm('是否同意申请?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-        }).catch(() => {
-
-        })
+      // 查看详情
+      seeDetail(row){
+         this.$router.push({ path: '/workerManagement/worker-detail', query: { id: row.id }})
       },
-      refuse(row){
-        console.log(row)
-        this.$confirm('是否拒绝申请?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-        }).catch(() => {
-
-        })
-      },
-      
       /** 选择分页 */
       handleSizeChange(e) {
         this.PageSize = e

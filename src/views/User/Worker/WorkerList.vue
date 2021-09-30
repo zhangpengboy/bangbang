@@ -8,7 +8,7 @@
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
             <span>输入查询：</span>
-            <el-input v-model="serach" class="top-content-item-input" placeholder="ID/用户名称/手机号" clearable/>
+            <el-input v-model="serach" class="top-content-item-input" placeholder="用户ID/名称/手机号" clearable/>
           </div>
           <div class="flex fvertical top-content-item-status">
             <span>工人等级：</span>
@@ -55,7 +55,7 @@
         <el-table-column prop="phone" label="手机号码" width="120"/>
         <el-table-column label="实名状态">
           <template slot-scope="scope">
-          	{{scope.row.realNameAuth == 0 ?'未实名':'已实名'}}
+          	{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
           </template>
         </el-table-column>
         <el-table-column prop="gender" label="性别">
@@ -80,7 +80,15 @@
         </el-table-column>
         <el-table-column prop="workerStatus" label="状态">
           <template slot-scope="scope">
-          	{{scope.row.workerStatus == 1 ?'冻结':'正常'}}
+          	<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
+            <el-switch
+               v-model="scope.row.workerStatus"
+               :active-value="0"
+               :inactive-value="1"
+               @change="workerStatusChange(scope.row)"
+               active-color="#0079fe"
+               inactive-color="#e5dbe5">
+             </el-switch>
           </template>
          </el-table-column>
         <el-table-column prop="updaterName" label="操作人" />
@@ -88,7 +96,7 @@
         <el-table-column label="操作" width="220">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-            <el-button type="text" size="small" @click="changeSte(scope.row)">{{ scope.row.workerStatus==1?'激活':'冻结' }}</el-button>
+
             <el-button v-if="scope.row.realNameAuth==0" type="text" size="small" @click="reanName(scope.row)">实名</el-button>
           </template>
         </el-table-column>
@@ -388,58 +396,33 @@ export default {
       this.PageIndex = e
       this.getList()
     },
-
-    // 激活冻结
-    changeSte(row) {
-      var that = this;
-      console.log(row)
-      if (row.workerStatus == 1) { // 冻结去激活
-        this.$confirm('是否确定激活用户', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 0
-          }
-          console.log(params)
-          gongrenupdateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getList()
-            }
-          })
-
-        }).catch(() => {})
+    // 给工人激活冻结
+    workerStatusChange(row){
+      if (row.workerStatus) {
+       this.changeUserStatus(row.id,1)
       }else{
-        this.$confirm('是否确定冻结用户', '确认提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          var params = {
-            userId:row.id,
-            userStatus: 1
-          }
-          gongrenupdateUserStatus(params).then(res => {
-            console.log(res)
-            if(res.code==200){
-              that.$message({
-                type: 'success',
-                message: '操作成功!'
-              })
-              that.getList()
-            }
-          })
-
-        }).catch(() => {})
+        this.changeUserStatus(row.id,0)
       }
     },
+    // 修改用户状态封装
+    changeUserStatus(userId,userStatus){
+      var that = this;
+      var params = {
+        userId:userId,
+        userStatus: userStatus
+      }
+      gongrenupdateUserStatus(params).then(res => {
+        console.log(res)
+        if(res.code==200){
+          that.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          that.getList()
+        }
+      })
+    },
+
     /** 实名 */
     reanName(row) {
       console.log(row)

@@ -49,6 +49,8 @@ export function gongRenQueryPage(params) {
  * @param {String} updator 跟进人ID/账号
  * @param {Number} pageIndex 当前页码数
  * @param {Number} pageSize 页面大小
+ * @param {Number} type   劳务派遣 -> 1 劳务分包 -> 2
+ * @param {String} address 地区
  */
 export function getBriel(params) {
 	return request({
@@ -126,6 +128,38 @@ export function getBriefPay(params) {
 	})
 }
 
+/**
+ * 开票列表
+ * @param {String} keywords 搜索内容
+ * @param {Number} status 状态
+ * @param {Number} pageIndex 当前页码数
+ * @param {Number} pageSize 页面大小
+ */
+export function getInvoice(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice`,
+		params
+	})
+}
+/**
+ * 发票状态修改
+ */
+export function postInvoiceStatus(data) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice/update`,
+		method: 'post',
+		data
+	})
+}
+/**
+ * 发票详情
+ */
+export function getInvoiceDetail(params) {
+	return request({
+		url: `/api/bill/v1.0/admin/brief/invoice/detail`,
+		params
+	})
+}
 /**
  * 修改充值状态
  * @param {Number} id 要修改的字段
@@ -482,7 +516,7 @@ export function exportCsvGongren(params) {
 
 // 工种、考勤、自我介绍、收款信息开始-----------------
 /** 查询所有工种 */
-export function gettypeWorkAllClass(){
+export function gettypeWorkAllClass() {
 	return request({
 		url: `/api/commons/admin/commonsLabel/v1.0/queryAllChild`,
 	})
@@ -740,7 +774,7 @@ export function visitListexportCsv(params) {
 		url: `/api/user/admin/userLoginLog/v1.0/exportCsv`,
 		method: 'get',
 		params,
-    responseType: 'blob'
+		responseType: 'blob'
 	})
 }
 // 访问统计列表折线图
@@ -759,3 +793,296 @@ export function getByOrderAndBrief(params) {
 		params
 	})
 }
+/**
+ * 合伙人列表
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {String} provinceName 地省名称
+ * @param {String} provinceCode 地省编码
+ * @param {String} areaCode 地区编码
+ * @param {String} cityCode 地市编码
+ * @param {String} cityName 地市名称
+ */
+export function getPartnerList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 合伙人导出
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 账号状态（0：正常 1:冻结；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {String} provinceName 地省名称
+ * @param {String} provinceCode 地省编码
+ * @param {String} areaCode 地区编码
+ * @param {String} cityCode 地市编码
+ * @param {String} cityName 地市名称
+ */
+export function getPartnerExport(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/export`,
+		params,
+		responseType: 'blob'
+	})
+}
+
+/**
+ * 合伙人详情
+ * @param {Number} userId  当前用户ID
+ */
+export function getPartnerDetails(userId) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/get/${userId}`,
+	})
+}
+
+/**
+ * 修改合伙人状态
+ * @param {Number} id 当前列表id
+ * @param {Number} status 状态
+ * @param {String} reason 理由
+ *  */
+export function getPartnerUpdateStatus(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.1/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+
+/**
+ * 合伙人-账单详情（已获得收入，未结算收入）
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
+ *  */
+export function getIncomeDetail(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/page`,
+		params
+	})
+}
+
+// 实名认证申请列表
+export function userRealNameApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/page`,
+		method: 'get',
+		params
+	})
+}
+// 实名认证申请导出
+export function userRealNameApplyexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/exportCsv`,
+		method: 'get',
+		params,
+		responseType: 'blob'
+	})
+}
+// 实名认证申请修改状态
+export function userRealNameApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+// 实名认证申请详情
+export function userRealNameApplyone(params) {
+	return request({
+		url: `/api/user/admin/userRealNameApply/v1.0/one`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员升级-审计审核-列表
+export function userUpgradeApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userUpgradeApply/v1.0/page`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员升级-审计审核-审核
+export function userUpgradeApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userUpgradeApply/v1.0/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+// 用户会员申请表-认证工人审核-列表
+export function userMemberApplyPage(params) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/page`,
+		method: 'get',
+		params
+	})
+}
+// 用户会员申请表-认证工人审核-导出
+export function userMemberApplyexportCsv(params) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/exportCsv`,
+		method: 'get',
+		params,
+		responseType: 'blob'
+	})
+}
+// 用户会员申请表-认证工人审核-审核
+export function userMemberApplyupdateStatus(data) {
+	return request({
+		url: `/api/user/admin/userMemberApply/v1.0.1/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+// 系统设置-获取奖励设置信息接口
+export function awardSettingGet(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/get`,	
+		method: 'get',
+		params
+	})
+}
+// 获取省市区
+export function getregion(params) {
+	return request({
+		url: `/api/commons/common/region/v1.0.1/`,
+		method: 'get',
+		params
+	})
+}
+// 系统设置-邀请奖励设置信息接口
+export function awardSettingupdateOne(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/updateOne`,
+		method: 'post',
+		data
+	})
+}
+/**
+ * 合伙人-账单详情-导出（已获得收入，未结算收入）
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 收益状态（0：已获得收入 1：未结算收入；；不传该参数查全部状态）
+ * @param {String} keyword  搜索关键字（用户ID/账号）
+ * @param {Number} type 收益类型（0：完成认证奖励 1：施工费用分佣；；不传该参数查全部类型）
+ *  */
+export function getIncomeDetailExport(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/incomeDetail/v1.0.1/export`,
+		params,
+		method: 'get',
+		responseType: 'blob'
+	})
+}
+
+/**
+ * 合伙人-数据统计团队
+ * @param {Number} userId  用户ID
+ *  */
+export function getInvitationTeam(userId) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/statistics/${userId}`
+	})
+}
+
+
+/**
+ * 合伙人-数据统计收益
+ * @param {Number} userId  用户ID
+ *  */
+export function getInvitationIncome(userId) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/Income/v1.0.1/statistics/${userId}`
+	})
+}
+
+/**
+ * 合伙人-提现记录
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID
+ * @param {String} keyword  搜索关键字（订单ID）
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态）
+ *   */
+export function getRecordList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 合伙人-导出提现记录
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID
+ * @param {String} keyword  搜索关键字（订单ID）
+ * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态）
+ *   */
+export function getRecordExport(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/export`,
+		params,
+		responseType: 'blob'
+	})
+}
+
+/**
+ * 邀请注册列表
+ * @param {Number} authStatus 认证状态 0：未认证 1：已认证
+ * @param {String} keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID
+ * */
+export function getInviteList(params) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/invitation/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 工作分享列表
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成
+ * @param {String} keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID
+ * */
+export function getTaskList(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/page`,
+		params
+	})
+}
+
+/**
+ * 工作分享列表-导出
+ * @param {Number} workStatus 认证状态 1：工作中 2：已完成
+ * @param {String} keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人ID
+ * */
+export function getTaskExport(params){
+	return request({
+		url: `/api/marketing/admin/marketing/partner/jobShare/v1.0.1/export`,
+		params
+	})
+}
+
+

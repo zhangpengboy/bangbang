@@ -24,9 +24,9 @@
         <div class="container">
           <p class="tit">工种</p>
           <div class="list flex alCen">
-            <div class="item flex alCen js-center" v-for="(item,index) in gongzhong">
+            <div class="item flex alCen js-center" v-for="(item,index) in gongzhong" @click.stop="edit(item,index)">
               <p class="txt">{{item.labelName}}</p>
-              <img src="../../assets/images/icon-close.png" class="iconClose" @click="detItem(item,index)">
+              <img src="../../assets/images/icon-close.png" class="iconClose" @click.stop="detItem(item,index)">
             </div>
             <div class="add flex alCen js-center" @click="addItem">
               <img src="../../assets/images/icon-add.png" class="iconAdd">
@@ -66,7 +66,7 @@
       getList() {
         this.loading = true;
         var params = {
-          pageSize:20,
+          pageSize:1000,
           pageNum:1,
           type:0,
           parentId:0
@@ -104,10 +104,15 @@
            cancelButtonText: '取消',
            inputValue:item.labelName
          }).then(({ value }) => {
-           if(value==null){
+           if(value==null||value==''){
              this.$message({
-               type: 'success',
+               type: 'warning',
                message: '不能为空 '
+             });
+           }else if(value.length>=8){
+             this.$message({
+               type: 'warning',
+               message: '名称不能超过8个字'
              });
            }else{
              var params = {
@@ -123,7 +128,9 @@
 
              })
            }
-         });
+         }).catch(() => {
+
+        });
        },
        // 分类删除
        dele(item,index){

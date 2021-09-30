@@ -101,8 +101,8 @@ export default {
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'bnhl0822.',
+        username: '',
+        password: '',
         userType: 2,
         appType: 2
       },
@@ -138,9 +138,6 @@ export default {
       },
       immediate: true
     }
-  },
-  created() {
-    // window.addEventListener('storage', this.afterQRScan)
   },
   mounted() {
     if (this.loginForm.username === '') {

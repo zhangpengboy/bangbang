@@ -13,12 +13,27 @@
 						</el-input>
 					</div>
 					<div class="flex fvertical top-content-item-status">
-						<span>跟进人：</span>
-						<el-select v-model="updator" placeholder="选择跟进人">
-							<el-option v-for="item in options" :key="item.value" :label="item.label"
+						<span>类型：</span>
+						<el-select v-model="type_name" placeholder="选择类型">
+							<el-option v-for="item in typeList" :key="item.value" :label="item.label"
 								:value="item.value">
 							</el-option>
 						</el-select>
+					</div>
+					<!-- <div class="flex fvertical top-content-item-status">
+						<span>跟进人：</span>
+						<el-input class="top-content-item-input" v-model="updator" @keyup.enter.native="handelSearch"
+							placeholder="请输入跟进人">
+						</el-input>
+					</div> -->
+					<div class="flex fvertical top-content-item-status">
+						<span>地区：</span>
+						 <el-cascader
+						style="width:250px"
+						v-model="address"
+						:options="addressList"
+						:props="addressconfig"
+						@change="handleaddressChange"></el-cascader>
 					</div>
 				</div>
 
@@ -34,7 +49,7 @@
 		<div class="box">
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
-				<el-button>导出</el-button>
+				<el-button @click="handleExport">导出</el-button>
 			</div>
 
 			<!-- 表格  -->
@@ -50,6 +65,11 @@
 				</el-table-column>
 				<el-table-column prop="phone" label="手机号码">
 				</el-table-column>
+				<el-table-column  label="类型">
+					<template slot-scope="scope">
+						{{scope.row.type == 1?'工人推荐':'劳务分包'}}
+					</template>
+				</el-table-column>
 				<el-table-column label="语音" width="140">
 					<template slot-scope="scope">
 						<template v-for="(item,index) in scope.row.voices">
@@ -61,21 +81,27 @@
 				</el-table-column>
 				<el-table-column prop="content" label="需求" width="300">
 				</el-table-column>
-				<el-table-column prop="address" label="服务单">
+				<el-table-column prop="city" label="地区">
+				</el-table-column>
+				<el-table-column prop="address" label="报价单">
+					<template slot-scope="scope">
+					<el-button @click="handleLook(scope.row)" type="text" size="small">查看详情</el-button>
+					</template>
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
-				<el-table-column label="创建时间">
+				<el-table-column label="创建时间" width="120">
 					<template slot-scope="scope">
 						<span>{{formatDate(scope.row.createTime)}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column prop="updateTime" label="操作时间">
+				<el-table-column  label="操作时间" width="120">
 					<template slot-scope="scope">
+						<!-- <p>{{scope.row.updateTime}}</p> -->
 						<span>{{formatDate(scope.row.updateTime)}}</span>
 					</template>
 				</el-table-column>
-				<el-table-column label="状态">
+				<el-table-column label="状态" width="100">
 					<template slot-scope="scope">
 						<div v-if="scope.row.status == 0">未发报价单</div>
 						<div v-else-if="scope.row.status == 1">已发报价单</div>
@@ -94,7 +120,7 @@
 								@click="handleCreate(scope.row)">创建报价单</el-button>
 						</template>
 
-						<el-button v-if="scope.row.status == 0 " type="text" size="small"
+						<el-button v-if="scope.row.status == 0 || scope.row.status == 1" type="text" size="small"
 							@click="handleClose(scope.row)">取消</el-button>
 					</template>
 				</el-table-column>
@@ -117,12 +143,29 @@
 <script>
 	import {
 		getBriel,
-		UpdateBriel
+		UpdateBriel,
+		getregion
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
 		data() {
 			return {
+				address:"", // 选中地区
+				addressList:[{
+					code: "",
+					name: "全部"
+				}], // 地区列表
+				type_name:"", // 选中类型
+				typeList:[{
+					value: "",
+					label: "全部"
+				},{
+					value: 1,
+					label: "工人推荐"
+				},{
+					value: 2,
+					label: "劳务分包"
+				}], // 类型列表
 				tableData: [], // 表单列表
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
@@ -136,12 +179,18 @@
 				keywords: "", // 输入查询
 				updator: "", // 跟进人ID
 				loading: false,
-				clientHeight:0
+				clientHeight:0,
+				addressconfig:{
+					value:'name',
+					label:"name",
+					children:'children'
+				}
 			}
 		},
-		mounted() {
+		async mounted() {
 			this.getBriel();
 			this.getWebHeing();
+			this.getRegion()
 		},
 		methods: {
 			// 鼠标经过
@@ -179,11 +228,13 @@
 				this.keywords = '';
 				this.value = '';
 				this.pageIndex = 1;
+				this.type_name = '';
+				this.address = '';
 				this.getBriel();
 			},
 
 			formatDate(value) {
-				return moment(value).format('YYYY-MM-DD')
+				return value ? moment(value).format('YYYY-MM-DD') : ''
 			},
 			/** 取消订单 */
 			handleClose(row) {
@@ -281,6 +332,8 @@
 				param.pageSize = this.pageSize;
 				param.keywords = this.keywords.trim();
 				param.updator = this.updator;
+				param.type = this.type_name;
+				param.city = this.address[1]
 				this.loading = true;
 				try {
 					let res = await getBriel(param);
@@ -293,6 +346,21 @@
 				}
 
 			},
+			//导出
+			handleExport(){
+				window.open(`/api/bill/v1.0/admin/brief/export?keywords=${this.keywords.trim()}&type=${this.type_name}&city=${this.address[1]||''}`)
+				
+			},
+			// 获取省市区
+			getRegion(){
+				getregion().then(res=>{
+					console.log(res)
+					this.addressList = [...this.addressList,...res.data[0].children]
+				})
+			},
+			handleaddressChange(e){
+				console.log(e)
+			}
 		}
 	}
 </script>

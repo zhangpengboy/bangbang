@@ -6,6 +6,10 @@
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
+            <span>输入查询：</span>
+            <el-input v-model="serach" class="top-content-item-input" placeholder="收款单位/收款账号/所属银行" />
+          </div>
+          <div class="flex fvertical top-content-item-status">
             <span>状态：</span>
             <el-select v-model="statusvalue" placeholder="全部">
               <el-option
@@ -118,6 +122,7 @@
          bank:'',
          loading:false,
          editID:0,
+         serach:'',
       }
     },
     created() {
@@ -129,7 +134,8 @@
         var params = {
           pageSize:20,
           pageNum:1,
-          status:status
+          status:status,
+          keyword:this.serach
         }
         getCollectionClass(params).then(res => {
           this.loading = false;
@@ -140,7 +146,7 @@
             }else{
               data[i].updateTime = formatDate(data[i].createTime)
             }
-          
+
           }
           console.log('res', data)
           this.tableData = data

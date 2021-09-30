@@ -33,7 +33,7 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">手机号码</p>
-                <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.phone" />
+                <input  class="desc flex1 col666" type="number" name="" :disabled="isEdit" v-model="basicInfo.phone" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">现住址</p>
@@ -53,15 +53,15 @@
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
-                <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
+                <!-- <el-select class="desc flex1 col666" :disabled="isEdit" v-model="basicInfo.gender" placeholder="请选择">
                   <el-option
                     v-for="item in genderoptions"
                     :key="item.id"
                     :label="item.labelName"
                     :value="item.id">
                   </el-option>
-                </el-select>
-                <!-- <input  class="desc flex1 col666" type="" name="" :disabled="isEdit" v-model="basicInfo.gender"/> -->
+                </el-select> -->
+                <input  class="desc flex1 col666" type="" name="" disabled v-model="basicInfo.gender==1?'女':basicInfo.gender==0?'男':'未知'"/>
               </div>
               <div class="item flex">
                 <p class="backgroud tit">工人等级</p>
@@ -87,7 +87,7 @@
             <div class="list">
               <div class="item flex">
                 <p class="backgroud tit">实名认证</p>
-                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth?'已实名':'未实名'" />
+                <input  class="desc flex1 col666" type="" name="" disabled :value="userInfo.realNameAuth==1?'已实名':userInfo.realNameAuth==2?'审核中':'未实名'" />
               </div>
               <div class="item flex">
                 <p class="backgroud tit">性别</p>
@@ -135,40 +135,48 @@
         <!-- 身份证 -->
         <div class="mt15 flex alCen">
           <div class="">
-            <el-upload
-              class="avatar-uploader"
-              action="123"
-              :before-upload="beforeUpload"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :with-credentials='true'
-              :auto-upload="true"
-              :on-success="upIdCard"
-            >
-              <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                action="123"
+                :before-upload="beforeUpload"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :with-credentials='true'
+                :auto-upload="true"
+                :on-success="upIdCard"
+              >
+                <img v-if="realNameInfo.idCardUri" :src="realNameInfo.idCardUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证正面</div>
           </div>
-          <div class="">
-            <el-upload
-              class="avatar-uploader"
-              style="margin-left: 10px;"
-              action="123"
-              :before-upload="beforeUpload2"
-              :show-file-list="false"
-              ref="newupload"
-              :disabled='isEditShM'
-              name="multipartFile"
-              :auto-upload="true"
-              :with-credentials='true'
-              :on-success="upIdCardBack"
-            >
-              <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
-              <i v-else class="el-icon-plus avatar-uploader-icon" />
-            </el-upload>
+          <div class="" style="margin-left: 20px;">
+            <div v-if="isEditShM">
+              <img :src="realNameInfo.idCardReverseUri" style="width: 178px;height: 178px;" @click="IdCardPreview(realNameInfo.idCardReverseUri)">
+            </div>
+            <div v-else>
+              <el-upload
+                class="avatar-uploader"
+                style="margin-left: 10px;"
+                action="123"
+                :before-upload="beforeUpload2"
+                :show-file-list="false"
+                ref="newupload"
+                name="multipartFile"
+                :auto-upload="true"
+                :with-credentials='true'
+                :on-success="upIdCardBack"
+              >
+                <img v-if="realNameInfo.idCardReverseUri" :src="realNameInfo.idCardReverseUri" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon" />
+              </el-upload>
+            </div>
             <div class="mt10 text-center">身份证背面</div>
           </div>
         </div>
@@ -246,7 +254,7 @@
                   <p class="backgroud tit">状态</p>
                   <p class="desc flex1 col666 flex alCen js-sb">
                     <span>{{bizCardInfo.workStatus==1?'工作中':'找工中'}}</span>
-                    <el-button type="text" size="small" v-if="isEditUserInfo" @click="changeStatus">切换状态</el-button>
+                    <!-- <el-button type="text" size="small" v-if="isEditUserInfo" @click="changeStatus">切换状态</el-button> -->
                   </p>
                 </div>
                 <div class="item flex">
@@ -424,6 +432,12 @@
 
       </div>
       <!-- 提现end -->
+
+      <!-- 图片预览 -->
+      <el-dialog :visible.sync="dialogVisible1" append-to-body>
+        <img width="100%" fit="contain" :src="yulanImg" alt="">
+      </el-dialog>
+
     </div>
 
   </div>
@@ -496,7 +510,9 @@ export default {
           labelName:'未知',
           id:2
         }
-      ]
+      ],
+      dialogVisible1:false,
+      yulanImg:'',
 
     }
   },
@@ -581,7 +597,7 @@ export default {
           updateTime :data.updateTime
         }
         this.realNameInfo = {
-          realNameAuth : data.realNameAuth?'已实名':'未实名'
+          realNameAuth : data.realNameAuth==1?'已实名':data.realNameAuth==2?'审核中':'未实名'
         }
         if(data.realNameAuthDTO){
         this.realNameInfo = {
@@ -643,7 +659,7 @@ export default {
 
     // 基本信息编辑
     edit() {
-      if(this.isEdit==false){
+      if(this.isEdit==false){     
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
@@ -661,7 +677,7 @@ export default {
           this.isEdit = true
           this.loadDate(this.userIdOrType)
         })
-
+        
       }else{
         this.isEdit = false
       }
@@ -686,6 +702,31 @@ export default {
         }else if(this.realNameInfo.age>100){
           this.$message({
             message: '年龄不能超过100岁',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.age==''){
+          this.$message({
+            message: '年龄不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.realName==''){
+          this.$message({
+            message: '姓名不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.nation==''){
+          this.$message({
+            message: '民族不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.idNo==''){
+          this.$message({
+            message: '身份证号不能为空',
+            type: 'warning'
+          });
+        }else if(this.realNameInfo.householdRegister==''){
+          this.$message({
+            message: '户籍地不能为空',
             type: 'warning'
           });
         }else{
@@ -783,7 +824,12 @@ export default {
       console.log(res)
       console.log(file)
     },
-
+    // 点击查看大图
+    IdCardPreview(url){
+      console.log(url)
+      this.yulanImg = url;
+      this.dialogVisible1 = true;
+    },
     workPhotoSuccess(res,file) {
       var obj = {};
       obj.url = res.data

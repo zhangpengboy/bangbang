@@ -40,6 +40,11 @@
         <el-table-column prop="payee" label="ID"  width="120"/>
         <el-table-column prop="collectionAccount" label="名称" />
         <el-table-column prop="bankName" label="手机号码" width="120"/>
+        <el-table-column label="审核内容">
+           <template slot-scope="scope">
+             <el-button type="text" size="small" @click="agree(scope.row)">查看信息</el-button>
+           </template>
+        </el-table-column>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
             <p style="color:#F59A23 ;" v-if="scope.row.status == 1">审核中</p>
@@ -109,14 +114,13 @@
            {name:'你好'},
            {name:'你好a'}
          ],
-
          serach:'',
          loading:false,
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
 		 clientHeight:0,
-
+		 
       }
     },
     created() {
@@ -124,6 +128,24 @@
       this.loadDate('');
     },
     methods: {
+      /** 计算页面高度 */
+      getWebHeing() {
+      	this.$nextTick(() => {
+      		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      			.offsetHeight - document.getElementById('page')
+      			.offsetHeight - document.getElementById('boxTop')
+      			.offsetHeight - 180;
+      	})
+      	window.addEventListener('resize', () => {
+      		if(document.getElementById('top')!=null){
+      		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      		  	.offsetHeight - document.getElementById('page')
+      		  	.offsetHeight - document.getElementById('boxTop')
+      		  	.offsetHeight - 180;
+      		  this.$forceUpdate();
+      		}
+      	})
+      },
       loadDate(status){
         this.loading = true;
         var params = {
@@ -184,7 +206,6 @@
 
         })
       },
-      
       /** 选择分页 */
       handleSizeChange(e) {
         this.PageSize = e
@@ -195,24 +216,6 @@
       handleCurrentChange(e) {
         this.PageIndex = e
         this.loadDate()
-      },
-      /** 计算页面高度 */
-      getWebHeing() {
-      	this.$nextTick(() => {
-      		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
-      			.offsetHeight - document.getElementById('page')
-      			.offsetHeight - document.getElementById('boxTop')
-      			.offsetHeight - 180;
-      	})
-      	window.addEventListener('resize', () => {
-      		if(document.getElementById('top')!=null){
-      		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
-      		  	.offsetHeight - document.getElementById('page')
-      		  	.offsetHeight - document.getElementById('boxTop')
-      		  	.offsetHeight - 180;
-      		  this.$forceUpdate();
-      		}
-      	})
       },
 
 

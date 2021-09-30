@@ -4,7 +4,7 @@
 	<div class="demand-service active">
 		<div class="box-demand-title flex fbetween">
 			<span>项目信息</span>
-			<template >
+			<template v-if="editFrom.schemeId == 0">
 				<el-button type="primary" v-if="isShowEdit" @click="handleUpdate">修改</el-button>
 				<!-- <el-button type="danger" v-else @click="handleCloseEdit">取消</el-button> -->
 			</template>
@@ -14,21 +14,22 @@
 		<div class="demand-service-info">
 			<el-form :model="editFrom" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
 				<el-form-item label="项目名称">
-					<el-input :disabled="true" v-model="editFrom.title"></el-input>
+					<el-input :disabled="isShowEdit" v-model="editFrom.title"></el-input>
 
 				</el-form-item>
 				<el-form-item label=" 类型">
-					<el-select v-model="editFrom.type" :disabled="true" placeholder="选择类型">
+					<el-select v-model="editFrom.type" :disabled="isShowEdit" placeholder="选择类型">
 						<el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
 				</el-form-item>
 				<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
-					<el-input :disabled="true"  v-model="editFrom.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
+					<el-input :disabled="isShowEdit" v-model="editFrom.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
 					</el-input>
+					<span>已输入{{editFrom.enterpriseName.length}}/30</span>
 				</el-form-item>
 				<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
-					<el-input :disabled="true"  v-model="editFrom.enterpriseAddress " placeholder="请输入联系地址">
+					<el-input :disabled="isShowEdit" v-model="editFrom.enterpriseAddress " placeholder="请输入联系地址">
 					</el-input>
 				</el-form-item>
 				<!-- 	<el-form-item label="项目简称" >
@@ -49,7 +50,7 @@
 				</el-form-item> -->
 
 				<el-form-item label="项目介绍">
-					<el-input type="textarea" :disabled="true" v-model="editFrom.description" :rows="4">
+					<el-input type="textarea" :disabled="isShowEdit" v-model="editFrom.description" :rows="4">
 					</el-input>
 					<div class="demand-service-upload flex">
 						<div v-for="(item,index) in editFrom.images" :key="index" class="demand-service-upload-img"
@@ -59,10 +60,19 @@
 							<div class="demand-service-upload-img-mask flex fvertical fcenter"
 								v-show="!isShowEdit &&current == index">
 								<i class="el-icon-zoom-in" @click="handleLookImg(item,index)"></i>
-								<!-- <i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i> -->
+								<i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i>
 							</div>
 						</div>
-					
+						<el-upload v-if="!isShowEdit && editFrom.images.length < 4" class="avatar-uploader flex"
+							action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
+							name="multipartFile" :show-file-list="false" :on-progress="handleProgress"
+							:on-remove="handleRemoveImg" :on-preview="handlePictureCardPreview"
+							:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="limit"
+							:before-upload="beforeAvatarUpload" :on-error="handleUploadError">
+							<i class="el-icon-plus avatar-uploader-icon" v-if="videoFlag == false"></i>
+							<el-progress :stroke-width="5" v-if="videoFlag == true" type="circle"
+								:percentage="videoUploadPercent" style="margin-top:12px;"></el-progress>
+						</el-upload>
 
 						<el-dialog :visible.sync="isImges">
 							<img width="100%" :src="dialogImageUrl" alt="">
@@ -76,8 +86,8 @@
 					<div class="demand-service-address">
 						<div class="flex fvertical fbetween">
 							<span>{{editFrom.address}}</span>
-							<!-- <el-button v-if="!isShowEdit" type="primary" @click="isAddress = true">修改
-							</el-button> -->
+							<el-button v-if="!isShowEdit" type="primary" @click="isAddress = true">修改
+							</el-button>
 						</div>
 						<div id="allmap" style="width:100%;height:300px;margin-top: 20px;">
 						</div>
@@ -87,7 +97,7 @@
 				</el-form-item>
 
 				<el-form-item label="打卡范围">
-					<el-select :disabled="true" v-model="editFrom.scope" placeholder="请选择">
+					<el-select :disabled="isShowEdit" v-model="editFrom.scope" placeholder="请选择">
 						<el-option v-for="item in scopeList" :key="item.radius" :label="item.radius"
 							:value="item.radius">
 						</el-option>
@@ -106,23 +116,22 @@
 						@click="handleRadio(item,index)" v-for="(item,index) in schemeList" :key="index">
 						方案{{getNumberTurnChinese(index+1)}}</div>
 				</div>
-			<!-- 	<div class="demand-service-plan-add" v-if="!isShowEdit && schemeList.length < 3" @click="handleAddPlan">
+				<div class="demand-service-plan-add" v-if="!isShowEdit && schemeList.length < 3" @click="handleAddPlan">
 					<i class="el-icon-plus avatar-uploader-icon"></i>
-				</div> -->
+				</div>
 
 			</div>
 
 			<div class="demand-service-plan-box" v-if="scheme==index" v-for="(item,index) in editFrom.schemes"
 				:key="index">
 				<!-- 方案标题  -->
-				<div class="demand-service-plan-box-title flex  ">
+				<div class="demand-service-plan-box-title flex fbetween">
 					<span class="box-demand-title">方案{{getNumberTurnChinese(index+1)}}：</span>
-					<el-tag v-if="item.id ==  editFrom.schemeId">选中方案</el-tag>
-					<!-- <div class="demand-service-plan-box-del " v-if="schemeList.length >1 && !isShowEdit"
+					<div class="demand-service-plan-box-del " v-if="schemeList.length >1 && !isShowEdit"
 						@click="handleDeleteProject(index)">
 						<i class="el-icon-delete"></i>
 						<span>删除方案</span>
-					</div> -->
+					</div>
 				</div>
 				<!-- 方案标题end  -->
 
@@ -131,29 +140,29 @@
 
 					<div class="flex demand-service-plan-box-item">
 						<el-form-item label="方案标签">
-							<el-input :disabled="true" v-model="item.tag"></el-input>
+							<el-input :disabled="isShowEdit" v-model="item.tag"></el-input>
 						</el-form-item>
 						<el-form-item label="简介">
-							<el-input :disabled="true" v-model="item.description"></el-input>
+							<el-input :disabled="isShowEdit" v-model="item.description"></el-input>
 						</el-form-item>
 					</div>
 					<div class="flex demand-service-plan-box-item">
-							<el-form-item label="方案进场时间">
-								<el-input :value="formatDate(item.enterStartTime)" :disabled="true"></el-input>
-							</el-form-item>
-							<el-form-item class="" label="方案工期">
-								<div class="flex">
-									<el-input :disabled="true" class="f1" v-model="item.enterDay"
-										oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
-									<el-input class="demand-service-plan-box-item-second" :disabled="true"
-										value="天"></el-input>
-								</div>
-							</el-form-item>
-						</div>
+						<el-form-item label="方案进场时间">
+							<el-input :value="formatDate(item.enterStartTime)" :disabled="true"></el-input>
+						</el-form-item>
+						<el-form-item class="" label="方案工期">
+							<div class="flex">
+								<el-input :disabled="true" class="f1" v-model="item.enterDay"
+									oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
+								<el-input class="demand-service-plan-box-item-second" :disabled="true"
+									value="天"></el-input>
+							</div>
+						</el-form-item>
+					</div>
 					<div class="flex demand-service-plan-box-item">
 						<el-form-item class="" label="换人次数">
 							<div class="flex">
-								<el-input :disabled="true" class="f1" v-model="item.replaceTimes"></el-input>
+								<el-input :disabled="isShowEdit" class="f1" v-model="item.replaceTimes"></el-input>
 								<el-input class="demand-service-plan-box-item-second" :disabled="true" value="次">
 								</el-input>
 							</div>
@@ -174,7 +183,7 @@
 
 							<div class="flex demand-service-plan-box-info-data">
 								<el-form-item label="班组名称">
-									<el-input v-model="teams.name" :disabled="Boolean(teams.id ) || isShowEdit"></el-input>
+									<el-input v-model="teams.name" :disabled="isShowEdit"></el-input>
 								</el-form-item>
 								<el-form-item label="进场时间">
 									<el-input :value="formatDate(teams.enterStartTime)" :disabled="true"></el-input>
@@ -192,7 +201,7 @@
 									<div class="flex">
 										<el-input class="f1" v-model="teams.totalUnit" :disabled="true">
 										</el-input>
-										<el-select style="width: 120px;margin-left: 10px;" :disabled="Boolean(teams.id ) || isShowEdit"
+										<el-select style="width: 120px;margin-left: 10px;" :disabled="isShowEdit"
 											v-model="teams.unit" placeholder="请选择">
 											<el-option v-for="item in companyList" :key="item.value" :label="item.label"
 												:value="item.value">
@@ -202,7 +211,7 @@
 								</el-form-item>
 								<el-form-item label="计件单价">
 									<div class="flex">
-										<el-input class="f1" :disabled="Boolean(teams.id ) || isShowEdit" v-model="teams.unitPrice"
+										<el-input class="f1" :disabled="isShowEdit" v-model="teams.unitPrice"
 											@input="handleTeamsUniprice(index,inx,teams)"></el-input>
 										<span>元/{{geUnit(teams.unit)}}</span>
 									</div>
@@ -211,14 +220,14 @@
 
 							<div class="flex  demand-service-plan-box-info-data">
 								<el-form-item label="上班时间">
-									<el-time-picker :disabled="Boolean(teams.id ) || isShowEdit" is-range v-model="teams.workTimeList"
+									<el-time-picker :disabled="isShowEdit" is-range v-model="teams.workTimeList"
 										range-separator="至" start-placeholder="开始时间" format='HH:mm'
 										@input="handleWorkTime(index,inx,teams)" end-placeholder="结束时间"
 										placeholder="选择时间范围" :clearable="false">
 									</el-time-picker>
 								</el-form-item>
 								<el-form-item label="午休时间">
-									<el-time-picker :disabled="Boolean(teams.id ) || isShowEdit" is-range v-model="teams.restTimeList"
+									<el-time-picker :disabled="isShowEdit" is-range v-model="teams.restTimeList"
 										format='HH:mm' range-separator="至" start-placeholder="开始时间"
 										@input="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
 										placeholder="选择时间范围">
@@ -234,19 +243,20 @@
 					<!-- 工种列表数据 -->
 					<div class="demand-service-plan-box-list">
 						<div class="demand-service-plan-box-list-item"
-							v-for="(teamTypes,types_index) in teams.teamTypes">
+							v-for="(teamTypes,types_index) in teams.teamTypes" :key="types_index">
 
 							<el-form :model="teamTypes" ref="ruleForm" label-width="100px">
 								<!-- 固定基本工种  -->
 								<div class="flex fbetween">
 									<div class="demand-service-plan-box-list-item-box flex fvertical">
-										<div class="plan-box-btn" v-if="!teamTypes.id && !isShowEdit">
-											<el-button @click="handleDeleteWork(index,inx,types_index,teamTypes)"
+										<div class="plan-box-btn">
+											<el-button :disabled="isShowEdit"
+												@click="handleDeleteWork(index,inx,types_index,teamTypes)"
 												type="primary" size="mini">删除</el-button>
 										</div>
 										<el-form-item label="工种">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.name" filterable
+											<el-select :disabled="isShowEdit" v-model="teamTypes.name" filterable
 												placeholder="请选择">
 												<el-option v-for="item in options" :key="item.labelName"
 													:label="item.labelName" :value="item.labelName">
@@ -256,10 +266,9 @@
 									</div>
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种标签">
-											<!-- :disabled="Boolean(teams.id ) || !isShowEdit" -->
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.tag"
-												placeholder="请选择" @change="handleTag(index,inx,types_index,teamTypes)">
+											<el-select :disabled="isShowEdit" v-model="teamTypes.tag" placeholder="请选择"
+												@change="handleTag(index,inx,types_index,teamTypes)">
 												<el-option v-for="item in tagList" :key="item.value" :label="item.label"
 													:value="item.label">
 												</el-option>
@@ -269,7 +278,7 @@
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种模式">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-select :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.workType"
+											<el-select :disabled="isShowEdit" v-model="teamTypes.workType"
 												placeholder="请选择"
 												@change="handleTypeModel(index,inx,types_index,teamTypes)">
 												<template v-if="teamTypes.tag == '班组长'">
@@ -295,7 +304,7 @@
 										<div class="plan-box-btn"></div>
 										<el-form-item label="工种进场时间">
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
-											<el-date-picker :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.enterStartTime"
+											<el-date-picker :disabled="isShowEdit" v-model="teamTypes.enterStartTime"
 												type="date" value-format="yyyy-MM-dd"
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
 												:clearable="false" placeholder="请设置进场时间">
@@ -305,7 +314,7 @@
 									<div class="demand-service-plan-box-list-item-box">
 										<el-form-item label="工种工期">
 											<div class="flex">
-												<el-input :disabled="Boolean(teamTypes.id) || isShowEdit" style="width: 200px;"
+												<el-input :disabled="isShowEdit" style="width: 200px;"
 													v-model="teamTypes.enterDay"
 													@input="handleDuration(index,inx,types_index,teamTypes)">
 												</el-input>
@@ -335,18 +344,18 @@
 											<span style="padding-left: 20px;">小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
+									<el-form-item label="带班服务费" prop="leaderFee"
+										v-if="teamTypes.tag == '班组长'">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
+											<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
+											<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -362,7 +371,7 @@
 									<!-- <div class="plan-box-btn"></div> -->
 									<el-form-item label="个人工程量">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -378,7 +387,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -393,7 +402,7 @@
 									v-if="teamTypes.tag == '班组长' && teamTypes.workType  == 1  ">
 									<el-form-item label="个人工程量">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -409,22 +418,22 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
-										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
-											</el-input>
-											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
-										</div>
-									</el-form-item>
+									<el-form-item label="带班服务费" prop="leaderFee"
+									v-if="teamTypes.tag == '班组长'">
+									<div class="flex">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+										</el-input>
+										<span style="padding:0 10px;">%</span>
+										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
+									</div>
+								</el-form-item>
 								</div>
 								<!-- 计件/班组长end -->
 
@@ -443,7 +452,7 @@
 									</el-form-item>
 									<el-form-item label="工时单价">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.unitPrice"
 												@input="handleUnitPrice(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -460,7 +469,7 @@
 									</el-form-item>
 									<el-form-item label="人数">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.number"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
@@ -469,21 +478,21 @@
 									</el-form-item>
 									<el-form-item label="加班费">
 										<div class="flex">
-											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.overtimeFee">
 											</el-input>
 											<span style="padding-left: 20px;">元/小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
-										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
-											</el-input>
-											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
-										</div>
-									</el-form-item>
+									<el-form-item label="带班服务费" prop="leaderFee"
+									v-if="teamTypes.tag == '班组长'">
+									<div class="flex">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+										</el-input>
+										<span style="padding:0 10px;">%</span>
+										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
+									</div>
+								</el-form-item>
 								</div>
 								<!-- 普通工种end  -->
 
@@ -491,7 +500,7 @@
 								<!--  工作描述 -->
 								<div class="demand-service-plan-box-list-item-text">
 									<el-form-item label="工作描述">
-										<el-input :disabled="Boolean(teamTypes.id) || isShowEdit" type="textarea" placeholder="请输入"
+										<el-input :disabled="isShowEdit" type="textarea" placeholder="请输入"
 											:autosize="{ minRows: 2, maxRows: 4}" v-model="teamTypes.description">
 										</el-input>
 									</el-form-item>
@@ -501,12 +510,10 @@
 							</el-form>
 						</div>
 
-						<div class="demand-service-plan-box-list-btn flex fvertical fcenter">
-							<div class="demand-service-plan-box-list-btn-add" v-if="item.id ==  editFrom.schemeId && !isShowEdit"
-								@click="handleAddWork(index,inx)">
+						<div class="demand-service-plan-box-list-btn flex fvertical fcenter" v-if="!isShowEdit">
+							<div class="demand-service-plan-box-list-btn-add" @click="handleAddWork(index,inx)">
 								添加工种</div>
-							<div class="demand-service-plan-box-list-btn-del" v-if="!teams.id && !isShowEdit"
-								@click="hanldeRemoveGroup(index,inx)">删除班组
+							<div class="demand-service-plan-box-list-btn-del" @click="hanldeRemoveGroup(index,inx)">删除班组
 							</div>
 						</div>
 					</div>
@@ -514,7 +521,7 @@
 					<!-- 工种列表数据end -->
 				</div>
 
-				<div class="demand-service-plan-add-main flex fcenter" v-if="item.id ==  editFrom.schemeId && !isShowEdit"
+				<div class="demand-service-plan-add-main flex fcenter" v-if="!isShowEdit"
 					@click="handleAddGroup(index)">添加班组
 				</div>
 
@@ -529,7 +536,7 @@
 						<span> 信息服务费</span>
 						<div class="flex">
 							<el-input class="f1 demand-service-plan-box-foot-item-server"
-								@input="handleInputToals(index)" :disabled="true" v-model="item.serviceFeeRate"
+								@input="handleInputToals(index)" :disabled="isShowEdit" v-model="item.serviceFeeRate"
 								placeholder="请输入信息服务费比例">
 							</el-input>
 							<el-input value="%" :disabled="true" class="f1 demand-service-plan-box-foot-item-company">
@@ -546,7 +553,7 @@
 					<div class="demand-service-plan-box-foot-item flex fvertical">
 						<span> 税费</span>
 						<div class="flex">
-							<el-input class="f1" :disabled="true" v-model="item.taxRate"
+							<el-input class="f1" :disabled="isShowEdit" v-model="item.taxRate"
 								@input="handleInputToals(index)" placeholder="请输入信息服务费比例"></el-input>
 							<el-input value="%" :disabled="true" class="f1 demand-service-plan-box-foot-item-company">
 							</el-input>
@@ -730,6 +737,7 @@
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
+				console.log('上班时间', val);
 				this.editFrom.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.editFrom.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratTime = Date.parse(val.workTimeList[0]);
@@ -787,8 +795,15 @@
 			},
 			//  取消编辑
 			handleCloseEdit() {
+				// console.log(this.recordFrom)
+				this.$confirm('是否取消编辑？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				this.isShowEdit = !this.isShowEdit;
 				this.editFrom = this.recordFrom
+				})
 			},
 			// 添加组
 			handleAddGroup(index) {
@@ -1391,8 +1406,6 @@
 					this.addressMap = new BMap.Map("allmap", {
 						enableMapClick: false
 					}) //新建地图实例，enableMapClick:false ：禁用地图默认点击弹框
-					console.log('lat',lat)
-					console.log(lng);
 					var point = new BMap.Point(lng, lat);
 					this.addressMap.centerAndZoom(point, 19)
 					var opts = {
@@ -1485,11 +1498,16 @@
 			},
 			// 提交方案
 			async handleAddSerice() {
+				this.$confirm('是否提交服务单？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				let param = this.deepClone(this.editFrom);
 				let schemes = param.schemes;
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
-					
+						
 						schemes[i].teams[j].enterEndTime = new Date(schemes[i].teams[j].enterEndTime).getTime();
 						schemes[i].teams[j].enterStartTime = new Date(schemes[i].teams[j].enterStartTime).getTime();
 						schemes[i].teams[j].restEndTime = new Date(schemes[i].teams[j].restEndTime).getTime();
@@ -1498,7 +1516,7 @@
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
 							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
-								.teams[j].restTimelen;
+								.teams[j].restTimelen
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
@@ -1506,14 +1524,12 @@
 						}
 					}
 				};
-				try{
-					let res = await getUpdateOrder(param);
-					this.$message.success('修改成功');
-					this.$emit('handleEditSuccess')
-					this.isShowEdit = true;
-				}catch(e){
-					//TODO handle the exception
-				}
+				getUpdateOrder(param).then(res=>{
+				this.$message.success('修改成功');
+				this.isShowEdit = true;
+				 })
+				}).catch(() => {});
+			
 			},
 			deepClone(obj) {
 				let _obj = JSON.stringify(obj),

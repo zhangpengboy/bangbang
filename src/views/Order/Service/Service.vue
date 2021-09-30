@@ -36,15 +36,25 @@
 		<!-- 头部end  -->
 
 		<div class="box">
+			<div class="box-top flex fbetween fvertical">
+					<div class="bold">数据列表</div>
+					<el-button @click="handleExport">导出</el-button>
+				</div>
 			<!-- 表格  -->
 			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border :height="clientHeight+'px'">
 				<el-table-column type="index" width="50">
 				</el-table-column>
 				<el-table-column prop="orderNum" label="ID" width="200">
 				</el-table-column>
-				<el-table-column prop="title" label="项目名称">
+				<el-table-column prop="title" label="项目名称"  width="200">
 				</el-table-column>
-				<el-table-column prop="matchNum" label="已匹配人数">
+				<el-table-column  label="类型" width="120">
+					<template slot-scope="scope">
+						<p v-if="scope.row.type == 1">工人推荐</p>
+						<p v-if="scope.row.type == 2">劳务分包</p>
+					</template>
+				</el-table-column>
+				<el-table-column prop="matchNum" label="已匹配人数" width="100">
 				</el-table-column>
 				<el-table-column prop="totalNum" label="总人数">
 				</el-table-column>
@@ -52,9 +62,11 @@
 				</el-table-column>
 				<el-table-column prop="totalFee" label="总金额">
 				</el-table-column>
+				<el-table-column prop="city" label="地区">
+				</el-table-column>
 				<el-table-column prop="address" label="需求单">
 					<template slot-scope="scope">
-						<div style="color: #409EFF;text-align: center;">查看详情</div>
+						<div style="color: #409EFF;text-align: center;cursor: pointer;" @click="hanldeOpenDemand(scope.row)">查看详情</div>
 					</template>
 				</el-table-column>
 				<el-table-column  label="查看工人信息">
@@ -197,9 +209,22 @@
 				this.$router.push({
 					path: '/order/service-details',
 					query: {
-						id: row.id
+						id: row.id,
+						briefId:row.briefId
 					}
 				})
+			},
+			/** 打开需求详情 */
+			hanldeOpenDemand(row){
+				this.$router.push({
+					path: '/order/service-details',
+					query: {
+						id: row.id,
+						briefId:row.briefId,
+						name:"top"
+					}
+				})
+				
 			},
 			// 订单列表接口
 			getorder() {
@@ -262,7 +287,12 @@
 				let res = await getUpdateReviewStatus(row);
 				this.$message.success('操作成功');
 				this.getorder();
-			}
+			},
+			//导出
+			handleExport(){
+				window.open(`/api/bill/v1.0/admin/order/export?keywords=${this.serach}&status=${this.status}`)
+				
+			},
 		}
 	}
 </script>

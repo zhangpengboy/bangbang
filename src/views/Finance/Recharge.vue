@@ -201,6 +201,7 @@
 			handleReset() {
 				this.status = '';
 				this.keywords = '';
+				this.handleSearch();
 			},
 			/**获取充值列表 */
 			async getBriefPay() {

@@ -8,58 +8,11 @@
 		<!-- tab按钮切换end -->
 		<div class="box">
 			<!-- 需求详情 -->
-			<div class="demand-deltails" v-if="tabPosition == 'top'">
-				<div class="box-demand-title">需求单信息</div>
-
-				<div class="demand-deltails-box">
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">状态</div>
-						<div class="demand-deltails-box-item-conter" v-if="info.status == 0">未发报价单</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 1">已发报价单</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 2">已取消</div>
-						<div class="demand-deltails-box-item-conter" v-else-if="info.status == 3">已转至服务单</div>
-
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">姓名</div>
-						<div class="demand-deltails-box-item-conter">{{info.createName }}</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">联系方式</div>
-						<div class="demand-deltails-box-item-conter">{{info.phone}}</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">语音</div>
-						<div class="demand-deltails-box-item-conter">
-							<m-audio class="demand-deltails-box-item-mp3" :src="item.url" text="点这里播放"
-								v-for="(item,index) in info.voices ">
-							</m-audio>
-						</div>
-					</div>
-
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">文字</div>
-						<div class="demand-deltails-box-item-conter f1">
-							{{info.content}}
-						</div>
-					</div>
-					<div class="demand-deltails-box-item flex">
-						<div class="demand-deltails-box-item-title">是否创建报价单</div>
-						<div class="demand-deltails-box-item-conter">
-							<span :class="info.orderId > 0?'':'color-error'">{{info.orderId >0?'已创建':'未创建'}}</span>
-						</div>
-					</div>
-				</div>
-
-			</div>
+			<demanInfo :info="info" v-if="tabPosition == 'top'" />
 			<!-- 需求详情end -->
 			<template v-else>
 				<!-- 编辑服务单  -->
-				<editService v-if="editFrom.id" :editFrom="editFrom" ref="editFrom" />
+				<editDeman v-if="editFrom.id" ref="editFrom" />
 				<!-- 编辑服务单end  -->
 				<!-- 服务单 -->
 				<div class="demand-service" v-else>
@@ -72,6 +25,22 @@
 								<el-input v-model="basicForm.title" placeholder="请输入项目名称" minlength="2" maxlength="30">
 								</el-input>
 								<span>已输入{{basicForm.title.length}}/30</span>
+							</el-form-item>
+							<el-form-item label=" 类型">
+								<el-select v-model="basicForm.type" placeholder="选择类型">
+									<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+										:value="item.value">
+									</el-option>
+								</el-select>
+							</el-form-item>
+							<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
+								</el-input>
+								<span>已输入{{basicForm.title.length}}/30</span>
+							</el-form-item>
+							<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseAddress " placeholder="请输入联系地址">
+								</el-input>
 							</el-form-item>
 
 							<!-- 	<el-form-item label="项目简称" >
@@ -197,6 +166,19 @@
 									<el-input v-model="item.description" maxlength="16"></el-input>
 								</el-form-item>
 							</div>
+						<div class="flex demand-service-plan-box-item">
+								<el-form-item label="方案进场时间">
+									<el-input v-model="item.enterStartTime" :disabled="true"></el-input>
+								</el-form-item>
+								<el-form-item class="" label="方案工期">
+									<div class="flex">
+										<el-input :disabled="true" class="f1" v-model="item.enterDay"
+											oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
+										<el-input class="demand-service-plan-box-item-second" :disabled="true"
+											value="天"></el-input>
+									</div>
+								</el-form-item>
+							</div>
 
 							<div class="flex demand-service-plan-box-item">
 								<el-form-item class="" label="换人次数" prop="replaceTimes">
@@ -271,7 +253,7 @@
 												<el-time-picker is-range v-model="teams.restTimeList" format='HH:mm'
 													range-separator="至" start-placeholder="开始时间"
 													@change="handleRestTime(index,inx,teams)" end-placeholder="结束时间"
-													placeholder="选择时间范围">
+													placeholder="选择时间范围" :clearable="false">
 												</el-time-picker>
 											</el-form-item>
 										</div>
@@ -378,8 +360,7 @@
 												<!-- <div class="plan-box-btn"></div> -->
 												<el-form-item label="每日工时">
 													<div class="flex">
-														<el-input style="width: 200px;"
-															:value="teams.dailyHours"
+														<el-input style="width: 200px;" :value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -480,8 +461,7 @@
 												<!-- <div class="plan-box-btn"></div> -->
 												<el-form-item label="每日工时">
 													<div class="flex">
-														<el-input style="width: 200px;"
-															:value="teams.dailyHours"
+														<el-input style="width: 200px;" :value="teams.dailyHours"
 															:disabled="true">
 														</el-input>
 														<span style="padding-left: 20px;">小时</span>
@@ -606,8 +586,11 @@
 							<!-- 总费用end -->
 						</el-form>
 						<!-- 方案信息end -->
-						<div class="demand-service-plan-box-foot-server-order flex fvertical fcenter "
-							@click="handleAddSerice">提交服务单</div>
+						<!-- <div class="demand-service-plan-box-foot-server-order flex fvertical fcenter "
+							@click="handleAddSerice">提交服务单</div> -->
+					<div class="demand-foot-btn flex fright fvertical" >
+					<el-button class="demand-foot-btn-item" type="primary" @click="handleAddSerice">提交服务单</el-button>
+					</div>
 					</div>
 				</div>
 				<!-- 服务单end -->
@@ -641,7 +624,8 @@
 <script>
 	// import loadBMap from '@/src/utils/loadBMap.js'
 	import loadBMap from '../../../utils/loadBMap.js'
-	import editService from '../components/edit-service.vue'
+	import editDeman from '../components/edit-demand.vue'
+	import demanInfo from '../components/demand-info.vue'
 	import uuid from 'node-uuid'
 	import {
 		AddOrder,
@@ -657,6 +641,13 @@
 				myHeaders: {
 					requestId: uuid.v4().replaceAll('-', '')
 				},
+				typeList: [{
+					value: 1,
+					label: "工人推荐"
+				}, {
+					value: 2,
+					label: "劳务分包"
+				}], // 类型列表
 				info: {},
 				loading: false, // 是否显示正在加载
 				briefId: 0,
@@ -844,13 +835,19 @@
 					duration: "", // 项目工期
 					description: "", // 项目介绍
 					scope: "100", // 打卡范围
-					images: [] // 图片地址
+					images: [], // 图片地址
+					enterpriseName:"", //公司名称
+					enterpriseAddress:"",//公司联系地址
+					type: null,
 				},
 				schemes: [{ // 方案
 					tag: "", // 标签
 					description: "", // 简介
 					replaceTimes: "", // 换人次数
 					totalUnit: "", // 总工程量
+					enterStartTime: "", //方案进场时间
+					enterEndTime: "", // 方案退场时间
+					enterDay: "", // 方案工期
 					serviceFeeRate: "", // 信息服务率
 					serviceFeeRateNum: "", //  信息服务费
 					taxRate: "", // 税率
@@ -860,15 +857,13 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-							0)], // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
-						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
+						workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组
+						workStartTime: this.formatDateTime(this.getYear()), // 上班时间
+						workEndTime: this.formatDateTime(this.getYear(64800000)), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-							0)], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(2016, 9, 10, 13, 0)), // 午休结束时间
+						restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
+						restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
+						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
@@ -925,7 +920,8 @@
 			}
 		},
 		components: {
-			editService
+			editDeman,
+			demanInfo
 		},
 		watch: {
 			isAddress(val) {
@@ -956,8 +952,17 @@
 			this.briefId = id;
 			this.getBriefDetail(id)
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
+			console.log(this.getYear())
 		},
 		methods: {
+			/** 获取时间日期时钟 */
+			getYear(clock = 28800000) {
+				var date = new Date();
+				var year1 = date.getFullYear();
+				var firstMonth = year1 + '-' + '01' + '-' + '01' + ' 00:00:00';
+				let day = new Date(firstMonth).getTime() + clock;
+				return this.formatDateTime(new Date(day))
+			},
 			// 删除图片
 			handleDeteleImg(item, index) {
 				this.basicForm.images.splice(index, 1)
@@ -1046,6 +1051,7 @@
 					let res = await getBriefDetail(id);
 					this.loading = false;
 					this.info = res.data;
+					this.basicForm.type = res.data.type
 					if (res.data.orderId > 0) {
 						this.getOrderDetail(res.data.orderId);
 					}
@@ -1116,6 +1122,7 @@
 			// 计算数组的总数
 			getGroupTotal(data) {
 				let teamTypes = this.schemes[data.index].teams[data.inx].teamTypes;
+				console.log('计算数组的总数::',teamTypes)
 				let total = 0;
 				let totalNumber = 0;
 				for (let i = 0; i < teamTypes.length; i++) {
@@ -1204,13 +1211,11 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-						0)], // 上班/下班 时间数组
+					workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组, 
 					workStartTime: "", // 上班时间
 					workEndTime: "", // 下班时间
 					dailyHours: 9, // 上班时长
-					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-						0)], // 午休时间数组
+					restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
 					restStartTime: "", // 午休开始时间
 					restEndTime: "", // 午休结束时间
 					restTimelen: 1, // 午休时长
@@ -1265,50 +1270,56 @@
 			},
 			// 午休时间
 			handleRestTime(index, inx, val) {
-				// console.log(val);
 				if (!val.restTimeList || val.restTimeList.length == 0) {
 					val.restTimelen = 0;
 					this.handleWorkTime(index, inx, val);
 					return;
 				};
-				
-				
 				this.handleWorkTime(index, inx, val);
-
+			
 			},
 			//  上班时间
 			handleWorkTime(index, inx, val) {
-				this.getDayLen(index, inx, val)
+				console.log('上班时间66：：', val);
+				this.getDayLen(index, inx, val);
+				for(let i = 0 ; i < val.teamTypes.length;i++){
+					if(val.dailyHours && val.teamTypes[i].unitPrice){
+						val.teamTypes[i].dailyFee = val.dailyHours * val.teamTypes[i].unitPrice;  
+					}
+				}
+				this.getGroupTotal({
+					index,
+					inx
+				})
 			},
 			// 计算每日上班时长
-			getDayLen(index, inx, val){
+			getDayLen(index, inx, val) {
 				//  上班时间
 				this.schemes[index].teams[inx].workStartTime = this.formatDateTime(val.workTimeList[0]);
 				this.schemes[index].teams[inx].workEndTime = this.formatDateTime(val.workTimeList[1]);
 				let stratWorkTime = Date.parse(val.workTimeList[0]);
 				let endWorkTime = Date.parse(val.workTimeList[1]);
-				
-				// this.schemes[index].teams[inx].dailyHours = this.timeFn(stratTime, endTime);
-				
 				// 午休时间
-				if(val.restTimeList){
+				if (val.restTimeList) {
 					val.restStartTime = this.formatDateTime(val.restTimeList[0]);
 					val.restEndTime = this.formatDateTime(val.restTimeList[1]);
-					let stratTime = Date.parse(val.restTimeList[0]);
-					let endTime = Date.parse(val.restTimeList[1]);
-					this.schemes[index].teams[inx].restTimelen = this.timeFn(stratTime, endTime);
-					let endStartTime = this.getMinute(stratWorkTime,endWorkTime)  - this.getMinute(stratTime,endTime);
-					let  {minutes,seconds} = this.getFormatSecond(endStartTime);
+					this.schemes[index].teams[inx].restTimelen = this.timeFn(val.restStartTime, val.restEndTime);
+					let endStartTime = this.getMinute(stratWorkTime, endWorkTime) - this.getMinute(val.restStartTime, val
+						.restEndTime);
+					let {
+						minutes,
+						seconds
+					} = this.getFormatSecond(endStartTime);
 					val.dailyHours = Number(minutes + '.' + seconds).toFixed(2);
-				}else{
+				} else {
 					val.restStartTime = 0;
 					val.restEndTime = 0;
 					this.schemes[index].teams[inx].dailyHours = this.timeFn(stratWorkTime, endWorkTime);
 				}
-				
-				
-			},
 			
+
+			},
+
 
 			// 计算工时单价
 			getCalculationUnitPrice(timeLen, list) {
@@ -1357,9 +1368,14 @@
 			},
 			// 获取当前工种标签
 			handleTag(index, inx, types_index, val) {
+				console.log('获取当前工种标签：：：', val)
 				if (val.tag == '班组长') {
 					val.workTypeVal = '';
 				}
+				if (val.tag != '班组长' && val.workType == 3) {
+					val.workTypeVal = '';
+				}
+
 				// this.$refs.typeRuleForm.clearValidate();
 				this.handleQuantity(index, inx, types_index, val)
 			},
@@ -1477,6 +1493,8 @@
 					val.enterEndTime = "";
 				}
 				this.schemes[index].teams[inx].enterStartTime = this.getComeTime(teamTypes)
+				//计算方案开始时间以及方案工期
+			 	this.schemes[index].enterStartTime = this.getComeTime(this.schemes[index].teams)
 			},
 			// 计算班组工程量
 			handleQuantity(index, inx, types_index, val) {
@@ -1526,6 +1544,9 @@
 					types_index,
 					val
 				});
+				// 计算方案结束时间以及方案总工期
+				this.schemes[index].enterEndTime = this.getExitLenTime(this.schemes[index].teams);
+				this.schemes[index].enterDay = this.getDateDiff(this.schemes[index].enterStartTime,this.schemes[index].enterEndTime)
 			},
 			/** 计算工期 */
 			dateChange(num = 1, date = false) {
@@ -1574,8 +1595,13 @@
 			},
 			/** 提交服务单 */
 			handleAddSerice() {
+				this.$confirm('是否提交服务单？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				if (!this.allAddress.point) {
-					return this.$message.error('请选择地址');
+					return this.$message.error('请选择项目地址');
 				}
 				let programeLen = this.$refs.programmeForm.length;
 				let typeLen = this.$refs.typeRuleForm.length;
@@ -1642,7 +1668,7 @@
 				} else {
 					return this.$message.error('请完善方案信息');
 				}
-
+				})
 			},
 			// 提交服务单信息
 			async getSbmitServer() {
@@ -1660,6 +1686,9 @@
 				param.images = this.basicForm.images
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
+				param.type = this.basicForm.type
+				param.enterpriseName = this.basicForm.enterpriseName
+				param.enterpriseAddress   = this.basicForm.enterpriseAddress  
 				let schemes = this.deepClone(this.schemes);
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {
@@ -1671,13 +1700,14 @@
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
-							schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
+							if(schemes[i].teams[j].teamTypes[k].workType == 1){
+								schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
+							}
 							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].dailyHours
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterEndTime).getTime();
-							// schemes[i].teams[j].teamTypes[k]
 						}
 					}
 				}
@@ -1873,15 +1903,14 @@
 					totalNum: 0, // 总人数
 					teams: [{ // 班组信息
 						name: "", // 班组名称
-						workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-							0)], // 上班/下班 时间数组
-						workStartTime: this.formatDateTime(new Date(2016, 9, 10, 8, 0)), // 上班时间
-						workEndTime: this.formatDateTime(new Date(2016, 9, 10, 18, 0)), // 下班时间
+						workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组
+						// 上班/下班 时间数组
+						workStartTime: this.formatDateTime(this.getYear()), // 上班时间
+						workEndTime: this.formatDateTime(this.getYear(64800000)), // 下班时间
 						dailyHours: 9, // 上班时长
-						restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-							0)], // 午休时间数组
-						restStartTime: this.formatDateTime(new Date(2016, 9, 10, 12, 0)), // 午休开始时间
-						restEndTime: this.formatDateTime(new Date(2016, 9, 10, 13, 0)), // 午休结束时间
+						restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
+						restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
+						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						unitPrice: "", // 计件单价
 						unit: 1, // 单位
@@ -1962,38 +1991,6 @@
 			color: #ccc;
 		}
 	}
-
-	.demand-deltails-box {
-		margin-top: 20px;
-		border: 1px solid #E9E9E9;
-
-		.demand-deltails-box-item {
-			border-bottom: 1px solid #E9E9E9;
-
-			&:nth-last-child(1) {
-				border-bottom: none;
-			}
-
-			.demand-deltails-box-item-title {
-				width: 160px;
-				background-color: #f2f2f2;
-				padding: 20px;
-				text-align: right;
-				font-size: 14px;
-			}
-
-			.demand-deltails-box-item-conter {
-				padding: 20px;
-				border-left: 1px solid #E9E9E9;
-				font-size: 14px;
-
-				.demand-deltails-box-item-mp3 {
-					margin-right: 15px;
-				}
-			}
-		}
-	}
-
 
 	.demand-service {
 		.box-demand-title {
