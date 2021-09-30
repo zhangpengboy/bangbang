@@ -50,8 +50,8 @@
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
             <p style="color:#F59A23 ;" v-if="scope.row.status == 1">审核中</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 2">审核成功</p>
-            <p style="color: #03BF16;" v-if="scope.row.status == 3">审核失败</p>
+            <p style="color: #03BF16;" v-if="scope.row.status == 2">审核成功</p>
+            <p style="color: #D9001B;" v-if="scope.row.status == 3">审核失败</p>
           </template>
          </el-table-column>
         <el-table-column prop="updaterName" label="操作人" width="100"/>
