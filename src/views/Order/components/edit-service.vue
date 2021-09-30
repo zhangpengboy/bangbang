@@ -23,14 +23,7 @@
 						</el-option>
 					</el-select>
 				</el-form-item>
-				<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
-					<el-input :disabled="true"  v-model="editFrom.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
-					</el-input>
-				</el-form-item>
-				<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
-					<el-input :disabled="true"  v-model="editFrom.enterpriseAddress " placeholder="请输入联系地址">
-					</el-input>
-				</el-form-item>
+
 				<!-- 	<el-form-item label="项目简称" >
 					<el-input v-model="ruleForm.name"></el-input>
 				</el-form-item> -->
@@ -52,7 +45,7 @@
 					<el-input type="textarea" :disabled="true" v-model="editFrom.description" :rows="4">
 					</el-input>
 					<div class="demand-service-upload flex">
-						<div v-for="(item,index) in editFrom.images" :key="index" class="demand-service-upload-img"
+						<div v-for="(item,index) in editFrom.images" class="demand-service-upload-img"
 							@mouseover="handleMouseoverImg(item,index)" @mouseout="handleMouseoutImg(item,index)">
 							<el-image :src="item">
 							</el-image>
@@ -137,19 +130,7 @@
 							<el-input :disabled="true" v-model="item.description"></el-input>
 						</el-form-item>
 					</div>
-					<div class="flex demand-service-plan-box-item">
-							<el-form-item label="方案进场时间">
-								<el-input :value="formatDate(item.enterStartTime)" :disabled="true"></el-input>
-							</el-form-item>
-							<el-form-item class="" label="方案工期">
-								<div class="flex">
-									<el-input :disabled="true" class="f1" v-model="item.enterDay"
-										oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
-									<el-input class="demand-service-plan-box-item-second" :disabled="true"
-										value="天"></el-input>
-								</div>
-							</el-form-item>
-						</div>
+
 					<div class="flex demand-service-plan-box-item">
 						<el-form-item class="" label="换人次数">
 							<div class="flex">
@@ -335,13 +316,12 @@
 											<span style="padding-left: 20px;">小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
+									<el-form-item label="带班管理费">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
+											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+												v-model="teamTypes.leaderFee">
 											</el-input>
-											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
+											<span style="padding-left: 20px;">元</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -416,13 +396,12 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
+									<el-form-item label="带班管理费">
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
+												v-model="teamTypes.leaderFee">
 											</el-input>
-											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
+											<span style="padding-left: 20px;">元/天</span>
 										</div>
 									</el-form-item>
 								</div>
@@ -475,13 +454,12 @@
 											<span style="padding-left: 20px;">元/小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
+									<el-form-item label="带班管理费" v-if="teamTypes.tag == '班组长'">
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
-												v-model="teamTypes.leaderRate">
+												v-model="teamTypes.leaderFee">
 											</el-input>
-											<span style="padding:0 10px;">%</span>
-											<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true" :value="teamTypes.leaderFee "></el-input>元
+											<span style="padding-left: 20px;">元/天</span>
 										</div>
 									</el-form-item>
 								</div>
@@ -624,7 +602,7 @@
 				limit: 4, //上传图片的长度
 				typeList: [{
 					value: 1,
-					label: "工人推荐"
+					label: "劳务派遣"
 				}, {
 					value: 2,
 					label: "劳务分包"
@@ -786,7 +764,11 @@
 				this.isShowEdit = !this.isShowEdit;
 			},
 			//  取消编辑
-			handleCloseEdit() {
+			handleCloseEdit(data) {
+				if(data){
+					this.editFrom = data;
+					return;
+				}
 				this.isShowEdit = !this.isShowEdit;
 				this.editFrom = this.recordFrom
 			},

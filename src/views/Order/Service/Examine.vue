@@ -7,7 +7,7 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input class="top-content-item-input" v-model="keywords" placeholder="服务单ID/项目名称/姓名/手机号">
+						<el-input class="top-content-item-input" v-model="keywords" placeholder="ID/项目名称">
 						</el-input>
 					</div>
 					<!-- <div class="flex fvertical top-content-item-status">
@@ -41,12 +41,7 @@
 			</div>
 
 			<el-table :data="tableData" border style="width: 100%" :height="clientHeight+'px'">
-				<el-table-column
-				type="index"
-				width="50"
-				label="序号">
-				</el-table-column>
-				<el-table-column prop="orderId" label="服务单ID" width="170">
+				<el-table-column prop="creatorId" label="ID" width="170">
 				</el-table-column>
 				<el-table-column prop="title" label="项目名称" width="180">
 				</el-table-column>
@@ -153,9 +148,7 @@
 				})
 			},
 			/** 导出 */
-			getExport() {
-				window.open(`/api/bill/v1.0/admin/brief/cancel/export?keywords=${this.keywords}&status=${this.status}`)
-			},
+			getExport() {},
 			/** 通过 */
 			goRecruit(row) {
 				this.$confirm('是否通过取消报名申请', '提示', {
