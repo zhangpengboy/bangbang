@@ -793,7 +793,6 @@ export function getByOrderAndBrief(params) {
 		params
 	})
 }
-
 /**
  * 合伙人列表
  * @param {Number} pageNum 页码
@@ -951,7 +950,15 @@ export function userMemberApplyupdateStatus(data) {
 // 系统设置-获取奖励设置信息接口
 export function awardSettingGet(params) {
 	return request({
-		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/get`,
+		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/get`,	
+		method: 'get',
+		params
+	})
+}
+// 获取省市区
+export function getregion(params) {
+	return request({
+		url: `/api/commons/common/region/v1.0.1/`,
 		method: 'get',
 		params
 	})
@@ -1077,4 +1084,5 @@ export function getTaskExport(params){
 		params
 	})
 }
+
 

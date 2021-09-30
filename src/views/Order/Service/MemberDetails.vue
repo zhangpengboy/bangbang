@@ -8,7 +8,11 @@
 				      <el-radio-button label="查看记录"></el-radio-button>
 				      <el-radio-button label="报名记录"></el-radio-button>
 				    </el-radio-group>
-			
+					
+			<!-- <div > -->
+					<el-button style="float: right;" v-if="radio == '查看记录'" @click="handleExport">查看记录导出</el-button>
+					<el-button style="float: right;" v-if="radio == '报名记录'" @click="handleExport1">报名记录导出</el-button>
+				<!-- </div> -->
 			</div>
 			<!-- <div class="top-content flex fvertical fbetween">
 				<div class="top-content-item flex fvertical f1">
@@ -210,6 +214,16 @@
 			handleRecordCurrentChange(e){
 				this.recorPageIndex = e;
 				this.getMembersList();
+			},
+			//详细记录导出
+			handleExport(){
+				window.open(`/api/bill/v1.0/admin/brief/enroll/memberList/export?orderId=${this.orderId}`)
+				
+			},
+			//浏览记录导出
+			handleExport1(){
+				window.open(`/api/bill/v1.0/admin/brief/enroll/browseList/export?orderId=${this.orderId}`)
+				
 			},
 		}
 	}

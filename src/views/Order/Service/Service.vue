@@ -36,6 +36,10 @@
 		<!-- 头部end  -->
 
 		<div class="box">
+			<div class="box-top flex fbetween fvertical">
+					<div class="bold">数据列表</div>
+					<el-button @click="handleExport">导出</el-button>
+				</div>
 			<!-- 表格  -->
 			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border :height="clientHeight+'px'">
 				<el-table-column type="index" width="50">
@@ -283,7 +287,12 @@
 				let res = await getUpdateReviewStatus(row);
 				this.$message.success('操作成功');
 				this.getorder();
-			}
+			},
+			//导出
+			handleExport(){
+				window.open(`/api/bill/v1.0/admin/order/export?keywords=${this.serach}&status=${this.status}`)
+				
+			},
 		}
 	}
 </script>
