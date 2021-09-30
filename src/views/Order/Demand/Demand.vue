@@ -20,19 +20,20 @@
 							</el-option>
 						</el-select>
 					</div>
-					<div class="flex fvertical top-content-item-status">
+					<!-- <div class="flex fvertical top-content-item-status">
 						<span>跟进人：</span>
 						<el-input class="top-content-item-input" v-model="updator" @keyup.enter.native="handelSearch"
 							placeholder="请输入跟进人">
 						</el-input>
-					</div>
+					</div> -->
 					<div class="flex fvertical top-content-item-status">
 						<span>地区：</span>
-						<el-select v-model="address" filterable placeholder="选择地区">
-							<el-option v-for="item in addressList" :key="item.value" :label="item.label"
-								:value="item.value">
-							</el-option>
-						</el-select>
+						 <el-cascader
+						style="width:250px"
+						v-model="address"
+						:options="addressList"
+						:props="addressconfig"
+						@change="handleaddressChange"></el-cascader>
 					</div>
 				</div>
 
@@ -48,7 +49,7 @@
 		<div class="box">
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
-				<el-button>导出</el-button>
+				<el-button @click="handleExport">导出</el-button>
 			</div>
 
 			<!-- 表格  -->
@@ -66,7 +67,7 @@
 				</el-table-column>
 				<el-table-column  label="类型">
 					<template slot-scope="scope">
-						{{scope.row.type == 1?'劳务派遣':'劳务分包'}}
+						{{scope.row.type == 1?'工人推荐':'劳务分包'}}
 					</template>
 				</el-table-column>
 				<el-table-column label="语音" width="140">
@@ -82,9 +83,12 @@
 				</el-table-column>
 				<el-table-column prop="city" label="地区">
 				</el-table-column>
-				<el-table-column prop="address" label="服务单">
+				<el-table-column prop="address" label="报价单">
+					<template slot-scope="scope">
+					<el-button @click="handleLook(scope.row)" type="text" size="small">查看详情</el-button>
+					</template>
 				</el-table-column>
-				<el-table-column prop="updateName" label="跟进人">
+				<el-table-column prop="updateName" label="操作人">
 				</el-table-column>
 				<el-table-column label="创建时间" width="120">
 					<template slot-scope="scope">
@@ -139,7 +143,8 @@
 <script>
 	import {
 		getBriel,
-		UpdateBriel
+		UpdateBriel,
+		getregion
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -147,8 +152,8 @@
 			return {
 				address:"", // 选中地区
 				addressList:[{
-					value: "",
-					label: "全部"
+					code: "",
+					name: "全部"
 				}], // 地区列表
 				type_name:"", // 选中类型
 				typeList:[{
@@ -156,7 +161,7 @@
 					label: "全部"
 				},{
 					value: 1,
-					label: "劳务派遣"
+					label: "工人推荐"
 				},{
 					value: 2,
 					label: "劳务分包"
@@ -174,12 +179,18 @@
 				keywords: "", // 输入查询
 				updator: "", // 跟进人ID
 				loading: false,
-				clientHeight:0
+				clientHeight:0,
+				addressconfig:{
+					value:'name',
+					label:"name",
+					children:'children'
+				}
 			}
 		},
 		async mounted() {
 			this.getBriel();
 			this.getWebHeing();
+			this.getRegion()
 		},
 		methods: {
 			// 鼠标经过
@@ -322,7 +333,7 @@
 				param.keywords = this.keywords.trim();
 				param.updator = this.updator;
 				param.type = this.type_name;
-				param.city = this.address;
+				param.city = this.address[1]
 				this.loading = true;
 				try {
 					let res = await getBriel(param);
@@ -335,6 +346,21 @@
 				}
 
 			},
+			//导出
+			handleExport(){
+				window.open(`/api/bill/v1.0/admin/brief/export?keywords=${this.keywords.trim()}&type=${this.type_name}&city=${this.address[1]||''}`)
+				
+			},
+			// 获取省市区
+			getRegion(){
+				getregion().then(res=>{
+					console.log(res)
+					this.addressList = [...this.addressList,...res.data[0].children]
+				})
+			},
+			handleaddressChange(e){
+				console.log(e)
+			}
 		}
 	}
 </script>

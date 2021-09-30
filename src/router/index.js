@@ -94,16 +94,16 @@ export const constantRoutes = [
 			meta: {
 				title: '用户列表'
 			}
-    }, {
-      path: 'userdetail',
-      component: () => import('@/views/User/List/detail'),
-      name: 'UserDetail',
-      meta: {
-        title: '用户详情',
-        activeMenu: '/user/List/List'
-      },
-      hidden: true
-    },{
+		}, {
+			path: 'userdetail',
+			component: () => import('@/views/User/List/detail'),
+			name: 'UserDetail',
+			meta: {
+				title: '用户详情',
+				activeMenu: '/user/List/List'
+			},
+			hidden: true
+		}, {
 			path: 'access-statistics',
 			component: () => import('@/views/User/accessStatistics/accessStatistics'),
 			name: 'accessStatistics',
@@ -117,15 +117,15 @@ export const constantRoutes = [
 			meta: {
 				title: '实名认证'
 			}
-		},{
-      path: 'realNameDetail',
-      component: () => import('@/views/User/RealName/realNameDetail'),
-      name: 'realNameDetail',
-      hidden: true,
-      meta: {
-        title: '实名详情'
-      }
-    },{
+		}, {
+			path: 'realNameDetail',
+			component: () => import('@/views/User/RealName/realNameDetail'),
+			name: 'realNameDetail',
+			hidden: true,
+			meta: {
+				title: '实名详情'
+			}
+		}, {
 			path: 'enterpriseList',
 			component: () => import('@/views/User/Enterprise/EnterpriseList'),
 			name: 'enterpriseList',
@@ -167,13 +167,31 @@ export const constantRoutes = [
 			},
 			hidden: true
 		}, {
+			path: 'workrtDetail',
+			component: () => import('@/views/User/Worker/workrtDetail'),
+			name: 'workrtDetail',
+			meta: {
+				title: '工人详情',
+				activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
+		}, {
+			path: 'taskDetail',
+			component: () => import('@/views/User/Worker/TaskDetail'),
+			name: 'taskDetail',
+			meta: {
+				title: '任务详情',
+				// activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
+		}, {
 			path: 'enterprise',
 			component: () => import('@/views/User/Worker/VerifyEnterprise'),
 			name: 'enterprise',
 			meta: {
 				title: '企业认证审核'
 			}
-		},{
+		}, {
 			path: 'partnerList',
 			component: () => import('@/views/User/Worker/PartnerList'),
 			name: 'partnerList',
@@ -181,14 +199,21 @@ export const constantRoutes = [
 				title: '合伙人列表'
 			}
 		}, {
-      path: 'partnerListDetails',
-      component: () => import('@/views/User/Worker/PartnerListDetails'),
-      name: 'partnerListDetails',
-      hidden: true, // 不在侧边栏显示
-      meta: {
-        title: '合伙人详情',
-      },
-    },{
+			path: 'partnerListDetails',
+			component: () => import('@/views/User/Worker/PartnerListDetails'),
+			name: 'partnerListDetails',
+			hidden: true, // 不在侧边栏显示
+			meta: {
+				title: '合伙人详情',
+			},
+		}, {
+			path: 'shareList',
+			component: () => import('@/views/User/Worker/shareList'),
+			name: 'shareList',
+			meta: {
+				title: '分享列表'
+			}
+		}, {
 			path: 'attestationWorker',
 			component: () => import('@/views/User/Worker/AttestationWorker'),
 			name: 'attestationWorker',
@@ -203,9 +228,9 @@ export const constantRoutes = [
 				title: '升级审核'
 			}
 		}, {
-			path: 'return',
+			path: 'partnerRecord',
 			component: () => import('@/views/User/Worker/PartnerRecord'),
-			name: 'return',
+			name: 'partnerRecord',
 			meta: {
 				title: '合伙人审核记录'
 			}
@@ -284,88 +309,87 @@ export const constantRoutes = [
 		meta: {
 			title: '工人管理系统'
 		},
-		children: [
-        {
-          path: 'worker-list',
-          name: 'workerList',
-          component: () => import('@/views/workerManagement/workManage/workerList'),
-          meta: {
-            title: '工人列表'
-          }
-        },{
-          path: 'worker-detail',
-          name: 'workerDetail',
-          component: () => import('@/views/workerManagement/workManage/workerDetail'),
-          hidden:true,
-          meta: {
-            title: '工人详情',
-            affix: false
-          }
-        },{
-          path: 'signIn-list',
-          name: 'signInList',
-          component: () => import('@/views/workerManagement/workManage/signInList'),
-          meta: {
-            title: '签到列表'
-          }
-        },{
-          path: 'userWork-ealuation',
-          name: 'userWorkEaluation',
-          component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
-          meta: {
-            title: '用工评价'
-          }
-        }, {
-        	path: 'project-list',
-          name: 'projectList',
-        	component: () => import('@/views/workerManagement/projectManage/projectList'),
-        	meta: {
-        		title: '项目列表'
-        	}
-        },{
-          path: 'project-detail',
-          name: 'projectDetail',
-          component: () => import('@/views/workerManagement/projectManage/projectDetail'),
-          hidden: true,
-          meta: {
-            title: '项目详情'
-          }
-        },{
-        	path: 'workbench',
-          name: 'workbench',
-        	component: () => import('@/views/workerManagement/projectManage/workbench'),
-        	meta: {
-        		title: '工作台'
-        	}
-        },{
-        	path: 'work-agreement',
-          name: 'workAgreement',
-        	component: () => import('@/views/workerManagement/projectManage/workAgreement'),
-        	meta: {
-        		title: '用工协议'
-        	}
-        },{
-        	path: 'leave-appove',
-          name: 'leaveAppove',
-        	component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
-        	meta: {
-        		title: '离队审批'
-        	}
-        },{
-        	path: 'work-overtime',
-          name: 'workOvertime',
-        	component: () => import('@/views/workerManagement/projectManage/workOvertime'),
-        	meta: {
-        		title: '加班申请'
-        	}
-        },{
-        	path: 'management-edit',
-          name: 'managementEdit',
-        	component: () => import('@/views/workerManagement/projectManage/managementEdit'),
-        	meta: {
-        		title: '协议管理'
-        	}
-        }
+		children: [{
+				path: 'worker-list',
+				name: 'workerList',
+				component: () => import('@/views/workerManagement/workManage/workerList'),
+				meta: {
+					title: '工人列表'
+				}
+			}, {
+				path: 'worker-detail',
+				name: 'workerDetail',
+				component: () => import('@/views/workerManagement/workManage/workerDetail'),
+				hidden: true,
+				meta: {
+					title: '工人详情',
+					affix: false
+				}
+			}, {
+				path: 'signIn-list',
+				name: 'signInList',
+				component: () => import('@/views/workerManagement/workManage/signInList'),
+				meta: {
+					title: '签到列表'
+				}
+			}, {
+				path: 'userWork-ealuation',
+				name: 'userWorkEaluation',
+				component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+				meta: {
+					title: '用工评价'
+				}
+			}, {
+				path: 'project-list',
+				name: 'projectList',
+				component: () => import('@/views/workerManagement/projectManage/projectList'),
+				meta: {
+					title: '项目列表'
+				}
+			}, {
+				path: 'project-detail',
+				name: 'projectDetail',
+				component: () => import('@/views/workerManagement/projectManage/projectDetail'),
+				hidden: true,
+				meta: {
+					title: '项目详情'
+				}
+			}, {
+				path: 'workbench',
+				name: 'workbench',
+				component: () => import('@/views/workerManagement/projectManage/workbench'),
+				meta: {
+					title: '工作台'
+				}
+			}, {
+				path: 'work-agreement',
+				name: 'workAgreement',
+				component: () => import('@/views/workerManagement/projectManage/workAgreement'),
+				meta: {
+					title: '用工协议'
+				}
+			}, {
+				path: 'leave-appove',
+				name: 'leaveAppove',
+				component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
+				meta: {
+					title: '离队审批'
+				}
+			}, {
+				path: 'work-overtime',
+				name: 'workOvertime',
+				component: () => import('@/views/workerManagement/projectManage/workOvertime'),
+				meta: {
+					title: '加班申请'
+				}
+			}, {
+				path: 'management-edit',
+				name: 'managementEdit',
+				component: () => import('@/views/workerManagement/projectManage/managementEdit'),
+				meta: {
+					title: '协议管理'
+				}
+			}
 
 		]
 	},
@@ -467,6 +491,13 @@ export const constantRoutes = [
 			name: 'Recharge',
 			meta: {
 				title: '充值审核'
+			}
+		},{
+			path: 'partnerCash',
+			component: () => import('@/views/Finance/PartnerCash'),
+			name: 'partnerCash',
+			meta: {
+				title: '合伙人提现'
 			}
 		}]
 	}, {
@@ -540,134 +571,133 @@ export const asyncRoutes = [{
 			isshow: true
 		},
 		children: [{
-			path: 'index',
-			component: () => import('@/views/User/List/List'),
-			name: 'UserIndex',
-			meta: {
-				title: '用户列表'
+				path: 'index',
+				component: () => import('@/views/User/List/List'),
+				name: 'UserIndex',
+				meta: {
+					title: '用户列表'
+				},
+				children: [{
+					path: 'userdetail',
+					component: () => import('@/views/User/List/detail'),
+					name: 'UserDetail',
+					meta: {
+						title: '用户详情',
+						activeMenu: '/user/List/List'
+					},
+					hidden: true
+				}]
+			}, {
+				path: 'access-statistics',
+				component: () => import('@/views/User/accessStatistics/accessStatistics'),
+				name: 'accessStatistics',
+				meta: {
+					title: '访问统计'
+				}
+			}, {
+				path: 'realName',
+				component: () => import('@/views/User/RealName/RealName'),
+				name: 'RealName',
+				meta: {
+					title: '实名认证'
+				},
+				children: [{
+					path: 'realNameDetail',
+					component: () => import('@/views/User/RealName/realNameDetail'),
+					name: 'realNameDetail',
+					hidden: true,
+					meta: {
+						title: '实名详情'
+					}
+				}]
+			}, {
+				path: 'enterpriseList',
+				component: () => import('@/views/User/Enterprise/EnterpriseList'),
+				name: 'enterpriseList',
+				meta: {
+					title: '企业列表'
+				},
+				children: [{
+					path: 'enterprisedetails',
+					component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
+					name: 'enterprisedetails',
+					hidden: true,
+					meta: {
+						title: '企业详情',
+						affix: false
+					}
+				}]
+			}, {
+				path: 'workerList',
+				component: () => import('@/views/User/Worker/WorkerList'),
+				name: 'partnerList',
+				meta: {
+					title: '工人列表'
+				},
+				children: [{
+					path: 'workrtDetail',
+					component: () => import('@/views/User/Worker/workrtDetail'),
+					name: 'workrtDetail',
+					meta: {
+						title: '工人详情',
+						activeMenu: '/user/Worker/WorkerList'
+					},
+					hidden: true
+				}]
+			}, {
+				path: 'enterprise',
+				component: () => import('@/views/User/Worker/VerifyEnterprise'),
+				name: 'enterprise',
+				meta: {
+					title: '企业认证审核'
+				}
+			}, {
+				path: 'partnerList',
+				component: () => import('@/views/User/Worker/PartnerList'),
+				name: 'partnerList',
+				meta: {
+					title: '合伙人列表'
+				},
+				children: [{
+					path: 'partnerListDetails',
+					component: () => import('@/views/User/Worker/PartnerListDetails'),
+					name: 'partnerListDetails',
+					hidden: true, // 不在侧边栏显示
+					meta: {
+						title: '合伙人详情',
+					},
+				}]
 			},
-		  children:[
-		    {
-		    	path: 'userdetail',
-		    	component: () => import('@/views/User/List/detail'),
-		    	name: 'UserDetail',
-		    	meta: {
-		    		title: '用户详情',
-		    		activeMenu: '/user/List/List'
-		    	},
-		    	hidden: true
-		    }
-		  ]
-		}, {
-			path: 'access-statistics',
-			component: () => import('@/views/User/accessStatistics/accessStatistics'),
-			name: 'accessStatistics',
-			meta: {
-				title: '访问统计'
-			}
-		}, {
-			path: 'realName',
-			component: () => import('@/views/User/RealName/RealName'),
-			name: 'RealName',
-			meta: {
-				title: '实名认证'
+			{
+				path: 'shareList',
+				component: () => import('@/views/User/Worker/shareList'),
+				name: 'shareList',
+				meta: {
+					title: '分享列表'
+				}
 			},
-		  children:[
-		    {
-		    	path: 'realNameDetail',
-		    	component: () => import('@/views/User/RealName/realNameDetail'),
-		    	name: 'realNameDetail',
-		      hidden: true,
-		    	meta: {
-		    		title: '实名详情'
-		    	}
-		    }
-		  ]
-		},{
-			path: 'enterpriseList',
-			component: () => import('@/views/User/Enterprise/EnterpriseList'),
-			name: 'enterpriseList',
-			meta: {
-				title: '企业列表'
-			},
-		  children:[
-		    {
-		    	path: 'enterprisedetails',
-		    	component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-		    	name: 'enterprisedetails',
-		    	hidden: true,
-		    	meta: {
-		    		title: '企业详情',
-		    		affix: false
-		    	}
-		    }
-		  ]
-		}, {
-			path: 'workerList',
-			component: () => import('@/views/User/Worker/WorkerList'),
-			name: 'partnerList',
-			meta: {
-				title: '工人列表'
-			},
-		  children:[
-		    {
-		    	path: 'workrtDetail',
-		    	component: () => import('@/views/User/Worker/workrtDetail'),
-		    	name: 'workrtDetail',
-		    	meta: {
-		    		title: '工人详情',
-		    		activeMenu: '/user/Worker/WorkerList'
-		    	},
-		    	hidden: true
-		    }
-		  ]
-		}, {
-			path: 'enterprise',
-			component: () => import('@/views/User/Worker/VerifyEnterprise'),
-			name: 'enterprise',
-			meta: {
-				title: '企业认证审核'
+			{
+				path: 'attestationWorker',
+				component: () => import('@/views/User/Worker/AttestationWorker'),
+				name: 'attestationWorker',
+				meta: {
+					title: '认证工人审核'
+				}
+			}, {
+				path: 'upgrade',
+				component: () => import('@/views/User/Worker/VerifyUpgrade'),
+				name: 'upgrade',
+				meta: {
+					title: '升级审核'
+				}
+			}, {
+				path: 'partnerRecord',
+				component: () => import('@/views/User/Worker/PartnerRecord'),
+				name: 'partnerRecord',
+				meta: {
+					title: '合伙人审核记录'
+				}
 			}
-		},{
-			path: 'partnerList',
-			component: () => import('@/views/User/Worker/PartnerList'),
-			name: 'partnerList',
-			meta: {
-				title: '合伙人列表'
-			},
-		  children:[
-		    {
-		    	path: 'partnerListDetails',
-		    	component: () => import('@/views/User/Worker/PartnerListDetails'),
-		    	name: 'partnerListDetails',
-		    	hidden: true, // 不在侧边栏显示
-		    	meta: {
-		    		title: '合伙人详情',
-		    	},
-		    }
-		  ]
-		}, {
-			path: 'attestationWorker',
-			component: () => import('@/views/User/Worker/AttestationWorker'),
-			name: 'attestationWorker',
-			meta: {
-				title: '认证工人审核'
-			}
-		}, {
-			path: 'upgrade',
-			component: () => import('@/views/User/Worker/VerifyUpgrade'),
-			name: 'upgrade',
-			meta: {
-				title: '升级审核'
-			}
-		}, {
-			path: 'return',
-			component: () => import('@/views/User/Worker/PartnerRecord'),
-			name: 'return',
-			meta: {
-				title: '合伙人审核记录'
-			}
-		}
 		]
 	},
 	{
@@ -717,95 +747,89 @@ export const asyncRoutes = [{
 		meta: {
 			title: '工人管理系统'
 		},
-    noComponent: true,
-		children: [
-      {
-        path: 'worker-list',
-        name: 'workerList',
-        component: () => import('@/views/workerManagement/workManage/workerList'),
-        meta: {
-          title: '工人列表'
-        },
-        children:[
-          {
-            path: 'worker-detail',
-            name: 'workerDetail',
-            component: () => import('@/views/workerManagement/workManage/workerDetail'),
-            hidden:true,
-            meta: {
-              title: '工人详情'
-            }
-          }
-        ]
-      },{
-        path: 'signIn-list',
-        name: 'signInList',
-        component: () => import('@/views/workerManagement/workManage/signInList'),
-        meta: {
-          title: '签到列表'
-        }
-      },{
-        path: 'userWork-ealuation',
-        name: 'userWorkEaluation',
-        component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
-        meta: {
-          title: '用工评价'
-        }
-      }, {
-      	path: 'project-list',
-        name: 'projectList',
-      	component: () => import('@/views/workerManagement/projectManage/projectList'),
-      	meta: {
-      		title: '项目列表'
-      	},
-        children:[
-          {
-          	path: 'project-detail',
-            name: 'projectDetail',
-          	component: () => import('@/views/workerManagement/projectManage/projectDetail'),
-            hidden: true,
-          	meta: {
-          		title: '项目详情'
-          	}
-          }
-        ]
-      },{
-      	path: 'workbench',
-        name: 'workbench',
-      	component: () => import('@/views/workerManagement/projectManage/workbench'),
-      	meta: {
-      		title: '工作台'
-      	}
-      },{
-      	path: 'work-agreement',
-        name: 'workAgreement',
-      	component: () => import('@/views/workerManagement/projectManage/workAgreement'),
-      	meta: {
-      		title: '用工协议'
-      	}
-      },{
-      	path: 'leave-appove',
-        name: 'leaveAppove',
-      	component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
-      	meta: {
-      		title: '离队审批'
-      	}
-      },{
-      	path: 'work-overtime',
-        name: 'workOvertime',
-      	component: () => import('@/views/workerManagement/projectManage/workOvertime'),
-      	meta: {
-      		title: '加班申请'
-      	}
-      },{
-      	path: 'management-edit',
-        name: 'managementEdit',
-      	component: () => import('@/views/workerManagement/projectManage/managementEdit'),
-      	meta: {
-      		title: '协议管理'
-      	}
-      }
-		]
+		noComponent: true,
+		children: [{
+			path: 'worker-list',
+			name: 'workerList',
+			component: () => import('@/views/workerManagement/workManage/workerList'),
+			meta: {
+				title: '工人列表'
+			},
+			children: [{
+				path: 'worker-detail',
+				name: 'workerDetail',
+				component: () => import('@/views/workerManagement/workManage/workerDetail'),
+				hidden: true,
+				meta: {
+					title: '工人详情'
+				}
+			}]
+		}, {
+			path: 'signIn-list',
+			name: 'signInList',
+			component: () => import('@/views/workerManagement/workManage/signInList'),
+			meta: {
+				title: '签到列表'
+			}
+		}, {
+			path: 'userWork-ealuation',
+			name: 'userWorkEaluation',
+			component: () => import('@/views/workerManagement/workManage/userWorkEaluation'),
+			meta: {
+				title: '用工评价'
+			}
+		}, {
+			path: 'project-list',
+			name: 'projectList',
+			component: () => import('@/views/workerManagement/projectManage/projectList'),
+			meta: {
+				title: '项目列表'
+			},
+			children: [{
+				path: 'project-detail',
+				name: 'projectDetail',
+				component: () => import('@/views/workerManagement/projectManage/projectDetail'),
+				hidden: true,
+				meta: {
+					title: '项目详情'
+				}
+			}]
+		}, {
+			path: 'workbench',
+			name: 'workbench',
+			component: () => import('@/views/workerManagement/projectManage/workbench'),
+			meta: {
+				title: '工作台'
+			}
+		}, {
+			path: 'work-agreement',
+			name: 'workAgreement',
+			component: () => import('@/views/workerManagement/projectManage/workAgreement'),
+			meta: {
+				title: '用工协议'
+			}
+		}, {
+			path: 'leave-appove',
+			name: 'leaveAppove',
+			component: () => import('@/views/workerManagement/projectManage/leaveAppove'),
+			meta: {
+				title: '离队审批'
+			}
+		}, {
+			path: 'work-overtime',
+			name: 'workOvertime',
+			component: () => import('@/views/workerManagement/projectManage/workOvertime'),
+			meta: {
+				title: '加班申请'
+			}
+		}, {
+			path: 'management-edit',
+			name: 'managementEdit',
+			component: () => import('@/views/workerManagement/projectManage/managementEdit'),
+			meta: {
+				title: '协议管理'
+			}
+		}]
 	},
 	{
 		path: '/content',
@@ -905,6 +929,13 @@ export const asyncRoutes = [{
 			name: 'Recharge',
 			meta: {
 				title: '充值审核'
+			}
+		},{
+			path: 'partnerCash',
+			component: () => import('@/views/Finance/PartnerCash'),
+			name: 'partnerCash',
+			meta: {
+				title: '合伙人提现'
 			}
 		}]
 	}, {

@@ -33,7 +33,15 @@
 									</el-option>
 								</el-select>
 							</el-form-item>
-
+							<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
+								</el-input>
+								<span>已输入{{basicForm.title.length}}/30</span>
+							</el-form-item>
+							<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
+								<el-input v-model="basicForm.enterpriseAddress " placeholder="请输入联系地址">
+								</el-input>
+							</el-form-item>
 
 							<!-- 	<el-form-item label="项目简称" >
 								<el-input v-model="ruleForm.name"></el-input>
@@ -156,6 +164,19 @@
 								</el-form-item>
 								<el-form-item label="简介" prop="description">
 									<el-input v-model="item.description" maxlength="16"></el-input>
+								</el-form-item>
+							</div>
+						<div class="flex demand-service-plan-box-item">
+								<el-form-item label="方案进场时间">
+									<el-input v-model="item.enterStartTime" :disabled="true"></el-input>
+								</el-form-item>
+								<el-form-item class="" label="方案工期">
+									<div class="flex">
+										<el-input :disabled="true" class="f1" v-model="item.enterDay"
+											oninput="value=value.replace(/^(0+)|[^\d]+/g,'')"></el-input>
+										<el-input class="demand-service-plan-box-item-second" :disabled="true"
+											value="天"></el-input>
+									</div>
 								</el-form-item>
 							</div>
 
@@ -565,8 +586,11 @@
 							<!-- 总费用end -->
 						</el-form>
 						<!-- 方案信息end -->
-						<div class="demand-service-plan-box-foot-server-order flex fvertical fcenter "
-							@click="handleAddSerice">提交服务单</div>
+						<!-- <div class="demand-service-plan-box-foot-server-order flex fvertical fcenter "
+							@click="handleAddSerice">提交服务单</div> -->
+					<div class="demand-foot-btn flex fright fvertical" >
+					<el-button class="demand-foot-btn-item" type="primary" @click="handleAddSerice">提交服务单</el-button>
+					</div>
 					</div>
 				</div>
 				<!-- 服务单end -->
@@ -619,7 +643,7 @@
 				},
 				typeList: [{
 					value: 1,
-					label: "劳务派遣"
+					label: "工人推荐"
 				}, {
 					value: 2,
 					label: "劳务分包"
@@ -812,6 +836,8 @@
 					description: "", // 项目介绍
 					scope: "100", // 打卡范围
 					images: [], // 图片地址
+					enterpriseName:"", //公司名称
+					enterpriseAddress:"",//公司联系地址
 					type: null,
 				},
 				schemes: [{ // 方案
@@ -819,6 +845,9 @@
 					description: "", // 简介
 					replaceTimes: "", // 换人次数
 					totalUnit: "", // 总工程量
+					enterStartTime: "", //方案进场时间
+					enterEndTime: "", // 方案退场时间
+					enterDay: "", // 方案工期
 					serviceFeeRate: "", // 信息服务率
 					serviceFeeRateNum: "", //  信息服务费
 					taxRate: "", // 税率
@@ -1464,6 +1493,8 @@
 					val.enterEndTime = "";
 				}
 				this.schemes[index].teams[inx].enterStartTime = this.getComeTime(teamTypes)
+				//计算方案开始时间以及方案工期
+			 	this.schemes[index].enterStartTime = this.getComeTime(this.schemes[index].teams)
 			},
 			// 计算班组工程量
 			handleQuantity(index, inx, types_index, val) {
@@ -1513,6 +1544,9 @@
 					types_index,
 					val
 				});
+				// 计算方案结束时间以及方案总工期
+				this.schemes[index].enterEndTime = this.getExitLenTime(this.schemes[index].teams);
+				this.schemes[index].enterDay = this.getDateDiff(this.schemes[index].enterStartTime,this.schemes[index].enterEndTime)
 			},
 			/** 计算工期 */
 			dateChange(num = 1, date = false) {
@@ -1561,8 +1595,13 @@
 			},
 			/** 提交服务单 */
 			handleAddSerice() {
+				this.$confirm('是否提交服务单？', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
 				if (!this.allAddress.point) {
-					return this.$message.error('请选择地址');
+					return this.$message.error('请选择项目地址');
 				}
 				let programeLen = this.$refs.programmeForm.length;
 				let typeLen = this.$refs.typeRuleForm.length;
@@ -1629,7 +1668,7 @@
 				} else {
 					return this.$message.error('请完善方案信息');
 				}
-
+				})
 			},
 			// 提交服务单信息
 			async getSbmitServer() {
@@ -1647,6 +1686,9 @@
 				param.images = this.basicForm.images
 				param.description = this.basicForm.description;
 				param.title = this.basicForm.title;
+				param.type = this.basicForm.type
+				param.enterpriseName = this.basicForm.enterpriseName
+				param.enterpriseAddress   = this.basicForm.enterpriseAddress  
 				let schemes = this.deepClone(this.schemes);
 				for (let i = 0; i < schemes.length; i++) {
 					for (let j = 0; j < schemes[i].teams.length; j++) {

@@ -50,6 +50,7 @@
 </template>
 
 <script>
+	import moment from 'moment'
 	export default {
 		props: {
 			recordTable: {
@@ -71,7 +72,10 @@
 			},
 			handleCurrentChangeRecord(e) {
 				this.$emit('handleCurrentChangeRecord', e)
-			}
+			},
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
 
 		}
 	}
