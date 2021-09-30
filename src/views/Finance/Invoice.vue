@@ -213,7 +213,9 @@
 				})
 			},
 			/** 导出 */
-			getExport() {},
+			getExport() {
+				window.open(`/api/bill/v1.0/admin/brief/invoice/export?keywords=${this.keywords}&status=${this.status}&type=${this.type}`)
+			},
 			/** 通过 */
 			goRecruit(row) {
 				this.rowDate = row
@@ -311,6 +313,7 @@
 			handleReset() {
 				this.keywords = '';
 				this.status = '';
+				this.type = ''
 				this.getDataList();
 			}
 		}
