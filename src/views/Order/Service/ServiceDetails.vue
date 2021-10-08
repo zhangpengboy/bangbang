@@ -12,14 +12,13 @@
 		</el-radio-group>
 		<!-- tab按钮切换end -->
 
-
 		<!-- 需求单详情 -->
 		<demanInfo :info="info" v-if="tabPosition == 'top'" />
 		<!-- 需求单详情end -->
 
 		<!-- 服务单 -->
 		<editService ref="editFrom" v-show="tabPosition == 'order'" @handleEditSuccess="handleEditSuccess" />
-
+		
 		<!-- 服务单end -->
 		<!-- 任务奖励 -->
 		<div v-if="tabPosition == 'reward'">
@@ -29,13 +28,13 @@
 					<div class="top-content-item flex fvertical">
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
-							<el-input class="top-content-item-input" v-model="teamTypeName" placeholder="任务名称/班组名称">
-
+							<el-input class="top-content-item-input" v-model="rewardPage.keywords" placeholder="任务名称/班组名称">
+								
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>类型：</span>
-							<el-select v-model="rewardType" placeholder="选择类型">
+							<el-select v-model="rewardPage.type" placeholder="选择类型">
 								<el-option v-for="item in rewardTypeList" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -43,7 +42,7 @@
 						</div>
 						<div class="flex fvertical top-content-item-status">
 							<span>状态：</span>
-							<el-select v-model="rewardStatus" placeholder="选择状态">
+							<el-select v-model="rewardPage.status" placeholder="选择状态">
 								<el-option v-for="item in rewardStatusList" :key="item.value" :label="item.label"
 									:value="item.value">
 								</el-option>
@@ -53,59 +52,71 @@
 
 
 					<div class="top-content-btn">
-						<el-button type="primary" @click="handelSeracMember">查询</el-button>
-						<el-button @click="handleResetMember">重置</el-button>
+						<el-button type="primary" @click="handelSeracReward">查询</el-button>
+						<el-button @click="handleResetReward">重置</el-button>
 					</div>
 				</div>
 			</div>
 
-			<el-table :data="rewardTableData" border style="width: 100%" height="300px">
+			<el-table :data="rewardtableData" :key="rewardKey" border style="width: 100%" height="300px">
 				<el-table-column type="index" width="50" label="序号">
 				</el-table-column>
-				<el-table-column prop="orderId" label="班组名称" width="170">
-					木工班组
+				<el-table-column prop="teamName" label="班组名称" width="170">
 				</el-table-column>
 				<el-table-column prop="title" label="任务名称" width="180">
-					广州市·天河区·招木工小工·6人
 				</el-table-column>
-				<el-table-column prop="createName" label="类型">
-					一次性
+				<el-table-column prop="type" label="类型">
+					<template slot-scope="scope">
+						{{scope.row.type == 1?'一次性':scope.row.type == 2?'周期':''}}
+					</template>
 				</el-table-column>
-				<el-table-column prop="phone" label="条件">
-					入场满15天
+				<el-table-column prop="condition" label="条件">
+						<template slot-scope="scope">
+						<p v-if="scope.row.condition"> 入场满{{scope.row.condition}}天</p>
+						</template>
 				</el-table-column>
 				<el-table-column prop="reason" label="奖励">
-					100元/人
+					<template slot-scope="scope">
+						<div v-if="scope.row.type">
+						<p v-if="scope.row.type == 1">{{scope.row.fee}}元</p>
+						<p v-else>验收产值{{scope.row.rate}}%</p>
+						</div>
+						</template>
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
 					<el-switch
-					v-model="rewardValue"
+					:value="scope.row.status == 1?true:false"
 					active-color="#13ce66"
 					inactive-color="#cac3c3">
 					</el-switch>
 					</template>
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作人">
-					客服A
 				</el-table-column>
-				<el-table-column prop="address" label="操作时间">
+				<el-table-column prop="updateTime" label="操作时间">
 					<template slot-scope="scope">
-						2017-07-24 17:25:38
-						<!-- <p>{{formatDate(scope.row.updateTime)}}</p> -->
+						<p>{{formatDate(scope.row.updateTime)}}</p>
 					</template>
 				</el-table-column>
 				<el-table-column label="操作">
 					<template slot-scope="scope">
 						<template >
-						<el-button size="mini" type="primary" @click="handleRewardEdit(scope.$index, scope.row)">编辑</el-button>
-						<el-button  size="mini"  type="primary"  @click="handleRewardHistory(scope.$index, scope.row)">历史</el-button>
+						<el-button size="mini" type="primary" @click="handleRewardEdit(scope.row)">编辑</el-button>
+						<el-button  size="mini"  type="primary"  @click="handleRewardHistory(scope.row)">历史</el-button>
 						</template>
 
 					</template>
 				</el-table-column>
 			</el-table>
-
+			<!-- 分页  -->
+				<div class="flex fcenter page">
+					<el-pagination class="page" id="page" background @size-change="handleRewrdSizeChange"
+						@current-change="handleRewrdCurrentChange" :current-page="rewardPage.PageIndex" :page-sizes="[10, 20, 30, 40]"
+						:page-size="rewardPage.PageSize" layout="total, prev, pager, next,sizes, jumper" :total="rewardPage.PageCount">
+					</el-pagination>
+				</div>
+				<!-- 分页end -->
 		</div>
 
 
@@ -124,7 +135,7 @@
 								</el-option>
 							</el-select>
 							<!-- <el-input class="top-content-item-input" v-model="teamTypeName" placeholder="ID/项目名称">
-
+								
 							</el-input> -->
 						</div>
 						<div class="flex fvertical top-content-item-status">
@@ -354,7 +365,7 @@
 										<el-input class="member-min-input" :disabled="true" value="人"></el-input>
 									</div>
 								</div>
-
+							
 
 							</div> -->
 
@@ -423,7 +434,7 @@
 									<div class="service-details-member-box-list-worker-user flex fvertical">
 										<div class="service-details-member-box-list-worker-user-item "
 											v-for="(res,list_index) in items.list" :key="list_index">
-											<div>
+											<div> 
 											<span>{{res.name}} {{res.phone}}</span>
 											<i class="el-icon-error" @click="handleDeteleUser(res,index,inx,list_index)" v-if="res.enrollStatus == 1"></i>
 											<span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 1">已离场</span>
@@ -626,8 +637,8 @@
 				</el-table-column>
 				<el-table-column prop="type" label="开票类型">
 					<template slot-scope="scope">
-					{{scope.row.type == 1?"个人":"企业"}}
-					</template>
+					{{scope.row.type == 1?"个人":"企业"}}	
+					</template>		
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
@@ -698,10 +709,10 @@
 			<el-button type="primary" @click="InvoiceDetailDialog = false">确 定</el-button>
 		</span>
 		</el-dialog>
-
+		
 		<!--  任务奖励编辑弹窗 -->
-		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloseLookReason">
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">
+		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloserewardEditDialog">
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
 				<el-select v-model="rewardValue" placeholder="请选择">
 					<el-option
 					v-for="item in rewardTypeList1"
@@ -713,57 +724,60 @@
 				</div>
 				</div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入天数"></el-input>天</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputday" type="number" placeholder="请输入天数"></el-input>天</div></div>
 			<div v-if="rewardValue == 1">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>元</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputprice" type="number" placeholder="请输入奖励"></el-input>元</div></div>
 			</div>
 			<div v-if="rewardValue == 2">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后，获得被分享工人验收产值的百分比金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInput" type="number" placeholder="请输入奖励"></el-input>%</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputrate " type="number" placeholder="请输入奖励"></el-input>%</div></div>
 			</div>
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="rewardEditDialog = false">取 消</el-button>
-				<el-button type="primary" @click="rewardEditDialog = false">确 定</el-button>
+				<el-button type="primary" @click="postreward">确 定</el-button>
 			</span>
 		</el-dialog>
 		<!--  任务奖励编辑弹窗end -->
 		<!--  任务奖励历史弹窗 -->
 		<el-dialog title="历史设置" :visible.sync="rewardHistoryDialog" width="50%" :before-close="handleCloserewardHistory">
 			  <el-table :data="rewardHistoryTableData" style="width: 100%" :stripe="true" height="300px">
-				<el-table-column type="index" width="50" label="序号"></el-table-column>
-			<el-table-column
-				prop="date"
-				label="类型"
-				width="180">
-				一次性
-			</el-table-column>
-			<el-table-column
-				prop="name"
-				label="条件"
-				width="180">
-				入场满15天
-			</el-table-column>
-			<el-table-column
-				prop="address"
-				label="奖励">
-				100元/人
-			</el-table-column>
-			<el-table-column
-				prop="address"
-				label="变更">
-				开启
-			</el-table-column>
-			<el-table-column
-				prop="address"
-				label="操作人">
-				客服A
-			</el-table-column>
-			<el-table-column
-				prop="address"
-				label="操作时间">
-				2017-07-24 17:25:38
-			</el-table-column>
+				<el-table-column type="index" width="50" label="序号">
+				</el-table-column>
+				<el-table-column prop="type" label="类型">
+					<template slot-scope="scope">
+						{{scope.row.type == 1?'一次性':scope.row.type == 2?'周期':''}}
+					</template>
+				</el-table-column>
+				<el-table-column prop="condition" label="条件">
+						<template slot-scope="scope">
+						<p v-if="scope.row.condition"> 入场满{{scope.row.condition}}天</p>
+						</template>
+				</el-table-column>
+				<el-table-column prop="reason" label="奖励">
+					<template slot-scope="scope">
+						<div v-if="scope.row.type">
+						<p v-if="scope.row.type == 1">{{scope.row.fee}}元</p>
+						<p v-else>验收产值{{scope.row.rate}}%</p>
+						</div>
+						</template>
+				</el-table-column>
+				<el-table-column label="状态">
+					<template slot-scope="scope">
+					<el-switch
+					:value="scope.row.status == 1?true:false"
+					active-color="#13ce66"
+					inactive-color="#cac3c3">
+					</el-switch>
+					</template>
+				</el-table-column>
+				<el-table-column prop="createName" label="操作人">
+				</el-table-column>
+				<el-table-column prop="address" label="操作时间">
+					<template slot-scope="scope">
+					<p>{{formatDate(scope.row.createTime)}}</p>
+					</template>
+				</el-table-column>
 			</el-table>
 			<span slot="footer" class="dialog-footer ">
 				<el-button type="primary" @click="rewardHistoryDialog = false">确 定</el-button>
@@ -790,6 +804,9 @@
 		getInvoice,
 		getInvoiceDetail,
 		getServiceUpdateStatus,
+		getReward,
+		postReward,
+		getRewardlog,
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -831,7 +848,7 @@
 				ruleForm: {},
 				orderId: null, // 订单ID
 				keywords: "", // 充值搜索内容
-				status: "", //状态
+				status: "", //状态 
 				teamTypeNameList: [], // 工种列表
 				companyList: [{ // 工程列表
 					label: '㎡',
@@ -947,7 +964,7 @@
 				InvoiceStatus:'', //开票查询状态
 				InvoicetableData:[], // 开票列表数据
 				InvoiceDetail:[] ,// 当前行发票详情数据
-				InvoiceDetailDialog:false, //发票详情界面
+				InvoiceDetailDialog:false, //发票详情界面 
 				//任务奖励
 				//任务奖励status
 				rewardStatusList:[{
@@ -959,7 +976,7 @@
 				}, {
 					label: "关闭",
 					value: 2
-				},],
+				},], 
 				rewardStatus:'', //任务状态
 				//任务奖励type
 				rewardTypeList:[{
@@ -981,10 +998,24 @@
 					value: 2
 				}],
 				rewardType:'', // 任务类型
-				rewardTableData:[{}], // 任务列表数据
+				rewardTableData:[], // 任务列表数据
+				rewardKey:'',//数据更新组件不刷新 
 				rewardEditDialog:false, // 任务奖励编辑弹窗
 				rewardInput:'',// 任务编辑
-				rewardValue:'',// 任务编辑
+				rewardValue:'',// 任务编辑status
+				rewardInputday:'', // 任务编辑入场天数
+				rewardInputprice:'',//任务编辑金额
+				rewardInputrate:'',// 任务编辑百分比
+				//任务奖励搜索条件
+				rewardPage:{
+				PageIndex: 1, // -页码
+				PageSize: 10, // -显示多少条数据
+				PageCount: 0, // -总条数
+				status:'',//状态
+				type:'',//类型
+				keywords:''//模糊搜索
+				},
+				rewardRow:{},//当前行数据
 				rewardHistoryTableData:[], //任务历史
 				rewardHistoryDialog:false // 任务历史弹窗
 			}
@@ -1007,7 +1038,7 @@
 					// 	// basicForm
 					// 	console.log(this.basicForm)
 					// 	this.$nextTick(()=>{
-
+							
 					// 		// this.$refs.editFrom.getDataInfo(this.basicForm);
 					// 	})
 					// 	break;
@@ -1029,10 +1060,11 @@
 			}
 			this.getBriefPay(this.orderId);
 			this.getOrderdetail(this.orderId);
-
+			
 			this.getOrderTeamType();
 			this.gettypeWorkClass();
 
+			this.getReward()
 			console.log('获取百度地图地址：',window)
 			console.log(this.basicForm)
 			//发票列表
@@ -1338,7 +1370,7 @@
 				}catch(e){
 					this.loading = false;
 				}
-
+				
 			},
 			// 查看发票详情
 			checkDetail(row){
@@ -1351,12 +1383,74 @@
 			InvoiceDetailclose(){
 				this.InvoiceDetailDialog = false
 			},
+				/** 获取任务奖励列表 */
+			async getReward() {
+				let param = {};
+				param.pageIndex = this.rewardPage.PageIndex;
+				param.pageSize = this.rewardPage.PageSize;
+				param.status = this.rewardPage.status;
+				param.keywords = this.rewardPage.keywords;
+				param.type = this.rewardPage.type;
+				param.orderId = this.orderId
+				this.loading = true;
+				getReward(param).then(res=>{
+					this.rewardKey = Math.random()
+					this.rewardtableData = res.data.records;
+					this.rewardPage.PageCount = res.data.total;
+				})
+				
+			},
+				/** 任务列表选择分页 */
+			handleRewrdSizeChange(e) {
+				this.rewardPage.PageSize = e;
+				this.rewardPage.PageIndex = 1;
+				this.getReward()
+			},
+			/** 任务列表点击分页 */
+			handleRewrdCurrentChange(e) {
+				this.rewardPage.PageIndex = e;
+				this.getReward()
+			},
+			//任务奖励编辑
+			postreward(){
+				postReward({
+				condition:  this.rewardInputday,
+				fee: this.rewardInputprice ,
+				rate:this.rewardInputrate,
+				status:1 ,
+				teamTypeId: this.rewardRow.teamTypeId,
+				type:this.rewardValue
+				}).then(res=>{
+					this.getReward()
+					this.$message.success('任务开启成功')
+					this.rewardEditDialog = false
+				})
+			},
 			//任务奖励 编辑
 			handleRewardEdit(row){
+				this.rewardRow = row
 				this.rewardEditDialog = true
+			},
+			//任务奖励 关闭
+			handleCloserewardEditDialog(){
+			this.rewardEditDialog = false
+			},
+			//任务奖励搜索
+			handelSeracReward(){
+			this.getReward()
+			},
+			// 任务奖励重置
+			handleResetReward(){
+				this.rewardPage.status = ""
+				this.rewardPage.type = ""
+				this.rewardPage.keywords = ""
+				this.getReward()
 			},
 			//任务奖励 历史弹窗
 			handleRewardHistory(row){
+				getRewardlog({teamTypeId:row.teamTypeId}).then(res=>{
+					this.rewardHistoryTableData = res.data.records;
+				})
 				this.rewardHistoryDialog = true
 			},
 			// 任务奖励 历史弹窗
@@ -1799,7 +1893,7 @@
 
 
 	}
-
+	
 	.InvoiceDetailDialog{
 		width: 100%;
 		display: flex;
