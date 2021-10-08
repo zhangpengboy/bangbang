@@ -12,13 +12,14 @@
 		</el-radio-group>
 		<!-- tab按钮切换end -->
 
+
 		<!-- 需求单详情 -->
 		<demanInfo :info="info" v-if="tabPosition == 'top'" />
 		<!-- 需求单详情end -->
 
 		<!-- 服务单 -->
 		<editService ref="editFrom" v-show="tabPosition == 'order'" @handleEditSuccess="handleEditSuccess" />
-		
+
 		<!-- 服务单end -->
 		<!-- 任务奖励 -->
 		<div v-if="tabPosition == 'reward'">
@@ -29,7 +30,7 @@
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
 							<el-input class="top-content-item-input" v-model="teamTypeName" placeholder="任务名称/班组名称">
-								
+
 							</el-input>
 						</div>
 						<div class="flex fvertical top-content-item-status">
@@ -123,7 +124,7 @@
 								</el-option>
 							</el-select>
 							<!-- <el-input class="top-content-item-input" v-model="teamTypeName" placeholder="ID/项目名称">
-								
+
 							</el-input> -->
 						</div>
 						<div class="flex fvertical top-content-item-status">
@@ -353,7 +354,7 @@
 										<el-input class="member-min-input" :disabled="true" value="人"></el-input>
 									</div>
 								</div>
-							
+
 
 							</div> -->
 
@@ -422,7 +423,7 @@
 									<div class="service-details-member-box-list-worker-user flex fvertical">
 										<div class="service-details-member-box-list-worker-user-item "
 											v-for="(res,list_index) in items.list" :key="list_index">
-											<div> 
+											<div>
 											<span>{{res.name}} {{res.phone}}</span>
 											<i class="el-icon-error" @click="handleDeteleUser(res,index,inx,list_index)" v-if="res.enrollStatus == 1"></i>
 											<span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 1">已离场</span>
@@ -625,8 +626,8 @@
 				</el-table-column>
 				<el-table-column prop="type" label="开票类型">
 					<template slot-scope="scope">
-					{{scope.row.type == 1?"个人":"企业"}}	
-					</template>		
+					{{scope.row.type == 1?"个人":"企业"}}
+					</template>
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
@@ -697,10 +698,10 @@
 			<el-button type="primary" @click="InvoiceDetailDialog = false">确 定</el-button>
 		</span>
 		</el-dialog>
-		
+
 		<!--  任务奖励编辑弹窗 -->
 		<el-dialog title="奖励设置" :visible.sync="rewardEditDialog" width="30%" :before-close="handleCloseLookReason">
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">  
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 类型：</p> <div class="rewardEditDialog-inp">
 				<el-select v-model="rewardValue" placeholder="请选择">
 					<el-option
 					v-for="item in rewardTypeList1"
@@ -830,7 +831,7 @@
 				ruleForm: {},
 				orderId: null, // 订单ID
 				keywords: "", // 充值搜索内容
-				status: "", //状态 
+				status: "", //状态
 				teamTypeNameList: [], // 工种列表
 				companyList: [{ // 工程列表
 					label: '㎡',
@@ -946,7 +947,7 @@
 				InvoiceStatus:'', //开票查询状态
 				InvoicetableData:[], // 开票列表数据
 				InvoiceDetail:[] ,// 当前行发票详情数据
-				InvoiceDetailDialog:false, //发票详情界面 
+				InvoiceDetailDialog:false, //发票详情界面
 				//任务奖励
 				//任务奖励status
 				rewardStatusList:[{
@@ -958,7 +959,7 @@
 				}, {
 					label: "关闭",
 					value: 2
-				},], 
+				},],
 				rewardStatus:'', //任务状态
 				//任务奖励type
 				rewardTypeList:[{
@@ -1006,7 +1007,7 @@
 					// 	// basicForm
 					// 	console.log(this.basicForm)
 					// 	this.$nextTick(()=>{
-							
+
 					// 		// this.$refs.editFrom.getDataInfo(this.basicForm);
 					// 	})
 					// 	break;
@@ -1028,10 +1029,10 @@
 			}
 			this.getBriefPay(this.orderId);
 			this.getOrderdetail(this.orderId);
-			
+
 			this.getOrderTeamType();
 			this.gettypeWorkClass();
-			
+
 			console.log('获取百度地图地址：',window)
 			console.log(this.basicForm)
 			//发票列表
@@ -1337,7 +1338,7 @@
 				}catch(e){
 					this.loading = false;
 				}
-				
+
 			},
 			// 查看发票详情
 			checkDetail(row){
@@ -1798,7 +1799,7 @@
 
 
 	}
-	
+
 	.InvoiceDetailDialog{
 		width: 100%;
 		display: flex;
