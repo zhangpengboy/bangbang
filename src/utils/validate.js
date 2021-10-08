@@ -110,3 +110,8 @@ export function timestamp(strtime){
   var time1 = date.getTime();//精确到毫秒:1398250549123
   return time1;
 }
+// 验证身份证号码
+export function IsCard(str) {
+   var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
+   return reg.test(str);
+ }

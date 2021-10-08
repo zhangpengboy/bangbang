@@ -6,7 +6,10 @@
           <span class="lableTxt">邦宁项目</span>
         </p>
         <div class="head flex alCen column">
-          <img src="../../../assets/images/xiangmu.png" class="avatar">
+          <div class="avatarCon">
+            <p class="status">计时</p>
+            <img src="../../../assets/images/xiangmu.png" class="avatar">
+          </div>
           <p class="proName">中铁广州一期项目</p>
           <p class="order">所属订单【2021948933493】</p>
         </div>
@@ -33,6 +36,7 @@
             </p>
 
           </div>
+          <!-- 邦宁项目 -->
           <div class="item flex alCen js-sb">
             <p class="tit">项目工期</p>
             <p class="desc">20天</p>
@@ -47,6 +51,27 @@
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">竣工时间</p>
+            <p class="desc">2018-06-20 12:41:50</p>
+          </div>
+          <!-- 自建项目 -->
+          <div class="item flex alCen js-sb">
+            <p class="tit">服务周期</p>
+            <p class="desc">20天</p>
+          </div>
+          <div class="item flex alCen js-sb">
+            <p class="tit">创建时间</p>
+            <p class="desc">2018-06-20 12:41:50</p>
+          </div>
+          <div class="item flex alCen js-sb">
+            <p class="tit">开始时间</p>
+            <p class="desc">2018-06-20 12:41:50</p>
+          </div>
+          <div class="item flex alCen js-sb">
+            <p class="tit">延期天数</p>
+            <p class="desc"><span style="color: #FF0000;">12</span>天</p>
+          </div>
+          <div class="item flex alCen js-sb">
+            <p class="tit">结束时间</p>
             <p class="desc">2018-06-20 12:41:50</p>
           </div>
         </div>
@@ -263,10 +288,25 @@
          }
        }
        .head{
-         .avatar{
-           width: 100px;
-           height: 100px;
-           border-radius: 50%;
+         .avatarCon{
+           position: relative;
+           .status{
+             position: absolute;
+             background-color: #006aff;
+             border-radius: 50px 50px 50px 0;
+             width: 76px;
+             line-height: 30px;
+             text-align: center;
+             color: #FFFFFF;
+             top:-15px;
+             right: -30px;
+
+           }
+           .avatar{
+             width: 100px;
+             height: 100px;
+             border-radius: 50%;
+           }
          }
          .proName{
            font-weight: bold;
