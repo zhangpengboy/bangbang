@@ -155,7 +155,12 @@
               type: 'success',
               message: '不能为空 '
             });
-          }else{
+          }else if(value.length>=8){
+             this.$message({
+               type: 'warning',
+               message: '名称不能超过8个字'
+             });
+           }else{
             var params = {
               labelName:value,
               parentId:0,
@@ -222,7 +227,12 @@
               type: 'success',
               message: '不能为空 '
             });
-          }else{
+          }else if(value.length>=8){
+             this.$message({
+               type: 'warning',
+               message: '名称不能超过8个字'
+             });
+           }else{
             var params = {
               labelName:value,
               parentId:this.activeClassID,

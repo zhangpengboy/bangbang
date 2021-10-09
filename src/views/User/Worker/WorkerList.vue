@@ -496,37 +496,55 @@ export default {
     },
     // 添加实名
     realNameTrue(){
-      var gender = 0;
-      if(this.rnGender=='男'){
-        gender = 0
+      if(this.idCardUp==''){
+        this.$message({
+          type: 'warning',
+          message: '请上传身份证!'
+        })
+      }else if(this.rnName==''){
+        this.$message({
+          type: 'warning',
+          message: '请输入姓名!'
+        })
+      }else if(IsCard(this.rnIdnum)==false){
+        this.$message({
+          type: 'warning',
+          message: '请输入正确身份证号!'
+        })
       }else{
-        gender = 1
-      }
-       var params = {
-         age:this.rnAge,
-         gender:gender,
-         householdRegister:this.rnHouse,
-         idCardReverseUri:this.idCardBackUp,
-         idCardUri:this.idCardUp,
-         idNo:this.rnIdnum,
-         nation:this.rnNation,
-         nativePlace:this.rnNativePlace,
-         realName:this.rnName,
-         userId:this.rnUserId,
-         validityEndTime:this.rnvalidityEndTime,
-         validityStartTime:this.rnvalidityStartTime
-       }
-       gongRenRealNameAuth(params).then(res => {
-         console.log(res)
-         if(res.code==200){
-           this.$message({
-             type: 'success',
-             message: '提交成功!'
-           })
-            this.realNamePop = false
-            this.getList()
+        var gender = 0;
+        if(this.rnGender=='男'){
+          gender = 0
+        }else{
+          gender = 1
+        }
+         var params = {
+           age:this.rnAge,
+           gender:gender,
+           householdRegister:this.rnHouse,
+           idCardReverseUri:this.idCardBackUp,
+           idCardUri:this.idCardUp,
+           idNo:this.rnIdnum,
+           nation:this.rnNation,
+           nativePlace:this.rnNativePlace,
+           realName:this.rnName,
+           userId:this.rnUserId,
+           validityEndTime:this.rnvalidityEndTime,
+           validityStartTime:this.rnvalidityStartTime
          }
-       })
+         gongRenRealNameAuth(params).then(res => {
+           console.log(res)
+           if(res.code==200){
+             this.$message({
+               type: 'success',
+               message: '提交成功!'
+             })
+              this.realNamePop = false
+              this.getList()
+           }
+         })
+      }
+     
 
     },
 
