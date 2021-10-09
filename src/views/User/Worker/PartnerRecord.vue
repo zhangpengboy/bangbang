@@ -19,7 +19,6 @@
 			</div>
 		</div>
 		<!-- 头部end -->
-
 		<!-- 数据列表 -->
 		<div class="box">
 			<div class="box-top flex fbetween fvertical" id="boxTop">

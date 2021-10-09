@@ -19,13 +19,20 @@
 						</el-select>
 					</div>
 
-					<div class="flex fvertical top-content-item-status">
+					<!-- <div class="flex fvertical top-content-item-status">
 						<span>地区：</span>
+						
 						<el-select v-model="address" filterable placeholder="选择地区">
 							<el-option v-for="item in addressList" :key="item.value" :label="item.label"
 								:value="item.value">
 							</el-option>
 						</el-select>
+					</div> -->
+
+					<div class="flex fvertical top-content-item-status">
+						<span>地区：</span>
+						<el-cascader style="width:250px" v-model="address" :options="addressList"
+							:props="addressconfig"></el-cascader>
 					</div>
 				</div>
 
@@ -98,7 +105,8 @@
 	import {
 		getPartnerList,
 		getPartnerExport,
-		getPartnerUpdateStatus
+		getPartnerUpdateStatus,
+		getregion
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -121,18 +129,34 @@
 				pageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				clientHeight: 0,
-				addressList: [], // 地区列表
-				address: "", // 地址
+				addressList: [{
+					code: "",
+					name: "全部"
+				}], // 地区列表
+				address: "全部", // 地址
 				loading: false, // 
+				addressconfig: {
+					value: 'name',
+					label: "name",
+					children: 'children'
+				}
 			}
 		},
 		mounted() {
 			this.getWebHeing();
 			this.getPartnerList();
+			this.getRegion();
 		},
 		methods: {
 			formatDateTime(value) {
 				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			// 获取省市区
+			getRegion() {
+				getregion().then(res => {
+					console.log(res)
+					this.addressList = [...this.addressList, ...res.data[0].children]
+				})
 			},
 			/** 修改当前列表状态 */
 			handleSumbitRelationship(row) {
@@ -187,7 +211,15 @@
 				param.pageSize = this.pageSize;
 				param.status = this.status;
 				param.keyword = this.keyword;
-				param.cityName = this.address;
+				let cityName = ''
+				if(this.address == '全部'){
+					cityName = ''
+				}else if(this.address.length==1){
+					cityName = this.address[0]
+				} else{
+					cityName = this.address[1]
+				}
+				param.cityName = cityName;
 				let url =
 					`/api/marketing/admin/marketing/partner/v1.0.1/export?status=${this.status}&keyword=${this.keyword}&cityName=${this.address}`
 				window.open(url);
@@ -224,7 +256,15 @@
 				param.pageSize = this.pageSize;
 				param.status = this.status;
 				param.keyword = this.keyword;
-				param.cityName = this.address;
+				let cityName = ''
+				if(this.address == '全部'){
+					cityName = ''
+				}else if(this.address.length==1){
+					cityName = this.address[0]
+				} else{
+					cityName = this.address[1]
+				}
+				param.cityName = cityName;
 				this.loading = true;
 				try {
 					let res = await getPartnerList(param);

@@ -132,22 +132,40 @@ export const constantRoutes = [
 			meta: {
 				title: '企业列表'
 			}
-		}, {
-			path: 'enterprisedetails',
-			component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
-			name: 'enterprisedetails',
-			hidden: true,
-			meta: {
-				title: '企业详情',
-				affix: false
-			}
-		}, {
+		},{
+      path: 'enterprisedetails',
+      component: () => import('@/views/User/Enterprise/EnterpriseDetails'),
+      name: 'enterprisedetails',
+      hidden: true,
+      meta: {
+        title: '企业详情',
+        affix: false
+      }
+    }, {
 			path: 'workerList',
 			component: () => import('@/views/User/Worker/WorkerList'),
 			name: 'partnerList',
 			meta: {
 				title: '工人列表'
 			}
+		},{
+      path: 'workrtDetail',
+      component: () => import('@/views/User/Worker/workrtDetail'),
+      name: 'workrtDetail',
+      meta: {
+        title: '工人详情',
+        activeMenu: '/user/Worker/WorkerList'
+      },
+      hidden: true
+    },{
+			path: 'taskDetail',
+			component: () => import('@/views/User/Worker/TaskDetail'),
+			name: 'taskDetail',
+			meta: {
+				title: '任务详情',
+				// activeMenu: '/user/Worker/WorkerList'
+			},
+			hidden: true
 		}, {
 			path: 'workrtDetail',
 			component: () => import('@/views/User/Worker/workrtDetail'),
@@ -216,7 +234,8 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人审核记录'
 			}
-		}]
+		}
+    ]
 	},
 	{
 		path: '/order',
