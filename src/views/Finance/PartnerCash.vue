@@ -185,8 +185,8 @@
 			},
 			/** 通过 */
 			handleSumbit(row) {
-				this.$message.error('功能暂未开发');
-				return;
+				// this.$message.error('功能暂未开发');
+				// return;
 				let param = {}
 				param.id = row.id;
 				param.status = 2;
@@ -200,7 +200,7 @@
 			},
 			async getPartnerCashUpdateStatus(param) {
 				let res = await getPartnerCashUpdateStatus(param);
-				this.$message.success('提现成功')
+				this.$message.success('操作成功')
 				this.getPartnerCash();
 			},
 			/** 获取数据列表 */
