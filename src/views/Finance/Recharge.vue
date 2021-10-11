@@ -96,8 +96,9 @@
 		<!--  编辑金额 -->
 		<el-dialog title="修改充值金额" :visible.sync="isMoney" width="30%" :before-close="handleClose">
 			<el-input v-model="money" ref="money" placeholder="请输入需要修改的充值金额"
-				oninput="value=value.replace(/[^0-9.]/g,'')">
+				oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 			</el-input>
+
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="isMoney = false">取 消</el-button>
 				<el-button type="primary" @click="getUpdateFee">确 定</el-button>
