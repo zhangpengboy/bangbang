@@ -67,7 +67,7 @@ service.interceptors.response.use(
 			// store.dispatch('user/resetToken').then(() => {
 			// 	location.reload()
 			// })
-		}else if(res.type=='text/xml'){
+		}else if(response.request.responseType=='blob'){
       return response;
     }else {
 			  Message({

@@ -234,8 +234,7 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人审核记录'
 			}
-		}
-    ]
+		}]
 	},
 	{
 		path: '/order',
@@ -376,6 +375,22 @@ export const constantRoutes = [
       	hidden: true,
       	meta: {
       		title: '编辑记录'
+      	}
+      },{
+      	path: 'workYanshouRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workYanshouRecord'),
+      	name: 'workYanshouRecord',
+      	hidden: true,
+      	meta: {
+      		title: '验收记录'
+      	}
+      },{
+      	path: 'workShenbaoRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workShenbaoRecord'),
+      	name: 'workShenbaoRecord',
+      	hidden: true,
+      	meta: {
+      		title: '申报记录'
       	}
       }, {
 				path: 'work-agreement',
@@ -832,6 +847,22 @@ export const asyncRoutes = [{
       	hidden: true,
       	meta: {
       		title: '编辑记录'
+      	}
+      },{
+      	path: 'workYanshouRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workYanshouRecord'),
+      	name: 'workYanshouRecord',
+      	hidden: true,
+      	meta: {
+      		title: '验收记录'
+      	}
+      },{
+      	path: 'workShenbaoRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workShenbaoRecord'),
+      	name: 'workShenbaoRecord',
+      	hidden: true,
+      	meta: {
+      		title: '申报记录'
       	}
       }
       ]
