@@ -43,7 +43,7 @@
 				</el-table-column>
 				<el-table-column prop="userId" label="用户ID" width="200">
 				</el-table-column>
-				<el-table-column prop="createName" label="名称">
+				<el-table-column prop="userName" label="名称">
 				</el-table-column>
 				<el-table-column prop="phone" label="手机号码">
 				</el-table-column>
