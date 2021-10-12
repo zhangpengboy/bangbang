@@ -578,6 +578,7 @@ export default {
     },
     getGongrenDetail(){
       var userInfo = this.userIdOrType;
+      console.log(userInfo)
       var params = {
         id:userInfo.id
       }
@@ -659,7 +660,7 @@ export default {
 
     // 基本信息编辑
     edit() {
-      if(this.isEdit==false){     
+      if(this.isEdit==false){
         var params = {
           id:this.userIdOrType.id,
           address :this.basicInfo.adr,
@@ -677,7 +678,7 @@ export default {
           this.isEdit = true
           this.loadDate(this.userIdOrType)
         })
-        
+
       }else{
         this.isEdit = false
       }

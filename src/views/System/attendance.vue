@@ -128,14 +128,25 @@
       },
       // 新增
       add(){
-        this.$prompt('请输入半径范围', '提示', {
+        this.$prompt('请输入半径范围1', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         }).then(({ value }) => {
+          var reg = /^[0-9]+.?[0-9]*$/;
           if(value==null){
             this.$message({
               type: 'success',
               message: '不能为空 '
+            });
+          }else if(reg.test(value)==false){
+            this.$message({
+              type: 'success',
+              message: '格式不正确 '
+            });
+          }else if(value>999999){
+            this.$message({
+              type: 'success',
+              message: '超出最大范围 '
             });
           }else{
             var params = {
@@ -158,10 +169,21 @@
           cancelButtonText: '取消',
           inputValue:row.radius
         }).then(({ value }) => {
+          var reg = /^[0-9]+.?[0-9]*$/;
           if(value==null){
             this.$message({
               type: 'success',
               message: '不能为空 '
+            });
+          }else if(reg.test(value)==false){
+            this.$message({
+              type: 'success',
+              message: '格式不正确 '
+            });
+          }else if(value>999999){
+            this.$message({
+              type: 'success',
+              message: '超出最大范围 '
             });
           }else{
             var params = {
