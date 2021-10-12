@@ -65,8 +65,8 @@
 				</el-table-column>
 				<el-table-column label="类型">
 					<template slot-scope="scope">
-						<p v-if="scope.row.type == 0">一次性</p>
-						<p v-if="scope.row.type == 1">周期</p>
+						<p v-if="scope.row.type == 1">一次性</p>
+						<p v-if="scope.row.type == 2">周期</p>
 					</template>
 				</el-table-column>
 				<el-table-column label="条件">
@@ -76,8 +76,8 @@
 				</el-table-column>
 				<el-table-column label="奖励">
 					<template slot-scope="scope">
-						<p v-if="scope.row.type == 0">{{scope.row.fee}}元</p>
-						<p v-if="scope.row.type == 1">验收产值{{scope.row.rate}}%</p>
+						<p v-if="scope.row.type == 1">{{scope.row.fee}}元</p>
+						<p v-if="scope.row.type == 2">验收产值{{scope.row.rate}}%</p>
 					</template>
 				</el-table-column>
 				<el-table-column prop="userName" label="分享合伙人">
