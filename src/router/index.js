@@ -234,8 +234,7 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人审核记录'
 			}
-		}
-    ]
+		}]
 	},
 	{
 		path: '/order',
@@ -362,6 +361,38 @@ export const constantRoutes = [
 					title: '工作台'
 				}
 			}, {
+      	path: 'workRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workRecord'),
+      	name: 'workRecord',
+      	hidden: true,
+      	meta: {
+      		title: '操作记录'
+      	}
+      }, {
+      	path: 'workSignInEditRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workSignInEditRecord'),
+      	name: 'workSignInEditRecord',
+      	hidden: true,
+      	meta: {
+      		title: '编辑记录'
+      	}
+      },{
+      	path: 'workYanshouRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workYanshouRecord'),
+      	name: 'workYanshouRecord',
+      	hidden: true,
+      	meta: {
+      		title: '验收记录'
+      	}
+      },{
+      	path: 'workShenbaoRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workShenbaoRecord'),
+      	name: 'workShenbaoRecord',
+      	hidden: true,
+      	meta: {
+      		title: '申报记录'
+      	}
+      }, {
 				path: 'work-agreement',
 				name: 'workAgreement',
 				component: () => import('@/views/workerManagement/projectManage/workAgreement'),
@@ -800,7 +831,41 @@ export const asyncRoutes = [{
 			component: () => import('@/views/workerManagement/projectManage/workbench'),
 			meta: {
 				title: '工作台'
-			}
+			},
+      children: [{
+      	path: 'workRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workRecord'),
+      	name: 'workRecord',
+      	hidden: true,
+      	meta: {
+      		title: '操作记录'
+      	}
+      },{
+      	path: 'workSignInEditRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workSignInEditRecord'),
+      	name: 'workSignInEditRecord',
+      	hidden: true,
+      	meta: {
+      		title: '编辑记录'
+      	}
+      },{
+      	path: 'workYanshouRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workYanshouRecord'),
+      	name: 'workYanshouRecord',
+      	hidden: true,
+      	meta: {
+      		title: '验收记录'
+      	}
+      },{
+      	path: 'workShenbaoRecord',
+      	component: () => import('@/views/workerManagement/projectManage/workShenbaoRecord'),
+      	name: 'workShenbaoRecord',
+      	hidden: true,
+      	meta: {
+      		title: '申报记录'
+      	}
+      }
+      ]
 		}, {
 			path: 'work-agreement',
 			name: 'workAgreement',

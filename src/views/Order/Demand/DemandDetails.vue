@@ -1754,6 +1754,9 @@
 					that.allAddress.region = res.addressComponents.district
 				})
 				this.allAddress = this.form.allAddress;
+				if (!this.allAddress.city) {
+					return this.$message.error('请填写详细地址')
+				}
 				this.isAddress = false;
 				this.getDetailsAdderss(this.form);
 			},
@@ -2034,7 +2037,7 @@
 			.demand-service-plan-box {
 				border: 1px dashed #d9d9d9;
 				border-radius: 20px;
-
+				margin-bottom: 110px;
 				.demand-service-plan-box-title {
 					padding: 20px 20px;
 

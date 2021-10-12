@@ -436,9 +436,9 @@
 											v-for="(res,list_index) in items.list" :key="list_index">
 											<div> 
 											<span>{{res.name}} {{res.phone}}</span>
-											<i class="el-icon-error" @click="handleDeteleUser(res,index,inx,list_index)" v-if="res.enrollStatus == 1"></i>
+											<i class="el-icon-error" @click="handleDeteleUser(res,index,inx,list_index)" v-if="res.status != 1"></i>
 											<span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 1">已离场</span>
-											<!-- 下个版本需要 -->
+											<!-- 下个版本才有字段判断 -->
 											<!-- <span class="service-details-member-box-list-worker-user-item-go" v-if="res.leaveStatus == 0">已结束</span> -->
 											</div>
 											<div class="service-details-member-box-list-worker-user-item-sign">{{formatDate(res.enrollTime)}}报名</div>
@@ -785,7 +785,27 @@
 		</el-dialog>
 
 		<!--  任务奖励历史弹窗end -->
+	<!--  充值编辑金额 -->
+		<el-dialog title="修改充值金额" :visible.sync="rechargeisMoney" width="30%" :before-close="handleClose">
+			<el-input v-model="rechargeMoney" ref="money" placeholder="请输入需要修改的充值金额"
+				oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
+			</el-input>
 
+			<span slot="footer" class="dialog-footer ">
+				<el-button @click="handleClose">取 消</el-button>
+				<el-button type="primary" @click="getUpdateFee">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!--  充值编辑金额 -->
+
+		<!--  充值拒绝理由 -->
+		<el-dialog title="拒绝理由" :visible.sync="rechargeisLook" width="30%" :before-close="handleCloseLookReason">
+			<span>{{rechargeReason}}</span>
+			<span slot="footer" class="dialog-footer ">
+				<el-button type="primary" @click="rechargeisLook = false">确 定</el-button>
+			</span>
+		</el-dialog>
+		<!--  充值拒绝理由end -->
 	</div>
 </template>
 
@@ -807,6 +827,8 @@
 		getReward,
 		postReward,
 		getRewardlog,
+		getUpdateStatus,
+		getUpdateFee
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -821,6 +843,11 @@
 				PageSize: 10, // 充值-显示多少条数据
 				PageCount: 0, // 充值-总条数
 				tableData: [], // 充值列表数据
+				rechargeisLook:false,// 是否显示查看理由
+				rechargeisMoney:false,// 是否显示金额
+				rechargeMoney:'',//充值修改金额
+				rechargeReason:'',//充值拒绝理由
+				rowID:'',
 				tabPosition: "order",
 				typeList: [{
 					value: 1,
@@ -1320,6 +1347,77 @@
 					//TODO handle the exception
 				}
 			},
+			/** 显示修改金额 */
+			handleMoney(index, row) {
+				this.rechargeisMoney = true;
+				this.rowID = row.id;
+			},
+			/**修改金额  */
+			async getUpdateFee() {
+				let param = {};
+				param.id = this.rowID;
+				param.fee = this.rechargeMoney;
+				if(!this.rechargeMoney){
+					return this.$message.error('金额不能为空')
+				}
+				let res = await getUpdateFee(param);
+				this.$message.success('操作成功')
+				this.rechargeMoney = ''
+				this.getBriefPay();
+				this.rechargeisMoney = false;
+			},
+			/** 通过 */
+			handleAdopt(index, row) {
+				console.log(index, row)
+				this.$confirm('是否通过对账申请?', '是否通过对账申请', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.getUpdateStatus(row.id)
+				}).catch(() => {
+
+				});
+			},
+			async getUpdateStatus(id, status = 1, reason = '') {
+				try {
+					let param = {};
+					param.id = id;
+					param.status = status;
+					param.reason = reason;
+
+					let res = await getUpdateStatus(param);
+					this.$message.success('操作成功')
+					this.getBriefPay();
+				} catch (e) {
+					//TODO handle the exception
+					console.log(e)
+				}
+
+
+			},
+			/** 拒绝 */
+			handleDelete(index, row) {
+				this.$prompt('是否拒绝提现申请', '确认提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					inputPlaceholder: '填写拒绝理由',
+					inputPattern: /^(?!\d)[\u4e00-\u9fa5a-zA-Z0-9_-]{1,25}$/,
+					inputErrorMessage: '请输入拒绝申请理由'
+				}).then(({
+					value
+				}) => {
+					console.log(value)
+					this.getUpdateStatus(row.id, 2, value)
+				}).catch(() => {
+
+				})
+			},
+				/** 取消修改金额对话框 */
+			handleClose() {
+				this.rechargeisMoney = false
+				this.rechargeMoney = ''
+			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.PageSize = e;
@@ -1423,6 +1521,9 @@
 				}).then(res=>{
 					this.getReward()
 					this.$message.success('任务开启成功')
+					this.rewardInputday= ''
+					this.rewardInputprice= ''
+					this.rewardInputrate= ''
 					this.rewardEditDialog = false
 				})
 			},

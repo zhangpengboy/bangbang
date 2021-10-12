@@ -118,7 +118,7 @@
                 <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.realName" />
               </div>
               <div class="item flex">
-                <p class="backgroud tit">名族</p>
+                <p class="backgroud tit">民族</p>
                 <input  class="desc flex1 col666" type="" name="" :disabled="isEditShM" v-model="realNameInfo.nation" />
               </div>
               <div class="item flex">
