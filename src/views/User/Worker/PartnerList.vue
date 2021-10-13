@@ -221,7 +221,7 @@
 				}
 				param.cityName = cityName;
 				let url =
-					`/api/marketing/admin/marketing/partner/v1.0.1/export?status=${this.status}&keyword=${this.keyword}&cityName=${this.address}`
+					`/api/marketing/admin/marketing/partner/v1.0.1/export?status=${this.status}&keyword=${this.keyword}&cityName=${this.address=='全部'?'':this.address}`
 				window.open(url);
 			},
 			/** 打开详情 */
