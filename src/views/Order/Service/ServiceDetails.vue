@@ -85,7 +85,7 @@
 				</el-table-column>
 				<el-table-column label="状态">
 					<template slot-scope="scope">
-					<el-switch
+					<el-switch @change="rewardSwitch(scope.row)"
 					:value="scope.row.status == 1?true:false"
 					active-color="#13ce66"
 					inactive-color="#cac3c3">
@@ -1557,6 +1557,51 @@
 			// 任务奖励 历史弹窗
 			handleCloserewardHistory(){
 				this.rewardHistoryDialog = false
+			},
+			// 任务奖励开关
+			rewardSwitch(row){
+				if(row.type){
+				//有则已经开过 直接关
+				if(row.status == 1){
+				postReward({
+				condition:  row.condition,
+				fee: row.fee ,
+				rate:row.rate,
+				type:row.type,
+				status:0 ,
+				teamTypeId: row.teamTypeId,
+				}).then(res=>{
+					this.getReward()
+					this.$message.error('任务关闭成功')
+					this.rewardInputday= ''
+					this.rewardInputprice= ''
+					this.rewardInputrate= ''
+					this.rewardEditDialog = false
+				})
+				}else{
+					postReward({
+					condition:  row.condition,
+					fee: row.fee ,
+					rate:row.rate,
+					type:row.type,
+					status:1 ,
+					teamTypeId: row.teamTypeId,
+				}).then(res=>{
+					this.getReward()
+					this.$message.success('任务开启成功')
+					this.rewardInputday= ''
+					this.rewardInputprice= ''
+					this.rewardInputrate= ''
+					this.rewardEditDialog = false
+				})
+				}
+				
+				}else {
+				//没有则未填写过规则 打开设置窗
+				this.rewardRow = row
+				this.rewardEditDialog = true
+		
+				}
 			},
 			//重新发布招工
 			Republish(item){

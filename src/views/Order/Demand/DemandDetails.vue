@@ -475,6 +475,7 @@
 												<el-form-item label="工时单价" prop="unitPrice">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.unitPrice"
+															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)"
 															@input="handleUnitPrice(index,inx,types_index,teamTypes)">
 														</el-input>
 														<span style="padding-left: 20px;">元/小时</span>
@@ -498,7 +499,7 @@
 												<el-form-item label="加班费" prop="overtimeFee">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.overtimeFee"
-															oninput="value=value.replace(/^\.+|[^\d.]/g,'')">
+															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 														</el-input>
 														<span style="padding-left: 20px;">元/小时</span>
 													</div>
@@ -1117,6 +1118,10 @@
 					type_index,
 					val
 				});
+				// setTimeout(()=>{
+				// 	console.log('zhixinglema')
+				// this.handleServiceFee(index, inx, type_index, val)
+				// },500);  
 			},
 			//  方案输入单价
 			handleTeamsUniprice(index, inx, val) {
