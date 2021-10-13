@@ -4,7 +4,7 @@
     <div class="box">
       <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
-        <el-button type="primary" @click="exportTable">导出</el-button>
+        <!-- <el-button type="primary" @click="exportTable">导出</el-button> -->
       </div>
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
