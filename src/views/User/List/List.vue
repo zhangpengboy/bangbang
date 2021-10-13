@@ -442,9 +442,10 @@
 			},
 			// 导出
 			exportTable() {
+				
 				let url = '/api/user/admin/common/v1.0/exportCsv';
 				let param =
-					`?id=${this.serach}&enterpriseAuthStatus=${this.authvalue}&grades=${this.gradevalue.join(',')}&pageNum=${this.PageIndex}&PageSize=${this.PageSize}&realNameAuth=${this.reamNamevalue}&userStatus=${this.statusvalue}&userType=${this.loginvalue}`;
+					`?id=${this.serach}&enterpriseAuth=${this.authvalue}&grades=${this.gradevalue.join(',')}&realNameAuth=${this.reamNamevalue}&userStatus=${this.statusvalue}&lastUserType=${this.loginvalue}`;
 				window.open(url+param);
 			},
 
