@@ -4,7 +4,7 @@
     <div class="box">
       <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
-        <el-button type="primary" @click="exportTable">导出</el-button>
+        <!-- <el-button type="primary" @click="exportTable">导出</el-button> -->
       </div>
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
@@ -37,11 +37,11 @@
         <div class="popList">
           <div class="item flex alCen">
             <p class="tit">认证工人奖励</p>
-            <input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入认证工人奖励" v-model="jiangli" value="" />
+            <input type="text" name="" class="ipt"  :disabled="dialogtype" placeholder="请输入认证工人奖励" v-model="authAwardFee" value="" />
           </div>
           <div class="item flex alCen">
             <p class="tit">施工费用分佣</p>
-            <input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入施工费用分佣" v-model="fenyong" value="" />
+            <input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入施工费用分佣" v-model="commissionAward" value="" />
           </div>
         </div>
 
@@ -61,7 +61,7 @@
         <div class="popList">
           <div class="item flex alCen">
             <p class="tit">奖励</p>
-            <input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="yaoqingJl" value="" />
+            <input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="invitationAwardFee" value="" />
           </div>
         </div>
 
@@ -96,16 +96,31 @@
          dialogVisible:false,
          dialogVisible1:false,
          id:0,
-         jiangli:'',  //合伙人奖励
-         fenyong:'',  //合伙人分佣
-         yaoqingJl:'', //邀请奖励
+         authAwardFee:'',  //合伙人奖励
+         commissionAward:'',  //合伙人分佣
+         invitationAwardFee:'', //邀请奖励
          dialogtype:true, //编辑or查看
+		 editData:{}
 
       }
     },
     created() {
       this.loadDate();
     },
+	watch:{
+		dialogVisible(val){
+			if(!val){
+				this.authAwardFee = this.editData.authAwardFee;
+				this.commissionAward = this.editData.commissionAward;
+				
+			}
+		},
+		dialogVisible1(val){
+			if(!val){
+				this.invitationAwardFee = this.editData.invitationAwardFee
+			}
+		}
+	},
     methods: {
       loadDate(){
         this.loading = true;
@@ -116,10 +131,11 @@
           console.log('res', data)
           this.id = data.id
           this.tableData[0].status = data.partnerStatus
-          this.tableData[1].status = data.invitationStatus
-          this.yaoqingJl = data.invitationAwardFee
-          this.jiangli = data.authAwardFee
-          this.fenyong = data.commissionAward
+          this.tableData[1].status = data.invitationStatus;
+		  this.editData = data;
+          this.invitationAwardFee = data.invitationAwardFee
+          this.authAwardFee = data.authAwardFee
+          this.commissionAward = data.commissionAward
 
         })
       },
@@ -213,6 +229,8 @@
       },
       // 编辑
       edit(row){
+		  console.log(row)
+		  console.log(this.editData)
         this.dialogtype = false
         if(row.id==0){
           console.log('合伙人')
@@ -227,10 +245,14 @@
       },
       // 编辑合伙人
       editHHR(){
+		console.log();
+		if(!Boolean(Number(this.authAwardFee))){
+			return this.$message.error('请输入正确认证工人奖励')
+		}
         var params = {
           id:this.id,
-          authAwardFee:this.jiangli,
-          commissionAward:this.fenyong
+          authAwardFee:this.authAwardFee,
+          commissionAward:this.commissionAward
         }
         awardSettingupdateOne(params).then(res => {
           if(res.code==200){
@@ -248,7 +270,7 @@
       editYQHY(){
         var params = {
           id:this.id,
-          invitationAwardFee:this.yaoqingJl,
+          invitationAwardFee:this.invitationAwardFee,
         }
         awardSettingupdateOne(params).then(res => {
           if(res.code==200){

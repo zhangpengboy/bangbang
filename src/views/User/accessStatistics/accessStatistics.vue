@@ -130,13 +130,7 @@
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
-         tableData:[
-           {name:'你好'},
-           {name:'你好a'},
-           {name:'你好a'},
-           {name:'你好a'},
-           {name:'你好a'}
-         ],
+         tableData:[],
          loading:false,
          navIndex:0,
          datas:[
@@ -236,27 +230,10 @@
         if(this.endDate){
           createTimeEnd = timestamp(formatDate(this.endDate))
         }
-        console.log('导出');
-        var query = {
-          pageSize:this.PageSize,
-          pageNum:this.PageIndex,
-          createTimeBegin:createTimeBegin,
-          createTimeEnd:createTimeEnd,
-          phone:this.serach,
-          userType:this.statusvalue
-        }
-        visitListexportCsv(query).then(res => {
-          console.log(res)
-          var responseURL = res.request.responseURL;
-          window.open(responseURL,'_blank')
-        }).catch(res=>{
-          console.log(res)
-          this.$message({
-              message:'下载失败！',
-              type:'error',
-              showClose:true
-          })
-        })
+		let url = '/api/user/admin/userLoginLog/v1.0/exportCsv';
+		let param = `?pageSize=${this.PageSize}&pageNum=${this.PageIndex}&createTimeBegin=${createTimeBegin}&createTimeEnd=${createTimeEnd}&phone=${this.serach}&userType=${this.statusvalue}`
+        window.open(url+param);
+		
       },
 
       async drawLine(){
