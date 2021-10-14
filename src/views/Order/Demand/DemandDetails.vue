@@ -1193,6 +1193,7 @@
 						}
 						if (data.workTypeVal == '管理') {
 							total += data.enterDay * data.leaderFee * data.number;
+							console.log('管理',data)
 						}
 					})
 				})
@@ -1542,7 +1543,7 @@
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				} else {
-				// 纯管理 方案总费用*带班服务费百分比
+				// 纯管理 班组总费用*带班服务费百分比
 				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				}
 			},
