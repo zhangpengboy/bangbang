@@ -398,6 +398,7 @@ export default {
           if(data.realNameAuthDTO){
             this.realNameInfo = {
                // genderTxt: data.realNameAuthDTO.gender==0?'男':'女',
+			   gender:data.realNameAuthDTO.gender,
                age:data.realNameAuthDTO.age,
                nativePlace:data.realNameAuthDTO.nativePlace,
                realName:data.realNameAuthDTO.realName,
