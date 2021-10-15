@@ -757,6 +757,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'face')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.realNameInfo.realName = res.data.realName
@@ -790,6 +791,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'back')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					var data = res.data

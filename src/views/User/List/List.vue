@@ -144,7 +144,7 @@
 					<div class="item">
 						<p class="tit">身份证正反面：</p>
 						<div class="popIdCard flex alCen">
-							<el-upload class="avatar-uploader" action="123" :before-upload="beforeUpload"
+							<el-upload class="avatar-uploader" action="123"  :before-upload="beforeUpload"
 								:show-file-list="false" ref="newupload" name="multipartFile" :with-credentials='true'
 								:auto-upload="true" :on-success="upIdCard">
 								<img v-if="idCard" :src="idCard" class="avatar">
@@ -214,7 +214,7 @@
 						<div class="popIdCard flex alCen">
 
 							<el-upload name="multipartFile" class="avatar-uploader" list-type="picture-card"
-								:file-list="fileUris" :action="adminUrl" :on-success="qiyeUp" :on-remove="qiyeRemove"
+								:file-list="fileUris" :action="adminUrl" :data='{"watermarkSkip":true}' :on-success="qiyeUp" :on-remove="qiyeRemove"
 								:limit='3'>
 								<i class="el-icon-plus" />
 							</el-upload>
@@ -581,6 +581,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'face')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.rnName = res.data.realName
@@ -612,6 +613,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'back')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.rnvalidityStartTime = res.data.startDate

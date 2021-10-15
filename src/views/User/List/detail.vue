@@ -246,7 +246,7 @@
 					</div>
 					<div v-else>
 						<el-upload name="multipartFile" :action="adminUrl" list-type="picture-card"
-							:file-list="renZhengInfo.fileUris" :on-success="qiyeUpsuccess" :on-remove="qiyeRemove"
+							:file-list="renZhengInfo.fileUris" :data='{"watermarkSkip":true}' :on-success="qiyeUpsuccess" :on-remove="qiyeRemove"
 							:on-exceed="handleExceed" :limit='3'>
 							<i class="el-icon-plus"></i>
 						</el-upload>
@@ -419,7 +419,7 @@
 					<div v-else class="box-demand-title mt20">{{bizCardInfo.certificateIntro}}</div>
 					<div class="mt10 flex alCen">
 						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
-							:file-list="zhenshuPhotoList" :disabled="isEditUserInfo==false" list-type="picture-card"
+							:file-list="zhenshuPhotoList"  :disabled="isEditUserInfo==false" list-type="picture-card"
 							:on-success="handleAvatarSuccess4" :on-remove="handleRemove4">
 							<i class="el-icon-plus" />
 						</el-upload>
@@ -860,6 +860,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'face')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.realNameInfo.realName = res.data.realName
@@ -893,6 +894,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'back')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					var data = res.data

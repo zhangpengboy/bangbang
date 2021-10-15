@@ -251,6 +251,7 @@
             <el-upload
               name="multipartFile"
               :action="adminUrl"
+			  :data='{"watermarkSkip":true}'
               list-type="picture-card"
               :file-list="renZhengInfo.fileUris"
               :on-success="qiyeUpsuccess"
@@ -552,6 +553,7 @@ export default {
        let data = new FormData()
        data.append('multipartFile', file)
        data.append('side', 'face')
+	   data.append('watermarkSkip',true)	 
        uploadIdCardByAli(data).then(res => {
          console.log(res)
         this.realNameInfo.realName = res.data.realName
@@ -586,6 +588,7 @@ export default {
        let data = new FormData()
        data.append('multipartFile', file)
        data.append('side', 'back')
+	   data.append('watermarkSkip',true)
        uploadIdCardByAli(data).then(res => {
          console.log(res)
          this.realNameInfo.validityEndTime = timestamp(res.data.startDate)

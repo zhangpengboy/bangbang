@@ -186,7 +186,7 @@
 						<p class="tit">资料上传：</p>
 						<div class="popIdCard flex alCen">
 							<el-upload name="multipartFile" class="avatar-uploader" list-type="picture-card"
-								:action="adminUrl" :file-list="fileUris" :on-success="qiyeUp" :on-remove="qiyeRemove"
+								:action="adminUrl" :data='{"watermarkSkip":true}' :file-list="fileUris" :on-success="qiyeUp" :on-remove="qiyeRemove"
 								:limit='3'>
 								<i class="el-icon-plus" />
 							</el-upload>
@@ -464,6 +464,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'face')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.rnName = res.data.realName
@@ -495,6 +496,7 @@
 				let data = new FormData()
 				data.append('multipartFile', file)
 				data.append('side', 'back')
+				data.append('watermarkSkip',true)
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.rnvalidityStartTime = res.data.startDate
