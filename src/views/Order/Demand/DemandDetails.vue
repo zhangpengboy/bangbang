@@ -68,7 +68,7 @@
 
 								<div class="demand-service-upload flex fvertical">
 
-									<div v-for="(item,index) in basicForm.images" class="demand-service-upload-img"
+									<div v-for="(item,index) in basicForm.images" :key="index" class="demand-service-upload-img"
 										@mouseover="handleMouseoverImg(item,index)"
 										@mouseout="handleMouseoutImg(item,index)">
 										<el-image :src="item">
@@ -117,7 +117,7 @@
 
 							<el-form-item label="打卡范围">
 								<el-select v-model="basicForm.scope" placeholder="请选择">
-									<el-option v-for="item in scopeList" :key="item.radius" :label="item.radius"
+									<el-option v-for="(item,i) in scopeList" :key="i" :label="item.radius"
 										:value="item.radius">
 									</el-option>
 								</el-select>
@@ -265,7 +265,7 @@
 								<!-- 工种列表数据 -->
 								<div class="demand-service-plan-box-list">
 									<div class="demand-service-plan-box-list-item"
-										v-for="(teamTypes,types_index) in teams.teamTypes">
+										v-for="(teamTypes,types_index) in teams.teamTypes" :key="types_index">
 
 										<el-form :model="teamTypes" :rules="teamTypesRules" ref="typeRuleForm"
 											label-width="110px">
@@ -449,7 +449,7 @@
 												</el-form-item>
 												<el-form-item label="带班服务费" prop="leaderFee">
 													<div class="flex">
-														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
 														</el-input>
 														<span style="padding:0 10px;">%</span>
 														<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"
@@ -507,7 +507,7 @@
 												<el-form-item label="带班服务费" prop="leaderFee"
 													v-if="teamTypes.tag == '班组长'">
 													<div class="flex">
-														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
 														</el-input>
 														<span style="padding:0 10px;">%</span>
 														<el-input style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"
@@ -1118,10 +1118,6 @@
 					type_index,
 					val
 				});
-				// setTimeout(()=>{
-				// 	console.log('zhixinglema')
-				// this.handleServiceFee(index, inx, type_index, val)
-				// },500);  
 			},
 			//  方案输入单价
 			handleTeamsUniprice(index, inx, val) {
@@ -1143,25 +1139,29 @@
 						.number) {
 						total += teamTypes[i].dailyFee * teamTypes[i].enterDay * teamTypes[i].number;
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 					if (teamTypes[i].workTypeVal == '计件') {
 						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.schemes[data.index].teams[data
 							.inx].unitPrice
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 
 					if (teamTypes[i].workTypeVal == '管理') {
-						total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
 
 				this.schemes[data.index].teams[data.inx].totalNum = totalNumber;
 				this.schemes[data.index].teams[data.inx].totalFee = total;
+				this.handleServiceFee(data.index,data.inx,data.type_index,data.val)
 				this.getTotal(data.index);
 			},
 			// 计算总费用
@@ -1177,23 +1177,24 @@
 				teams.forEach((item, inx) => {
 					// console.log(item.teamTypes)
 					item.teamTypes.forEach((data, inxx) => {
-						console.log(data);
 						if (data.workTypeVal == '计时' && data.dailyFee && data.enterDay && data
 							.number) {
 							total += data.dailyFee * data.enterDay * data.number;
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								// total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workTypeVal == '计件') {
 							total += data.number * data.personalQuantity * item.unitPrice
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								// total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workTypeVal == '管理') {
-							total += data.enterDay * data.leaderFee * data.number;
-							console.log('管理',data)
+							// total += data.enterDay * data.leaderFee * data.number;
+							total += data.leaderFee?data.leaderFee:0
 						}
 					})
 				})
@@ -1253,6 +1254,7 @@
 							unitPrice: '', //单价 
 							number: "", // 人数
 							leaderFee: "", // 带班费
+							leaderRate:'',// 带班费%
 							description: "", // 描述
 							overtimeFee: "", // 加班费
 							dailyFee: "", //  每日收入
@@ -1536,16 +1538,24 @@
 			},
 			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
 			handleServiceFee(index, inx, types_index, val){
-				if(val.workType == 1 ){
+				// 定位到对应的班组索引循环计算班组长的服务费
+				this.schemes[index].teams[inx].teamTypes.forEach(item => {
+				item.leaderFee = 0
+				if(item.workType == 1 ){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
-				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				}else if(val.workType == 2){
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*(item.leaderRate?item.leaderRate:0/100)
+				}else if(item.workType == 2){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
-				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*(item.leaderRate?item.leaderRate:0/100)
 				} else {
 				// 纯管理 班组总费用*带班服务费百分比
-				this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = this.schemes[index].teams[inx].totalFee*(item.leaderRate?item.leaderRate:0/100)
 				}
+						})
+				
 			},
 			/** 当用户工种工期输入时 */
 			handleDuration(index, inx, types_index, val) {

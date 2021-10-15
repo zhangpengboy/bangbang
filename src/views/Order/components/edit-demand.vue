@@ -98,7 +98,7 @@
 
 				<el-form-item label="打卡范围">
 					<el-select :disabled="isShowEdit" v-model="editFrom.scope" placeholder="请选择">
-						<el-option v-for="item in scopeList" :key="item.radius" :label="item.radius"
+						<el-option v-for="(item,i) in scopeList" :key="i" :label="item.radius"
 							:value="item.radius">
 						</el-option>
 					</el-select>
@@ -347,7 +347,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 										v-if="teamTypes.tag == '班组长'">
 										<div class="flex">
-											<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+											<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
 											<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -428,7 +428,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 									v-if="teamTypes.tag == '班组长'">
 									<div class="flex">
-										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
 										</el-input>
 										<span style="padding:0 10px;">%</span>
 										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -487,7 +487,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 									v-if="teamTypes.tag == '班组长'">
 									<div class="flex">
-										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 150px;" v-model="teamTypes.leaderRate">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
 										</el-input>
 										<span style="padding:0 10px;">%</span>
 										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -1051,8 +1051,9 @@
 					description: "", // 描述
 					overtimeFee: "", // 加班费
 					dailyFee: "", //  每日收入
-					dailyHours: "", // 每日工时
+					dailyHours: '', // 每日工时
 				}
+				// this.timeFn(this.editFrom.schemes[index].teams[inx].workStartTime, this.editFrom.schemes[index].teams[inx].workEndTime)
 				this.editFrom.schemes[index].teams[inx].teamTypes.push(param);
 			},
 			// 删除组
@@ -1200,6 +1201,10 @@
 			//  方案输入单价
 			handleTeamsUniprice(index, inx, val) {
 				val.unitPrice = val.unitPrice.replace(/[^0-9.]/g, '');
+				//编辑时修改班组计件单价 循环赋值到对应工种unitPrice中
+				val.teamTypes.forEach(item=>{
+					item.unitPrice = val.unitPrice
+				})
 				this.getGroupTotal({
 					index,
 					inx,

@@ -88,7 +88,7 @@
 
 				<el-form-item label="打卡范围">
 					<el-select :disabled="true" v-model="editFrom.scope" placeholder="请选择">
-						<el-option v-for="item in scopeList" :key="item.radius" :label="item.radius"
+						<el-option v-for="(item,i) in scopeList" :key="i" :label="item.radius"
 							:value="item.radius">
 						</el-option>
 					</el-select>
