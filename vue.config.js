@@ -11,54 +11,49 @@ const name = defaultSettings.title || '系统后台' // page title
 const port = process.env.port || process.env.npm_config_port || 9527 // dev port
 
 module.exports = {
-	// publicPath: process.env.NODE_ENV === 'production' ? '/vue-admin/' : '/',
-	publicPath: '/',
-	outputDir: 'build',
-	assetsDir: 'static',
-	lintOnSave: false /* process.env.NODE_ENV === 'development' */,
-	productionSourceMap: false,
-	devServer: {
-		port: '9527',
-		open: false,
-		overlay: {
-			warnings: false,
-			errors: true
-		},
-		proxy: { //配置跨域
-			'/api': {
-				// target:'http://192.9.200.208:8070/',
-				// target:'http://183.60.156.101:22880/',
-				// target: 'http://183.60.156.101:22778/', //开发环境
-				// target:'http://183.60.156.101:22880',  //测试环境
-				target: process.env.VUE_APP_BASE_API,
-				// target:'http://183.60.156.101:22880',  //测试环境
-				// target: process.env.VUE_APP_BASE_API,
-				// target:'http://183.60.156.101:22880',
-				// target:"http://183.60.156.101:22780/",
-				// ws: true,
-				changeOrigin: true, //允许跨域
-				pathRewrite: {
-					'^/api': '' // 这个意思就是以api开头的，定向到哪里, 如果你的后边还有路径的话， 会自动拼接上
-				}
-			}
-		}
-	},
-	configureWebpack: {
-		name: name,
-		resolve: {
-			alias: {
-				'@': resolve('src')
-			}
-		}
-	},
-	chainWebpack(config) {
-
-		config.plugin('preload').tap(() => [{
-			rel: 'preload',
-
-			fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
-			include: 'initial'
-		}])
+  // publicPath: process.env.NODE_ENV === 'production' ? '/vue-admin/' : '/',
+  publicPath: '/',
+  outputDir: 'build',
+  assetsDir: 'static',
+  lintOnSave: false /* process.env.NODE_ENV === 'development' */,
+  productionSourceMap: false,
+  devServer: {
+    port: '9527',
+    open: false,
+    overlay: {
+      warnings: false,
+      errors: true
+    },
+    proxy: { // 配置跨域
+      '/api': {
+        // target:'http://192.9.200.208:8070/',
+        // target:'http://183.60.156.101:22880/',
+        // target: 'http://183.60.156.101:22778/', //开发环境
+        target: 'http://183.60.156.101:22880', // 测试环境
+        // target: process.env.VUE_APP_BASE_API,
+        // target:'http://183.60.156.101:22880',  //测试环境
+        // target: process.env.VUE_APP_BASE_API,
+        // target:'http://183.60.156.101:22880',
+        // target:"http://183.60.156.101:22780/",
+        // ws: true,
+        changeOrigin: true, // 允许跨域
+        pathRewrite: {
+          '^/api': '' // 这个意思就是以api开头的，定向到哪里, 如果你的后边还有路径的话， 会自动拼接上
+        }
+      }
+    }
+  },
+  configureWebpack: {
+    name: name,
+    resolve: {
+      alias: {
+        '@': resolve('src')
+      }
+    }
+  },
+  chainWebpack(config) {
+    config.plugin('preload').tap(() => [{
+      rel: 'preload',
 
       fileBlacklist: [/\.map$/, /hot-update\.js$/, /runtime\..*\.js$/],
       include: 'initial'
