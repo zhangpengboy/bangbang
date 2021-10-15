@@ -81,7 +81,7 @@
 									</div>
 
 									<el-upload class="avatar-uploader flex" v-if="basicForm.images.length < 4"
-										action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
+										action="/api/commons/file/admin/v1/upload/public" :data='{"watermarkSkip":true}' list-type="picture-card"
 										name="multipartFile" :on-remove="handleRemoveImg" :on-progress="handleProgress"
 										:on-preview="handlePictureCardPreview" :on-error="handleUploadError"
 										:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="4"
@@ -1544,15 +1544,15 @@
 				if(item.workType == 1 ){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*(item.leaderRate?item.leaderRate:0/100)
+				item.leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
 				}else if(item.workType == 2){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*(item.leaderRate?item.leaderRate:0/100)
+				item.leaderFee = (this.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*((item.leaderRate?item.leaderRate:0)/100)
 				} else {
 				// 纯管理 班组总费用*带班服务费百分比
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = this.schemes[index].teams[inx].totalFee*(item.leaderRate?item.leaderRate:0/100)
+				item.leaderFee = this.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
 				}
 						})
 				
