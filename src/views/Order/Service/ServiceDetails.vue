@@ -724,14 +724,14 @@
 				</div>
 				</div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputday" type="number" placeholder="请输入天数"></el-input>天</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputday" type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入天数"></el-input>天</div></div>
 			<div v-if="rewardValue == 1">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputprice" type="number" placeholder="请输入奖励"></el-input>元</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputprice" type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入奖励"></el-input>元</div></div>
 			</div>
 			<div v-if="rewardValue == 2">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后，获得被分享工人验收产值的百分比金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputrate " type="number" placeholder="请输入奖励"></el-input>%</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputrate " type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入奖励"></el-input>%</div></div>
 			</div>
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="rewardEditDialog = false">取 消</el-button>

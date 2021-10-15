@@ -64,7 +64,7 @@
 							</div>
 						</div>
 						<el-upload v-if="!isShowEdit && editFrom.images.length < 4" class="avatar-uploader flex"
-							action="/api/commons/file/admin/v1/upload/public" list-type="picture-card"
+							action="/api/commons/file/admin/v1/upload/public" :data='{"watermarkSkip":true}' list-type="picture-card"
 							name="multipartFile" :show-file-list="false" :on-progress="handleProgress"
 							:on-remove="handleRemoveImg" :on-preview="handlePictureCardPreview"
 							:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="limit"
@@ -347,7 +347,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 										v-if="teamTypes.tag == '班组长'">
 										<div class="flex">
-											<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
+											<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" :disabled="isShowEdit" v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
 											<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -428,7 +428,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 									v-if="teamTypes.tag == '班组长'">
 									<div class="flex">
-										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" :disabled="isShowEdit" v-model="teamTypes.leaderRate">
 										</el-input>
 										<span style="padding:0 10px;">%</span>
 										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -487,7 +487,7 @@
 									<el-form-item label="带班服务费" prop="leaderFee"
 									v-if="teamTypes.tag == '班组长'">
 									<div class="flex">
-										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
+										<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" :disabled="isShowEdit" v-model="teamTypes.leaderRate">
 										</el-input>
 										<span style="padding:0 10px;">%</span>
 										<el-input v-model="teamTypes.leaderFee" style="width: 100px;" class="demand-service-plan-box-item-second" :disabled="true"></el-input>元
@@ -697,9 +697,10 @@
 		methods: {
 			// 计算工时单价
 			handleUnitPrice(index, inx, type_index, val) {
-				let dailyFee = (this.editFrom.schemes[index].teams[inx].workTimelen - this.editFrom.schemes[index].teams[
-						inx].restTimelen) *
-					val.unitPrice
+				// let dailyFee = (this.editFrom.schemes[index].teams[inx].workTimelen - this.editFrom.schemes[index].teams[
+				// 		inx].restTimelen) *
+				// 	val.unitPrice
+				let dailyFee = ((val.dailyHours) * val.unitPrice).toFixed(2)
 				val.dailyFee = dailyFee;
 				this.getGroupTotal({
 					index,
@@ -1051,7 +1052,7 @@
 					description: "", // 描述
 					overtimeFee: "", // 加班费
 					dailyFee: "", //  每日收入
-					dailyHours: '', // 每日工时
+					dailyHours: this.timeFn(this.editFrom.schemes[index].teams[inx].workStartTime, this.editFrom.schemes[index].teams[inx].workEndTime)-1, // 每日工时
 				}
 				// this.timeFn(this.editFrom.schemes[index].teams[inx].workStartTime, this.editFrom.schemes[index].teams[inx].workEndTime)
 				this.editFrom.schemes[index].teams[inx].teamTypes.push(param);
@@ -1222,7 +1223,8 @@
 						.number) {
 						total += teamTypes[i].dailyFee * teamTypes[i].enterDay * teamTypes[i].number;
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 					if (teamTypes[i].workType == 1) {
@@ -1230,18 +1232,20 @@
 							.teams[data
 								.inx].unitPrice
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 
 					if (teamTypes[i].workType == 3) {
-						total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
 				this.editFrom.schemes[data.index].teams[data.inx].totalNum = totalNumber
 				this.editFrom.schemes[data.index].teams[data.inx].totalFee = total;
-				// console.log('this.editFrom.schemes[data.index].teams[data.inx]',this.editFrom.schemes[data.index].teams[data.inx])
+				this.handleServiceFee(data.index,data.inx,data.type_index,data.val)
 				this.getTotal(data.index);
 			},
 			// 计算总的社工服务费
@@ -1256,17 +1260,20 @@
 							.number) {
 							total += data.dailyFee * data.enterDay * data.number;
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								// total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 1) {
 							total += data.number * data.personalQuantity * item.unitPrice
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								// total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 3) {
-							total += data.enterDay * data.leaderFee * data.number;
+							// total += data.enterDay * data.leaderFee * data.number;
+							total += data.leaderFee?data.leaderFee:0
 						}
 					})
 				})
@@ -1282,6 +1289,27 @@
 					this.editFrom
 					.schemes[index].serviceFeeRateNum)
 				this.$forceUpdate()
+			},
+			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
+			handleServiceFee(index, inx, types_index, val){
+				// 定位到对应的班组索引循环计算班组长的服务费
+				this.editFrom.schemes[index].teams[inx].teamTypes.forEach(item => {
+				item.leaderFee = 0
+				if(item.workType == 1 ){
+				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
+				}else if(item.workType == 2){
+				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*((item.leaderRate?item.leaderRate:0)/100)
+				} else {
+				// 纯管理 班组总费用*带班服务费百分比
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = this.editFrom.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
+				}
+						})
+				
 			},
 			// 删除方案
 			handleDeleteProject(index) {
@@ -1520,8 +1548,8 @@
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
-							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
-								.teams[j].restTimelen
+							// schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
+							// 	.teams[j].restTimelen
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
