@@ -26,7 +26,7 @@
 				<el-form-item label="公司名称" class="demand-service-info-item" prop="title">
 					<el-input :disabled="isShowEdit" v-model="editFrom.enterpriseName" placeholder="请输入公司名称" minlength="2" maxlength="30">
 					</el-input>
-					<span>已输入{{editFrom.enterpriseName.length}}/30</span>
+					<span>已输入{{editFrom.enterpriseName?editFrom.enterpriseName.length:'0'}}/30</span>
 				</el-form-item>
 				<el-form-item label="联系地址" class="demand-service-info-item" prop="title">
 					<el-input :disabled="isShowEdit" v-model="editFrom.enterpriseAddress " placeholder="请输入联系地址">
@@ -269,7 +269,7 @@
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-select :disabled="isShowEdit" v-model="teamTypes.tag" placeholder="请选择"
 												@change="handleTag(index,inx,types_index,teamTypes)">
-												<el-option v-for="item in tagList" :key="item.value" :label="item.label"
+												<el-option v-for="(item) in tagList" :key="item.value" :label="item.label"
 													:value="item.label">
 												</el-option>
 											</el-select>
@@ -1046,7 +1046,7 @@
 					enterEndTime: "", // 工种退场时间
 					enterDay: "", //工种工期
 					personalQuantity: "", // 个人工程量
-					unitPrice: '', //单价 
+					unitPrice: this.editFrom.schemes[index].teams[inx].unitPrice, //单价 
 					number: "", // 人数
 					leaderFee: "", // 带班费
 					description: "", // 描述
@@ -1187,6 +1187,8 @@
 					}
 				}
 				this.editFrom.schemes[index].teams[inx].totalUnit = total;
+				// console.log('计算班组工程量',allToal);
+
 				for (let i = 0; i < this.editFrom.schemes[index].teams.length; i++) {
 					allToal += this.editFrom.schemes[index].teams[i].totalUnit;
 				}
@@ -1293,12 +1295,14 @@
 			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
 			handleServiceFee(index, inx, types_index, val){
 				// 定位到对应的班组索引循环计算班组长的服务费
+				if(this.editFrom.schemes[index].teams[inx].teamTypes.length>0){
 				this.editFrom.schemes[index].teams[inx].teamTypes.forEach(item => {
 				item.leaderFee = 0
-				if(item.workType == 1 ){
+				if(item.tag == '班组长'){
+				if( item.workType == 1 ){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
+				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + this.editFrom.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
 				}else if(item.workType == 2){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
@@ -1308,7 +1312,9 @@
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				item.leaderFee = this.editFrom.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
 				}
+				}
 						})
+				}
 				
 			},
 			// 删除方案
