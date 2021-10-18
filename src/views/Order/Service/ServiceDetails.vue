@@ -724,14 +724,14 @@
 				</div>
 				</div>
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 条件：</p> <div class="rewardEditDialog-inp">请设置入场达标天数</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputday" type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入天数"></el-input>天</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" maxlength="3"  max="365" min="1" v-model="rewardInputday" type="text" oninput="value=value.replace(/\D/g,'')"  placeholder="请输入天数"></el-input>天</div></div>
 			<div v-if="rewardValue == 1">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后一次性奖励金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputprice" type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入奖励"></el-input>元</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px"  maxlength="3"  max="100" min="1" v-model="rewardInputprice" type="text" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入奖励"></el-input>元</div></div>
 			</div>
 			<div v-if="rewardValue == 2">
 			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"> 奖励：</p> <div class="rewardEditDialog-inp">达成奖励条件后，获得被分享工人验收产值的百分比金额</div></div>
-			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px" v-model="rewardInputrate " type="number" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" placeholder="请输入奖励"></el-input>%</div></div>
+			<div class="InvoiceDetailDialog"> <p class="InvoiceDetailDialog-txt"></p> <div class="rewardEditDialog-right"><el-input style="width:80%;margin-right:20px"  :maxlength="3" :max="100" :min="1" v-model="rewardInputrate " type="text" @input="percent" placeholder="请输入奖励"></el-input>%</div></div>
 			</div>
 			<span slot="footer" class="dialog-footer ">
 				<el-button @click="rewardEditDialog = false">取 消</el-button>
@@ -1028,6 +1028,7 @@
 				rewardTableData:[], // 任务列表数据
 				rewardKey:'',//数据更新组件不刷新 
 				rewardEditDialog:false, // 任务奖励编辑弹窗
+				rewardRow:{},//当前行数据
 				rewardInput:'',// 任务编辑
 				rewardValue:'',// 任务编辑status
 				rewardInputday:'', // 任务编辑入场天数
@@ -1042,7 +1043,6 @@
 				type:'',//类型
 				keywords:''//模糊搜索
 				},
-				rewardRow:{},//当前行数据
 				rewardHistoryTableData:[], //任务历史
 				rewardHistoryDialog:false // 任务历史弹窗
 			}
@@ -1540,6 +1540,11 @@
 			handelSeracReward(){
 			this.getReward()
 			},
+			percent(e){
+				if(e>100){
+					this.rewardInputrate = 100
+				}
+			},
 			// 任务奖励重置
 			handleResetReward(){
 				this.rewardPage.status = ""
@@ -1572,7 +1577,7 @@
 				teamTypeId: row.teamTypeId,
 				}).then(res=>{
 					this.getReward()
-					this.$message.error('任务关闭成功')
+					this.$message.success('任务关闭成功')
 					this.rewardInputday= ''
 					this.rewardInputprice= ''
 					this.rewardInputrate= ''
