@@ -321,7 +321,7 @@
 					<div class="mt10 flex alCen">
 						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
 							:disabled="isEditUserInfo==false" list-type="picture-card" :file-list="workPhotoList"
-							:on-success="workPhotoSuccess" :on-remove="handleRemove3" :limit='6'
+							:on-success="workPhotoSuccess" :on-preview="handlePictureCardPreview" :on-remove="handleRemove3" :limit='6'
 							:on-exceed="handleExceed">
 							<i class="el-icon-plus" />
 						</el-upload>
@@ -337,13 +337,11 @@
 					<div class="mt10 flex alCen">
 						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
 							:file-list="zhenshuPhotoList" :disabled="isEditUserInfo==false" list-type="picture-card"
-							:on-success="handleAvatarSuccess4" :on-remove="handleRemove4" :limit='6'
+							:on-success="handleAvatarSuccess4" :on-preview="handlePictureCardPreview" :on-remove="handleRemove4" :limit='6'
 							:on-exceed="handleExceed">
 							<i class="el-icon-plus" />
 						</el-upload>
-						<el-dialog :visible.sync="dialogVisible4">
-							<img width="100%" :src="imageUr4" alt="">
-						</el-dialog>
+					
 					</div>
 
 				</el-row>
@@ -497,6 +495,12 @@
 			this.loadBiref();
 		},
 		methods: {
+			// 点击图片放大
+			handlePictureCardPreview(file){
+				console.log(file)
+				this.dialogVisible3 = true;
+				this.imageUr3 = file.url
+			},
 			// 获取工种
 			loadGongZh() {
 				var params = {}
@@ -633,7 +637,8 @@
 							obj.name = 'img' + i
 							imgdata2[i] = obj
 						}
-						this.certificateUrl = imgdata2
+						this.zhenshuPhotoList = imgdata2
+						console.log(imgdata2,'666666666666666666')
 					}
 
 				})
@@ -761,7 +766,7 @@
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.realNameInfo.realName = res.data.realName
-					this.realNameInfo.gender = res.data.gender
+					this.realNameInfo.gender = this.getGenderoptions(res.data.gender)
 					this.realNameInfo.nation = res.data.nation
 					this.realNameInfo.age = res.data.age
 					this.realNameInfo.idNo = res.data.idNo
@@ -769,6 +774,14 @@
 					this.getIdUrl(1, res.data.idCardUri)
 				})
 				return false
+			},
+			// 获取性别类型
+			getGenderoptions(name){
+				 for(let i = 0 ; i < this.genderoptions.length;i++){
+					 if(this.genderoptions[i].labelName == name){
+						 return this.genderoptions[i].id;
+					 }
+				 }
 			},
 			// 解析身份证照片
 			getIdUrl(type, url) {

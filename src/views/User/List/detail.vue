@@ -112,11 +112,11 @@
 								<input class="desc flex1 col666" type="" name="" :disabled="isEditShM"
 									v-model="realNameInfo.age" />
 							</div>
-							<div class="item flex">
+						<!-- 	<div class="item flex">
 								<p class="backgroud tit">籍贯</p>
 								<input class="desc flex1 col666" type="" name="" :disabled="isEditShM"
 									v-model="realNameInfo.nativePlace" />
-							</div>
+							</div> -->
 						</div>
 					</el-col>
 					<el-col :span="12">
@@ -136,11 +136,11 @@
 								<input class="desc flex1 col666" type="" name="" :disabled="isEditShM"
 									v-model="realNameInfo.idNo" />
 							</div>
-							<div class="item flex">
+						<!-- 	<div class="item flex">
 								<p class="backgroud tit">户籍地</p>
 								<input class="desc flex1 col666" type="" name="" :disabled="isEditShM"
 									v-model="realNameInfo.householdRegister" />
-							</div>
+							</div> -->
 						</div>
 					</el-col>
 				</el-row>
@@ -811,12 +811,14 @@
 							message: '身份证号不能为空',
 							type: 'warning'
 						});
-					} else if (this.realNameInfo.householdRegister == '') {
-						this.$message({
-							message: '户籍地不能为空',
-							type: 'warning'
-						});
-					} else {
+					}
+					//  else if (this.realNameInfo.householdRegister == '') {
+					// 	this.$message({
+					// 		message: '户籍地不能为空',
+					// 		type: 'warning'
+					// 	});
+					// }
+					 else {
 						var params = {
 							age: this.realNameInfo.age,
 							gender: this.realNameInfo.gender,
@@ -831,6 +833,8 @@
 							validityEndTime: this.realNameInfo.validityEndTime,
 							validityStartTime: this.realNameInfo.validityEndTime
 						}
+						console.log(params);
+						// return;
 						realNameAuth(params).then(res => {
 							var data = res.data
 							console.log(res)
@@ -864,7 +868,7 @@
 				uploadIdCardByAli(data).then(res => {
 					console.log(res)
 					this.realNameInfo.realName = res.data.realName
-					this.realNameInfo.gender = res.data.gender
+					this.realNameInfo.gender = this.getGenderoptions(res.data.gender)
 					this.realNameInfo.nation = res.data.nation
 					this.realNameInfo.age = res.data.age
 					this.realNameInfo.idNo = res.data.idNo
@@ -872,6 +876,14 @@
 					this.getIdUrl(1, res.data.idCardUri)
 				})
 				return false
+			},
+			// 获取性别类型
+			getGenderoptions(name){
+				 for(let i = 0 ; i < this.genderoptions.length;i++){
+					 if(this.genderoptions[i].labelName == name){
+						 return this.genderoptions[i].id;
+					 }
+				 }
 			},
 			// 解析身份证照片
 			getIdUrl(type, url) {
