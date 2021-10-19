@@ -744,8 +744,16 @@
 				let stratTime = Date.parse(val.workTimeList[0]);
 				let endTime = Date.parse(val.workTimeList[1]);
 				this.editFrom.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
+				// 上班时间改变 循环赋值
+				this.editFrom.schemes[index].teams[inx].teamTypes.forEach(item=>{
+					item.dailyHours = this.editFrom.schemes[index].teams[inx].workTimelen - 1 
+				})
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
+				if(!val.restTimelen){
+				val.restTimelen = this.timeFn(this.editFrom.schemes[index].teams[inx].restStartTime, this.editFrom.schemes[index].teams[inx].restEndTime);
+				}
 				let timeLen = val.workTimelen - val.restTimelen;
+				console.log(val.workTimelen , val.restTimelen)
 				this.getCalculationUnitPrice(timeLen, teamTypes);
 				this.$forceUpdate();
 			},
