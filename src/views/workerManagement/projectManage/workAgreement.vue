@@ -15,7 +15,7 @@
       <Table :data="tableData" :columns="columns" :height="clientHeight+'px'">
         <template slot="status">
           <el-table-column label="状态">
-            <template slot-scope="{row}">{{row.status}}</template>
+            <template slot-scope="{row}"><span :style="{color: row.status === 1 ? '' : '#f00'}">{{row.status === 1 ? '生效中' : '已到期'}}</span></template>
           </el-table-column>
         </template>
         <template slot="handle">
