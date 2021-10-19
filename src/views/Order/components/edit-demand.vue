@@ -753,8 +753,8 @@
 				val.restTimelen = this.timeFn(this.editFrom.schemes[index].teams[inx].restStartTime, this.editFrom.schemes[index].teams[inx].restEndTime);
 				}
 				let timeLen = val.workTimelen - val.restTimelen;
-				console.log(val.workTimelen , val.restTimelen)
 				this.getCalculationUnitPrice(timeLen, teamTypes);
+				this.getGroupTotal({index,inx})
 				this.$forceUpdate();
 			},
 			// 计算工时单价
