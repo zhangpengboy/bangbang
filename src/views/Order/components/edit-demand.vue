@@ -1224,30 +1224,35 @@
 					if (teamTypes[i].workType == 2 && teamTypes[i].dailyFee && teamTypes[i].enterDay && teamTypes[i]
 						.number) {
 						total += teamTypes[i].dailyFee * teamTypes[i].enterDay * teamTypes[i].number;
-						if (teamTypes[i].tag == '班组长') {
+						// if (teamTypes[i].tag == '班组长') {
 							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
-							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
-						}
+							// total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
+						// }
 					}
 					if (teamTypes[i].workType == 1) {
 						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.editFrom.schemes[data.index]
-							.teams[data
-								.inx].unitPrice
-						if (teamTypes[i].tag == '班组长') {
+							.teams[data.inx].unitPrice
+						// if (teamTypes[i].tag == '班组长') {
 							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
-							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
-						}
+							// total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
+						// }
 					}
 
 					if (teamTypes[i].workType == 3) {
 						// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
-						total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
+						// total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
+				// 班组总人数
 				this.editFrom.schemes[data.index].teams[data.inx].totalNum = totalNumber
+				console.log('11班组总人数',this.editFrom.schemes[data.index].teams[data.inx].totalNum)
+				// 班组总费用
 				this.editFrom.schemes[data.index].teams[data.inx].totalFee = total;
+				console.log('班组总费用',this.editFrom.schemes[data.index].teams[data.inx].totalFee)
+				// 计算班组中的班组长服务费
 				this.handleServiceFee(data.index,data.inx,data.type_index,data.val)
+				// 计算方案总费用
 				this.getTotal(data.index);
 			},
 			// 计算总的社工服务费
@@ -1263,19 +1268,19 @@
 							total += data.dailyFee * data.enterDay * data.number;
 							if (data.tag == '班组长') {
 								// total += data.enterDay * data.leaderFee * data.number;
-								total += data.leaderFee?data.leaderFee:0
+								// total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 1) {
 							total += data.number * data.personalQuantity * item.unitPrice
 							if (data.tag == '班组长') {
 								// total += data.enterDay * data.leaderFee * data.number;
-								total += data.leaderFee?data.leaderFee:0
+								// total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 3) {
 							// total += data.enterDay * data.leaderFee * data.number;
-							total += data.leaderFee?data.leaderFee:0
+							// total += data.leaderFee?data.leaderFee:0
 						}
 					})
 				})
@@ -1295,26 +1300,10 @@
 			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
 			handleServiceFee(index, inx, types_index, val){
 				// 定位到对应的班组索引循环计算班组长的服务费
-				if(this.editFrom.schemes[index].teams[inx].teamTypes.length>0){
 				this.editFrom.schemes[index].teams[inx].teamTypes.forEach(item => {
 				item.leaderFee = 0
-				if(item.tag == '班组长'){
-				if( item.workType == 1 ){
-				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
-				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + this.editFrom.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
-				}else if(item.workType == 2){
-				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
-				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*((item.leaderRate?item.leaderRate:0)/100)
-				} else {
-				// 纯管理 班组总费用*带班服务费百分比
-				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				item.leaderFee = this.editFrom.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
-				}
-				}
-						})
-				}
+				})
 				
 			},
 			// 删除方案
