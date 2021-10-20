@@ -2,6 +2,7 @@
     <el-table v-bind="$attrs" :stripe="stripe" :border="border" style="width: 100%">
         <template v-for="item in columns">
             <el-table-column
+                :key="item.prop"
                 :type="item.type"
                 :width="item.width"
                 v-if="item.type === 'selection'"
@@ -11,7 +12,7 @@
                 :name="item.slot"></slot>
             <el-table-column
             v-if="(item.type !== 'selection')&&(!item.slot)"
-                :key="item.prop"
+                :key="item.prop + uid()"
                 :label="item.label" 
                 :prop="item.prop" 
                 :type="item.type"
@@ -40,6 +41,9 @@ export default {
         }
     },
     methods: {
+        uid () {
+            return Math.random().toString().slice(2)
+        }
     }
 }
 </script>

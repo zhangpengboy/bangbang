@@ -19,7 +19,7 @@
           </el-table-column>
         </template>
         <template slot="handle">
-          <el-table-column label="状态">
+          <el-table-column label="操作">
             <template slot-scope="{row}">
               <el-button type="text">查看协议</el-button>
               <el-button type="text">下载</el-button>
