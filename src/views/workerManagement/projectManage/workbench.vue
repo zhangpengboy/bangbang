@@ -37,7 +37,7 @@
     </div>
     <!-- 消息中心 -->
     <div v-if="tabPosition == 'xxzx'" class="demand-service">
-      <workIndex />
+      <msgCenter />
 
     </div>
 
@@ -52,12 +52,15 @@
   import workProPeople from '../component/workProPeople.vue'
   import workSignin from '../component/workSignin.vue'
   import workYsgl from '../component/workYsgl.vue'
+import msgCenter from '../component/msgCenter.vue'
+
   export default {
     components: {
       workIndex,
       workProPeople,
       workSignin,
-      workYsgl
+      workYsgl,
+      msgCenter
     },
     data() {
       return {
