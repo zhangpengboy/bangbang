@@ -530,6 +530,21 @@ export const constantRoutes = [
 			meta: {
 				title: '合伙人提现'
 			}
+		},{
+			path:"partnerProfit",
+			component: () => import('@/views/Finance/PartnerProfit'),
+			name: 'partnerProfit',
+			meta: {
+				title: '合伙人分润审核列表'
+			}
+		},{
+			path:"partnerProfitDetalis",
+			component: () => import('@/views/Finance/PartnerProfitDetalis'),
+			name: 'partnerProfitDetalis',
+			hidden: true,
+			meta: {
+				title: '核对详情'
+			}
 		}]
 	}, {
 		path: '/system',
@@ -1001,6 +1016,13 @@ export const asyncRoutes = [{
 			name: 'partnerCash',
 			meta: {
 				title: '合伙人提现'
+			}
+		},{
+			path:"partnerProfit",
+			component: () => import('@/views/Finance/PartnerProfit'),
+			name: 'partnerProfit',
+			meta: {
+				title: '合伙人分润审核列表'
 			}
 		}]
 	}, {

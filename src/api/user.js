@@ -983,7 +983,7 @@ export function userMemberApplyupdateStatus(data) {
 // 系统设置-获取奖励设置信息接口
 export function awardSettingGet(params) {
 	return request({
-		url: `/api/marketing/admin/marketing/setting/v1.0.2/get`,	
+		url: `/api/marketing/admin/marketing/setting/v1.0.2/get`,
 		method: 'get',
 		params
 	})
@@ -1198,7 +1198,7 @@ export function getSbumitShart(params) {
  * @param {Number} pageSize  页面大小
  * @param {Number} status 收益状态（0：审核中 1：已驳回 2：已转账；；不传该参数查全部状态） 
  * */
-export function getPartnerCash(params){
+export function getPartnerCash(params) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/page`,
 		params
@@ -1210,7 +1210,7 @@ export function getPartnerCash(params){
  * @param {Number} id  主键id
  * @param {Number} status  状态（0：审核中, 1：已驳回, 2：已到账）
  * */
-export function getPartnerCashUpdateStatus(data){
+export function getPartnerCashUpdateStatus(data) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/withdraw/v1.0.1/updateStatus`,
 		method: 'post',
@@ -1218,3 +1218,98 @@ export function getPartnerCashUpdateStatus(data){
 	})
 }
 
+/**
+ * 查询合伙人分润核对列表接口
+ * @param {String} keyword  keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {String} createTimeBegin 创建开始时间戳 
+ * @param {String} createTimeEnd 创建截止时间戳
+ * @param {Number} status 核对状态（0:已核对 1:未核对） 
+ * */
+export function getPartnerRebate(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/page`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 导出合伙人分润核对列表接口
+ * @param {String} keyword  keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {String} createTimeBegin 创建开始时间戳 
+ * @param {String} createTimeEnd 创建截止时间戳 
+ * @param {Number} status 核对状态（0:已核对 1:未核对） 
+ * */
+export function getPartnerRebateExport(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/export`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 查询合伙人分润核对明细列表接口
+ * @param {String} keyword  keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {String} createTimeBegin 创建开始时间戳 
+ * @param {String} createTimeEnd 创建截止时间戳 
+ * @param {Number} status 核对状态（0:已核对 1:未核对）
+ * @param {Number} userId 合伙人用户Id 
+ * */
+export function getPartnerRebateDetails(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/detail/page`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 导出合伙人分润核对列表明细接口
+ * @param {String} keyword  keyword 搜索关键字
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {String} createTimeBegin 创建开始时间戳 
+ * @param {String} createTimeEnd 创建截止时间戳 
+ * @param {Number} status 核对状态（0:已核对 1:未核对）
+ * @param {Number} userId 合伙人用户Id 
+ * */
+export function getPartnerRebateDetailsExport(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/detail/export`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 合伙人续期接口
+ * @param {String} id  当前列表ID 
+ * @param {Number} reason 禁用/续期 理由
+ * @param {Number} status  申请状态 0:正常 1: 禁用
+ * */
+export function getPartnerRenew(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/renew`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 合伙人分润核对接口
+ * @param {String} []  数组ID 
+ * */
+export function getPartnerRebateAudit(data) {
+	return request({
+		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit`,
+		method: 'post',
+		data
+	})
+}
