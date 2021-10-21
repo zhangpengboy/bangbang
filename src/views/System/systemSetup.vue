@@ -80,13 +80,15 @@
 				</span>
 			</el-dialog>
 
-			<!-- -->
+			<!-- 积分 -->
 			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible2" width="576px">
 				<div class="popList">
 					<div class="item flex alCen">
-						<p class="tit">奖励</p>
+						<p class="tit">积分抵扣服费比例</p>
+						<input type="text" class="ipt-currency" :disabled="true" placeholder="100金币=">
 						<input type="text" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
 							:disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="exchangeRate"   />
+						<input type="text" class=" ipt-unit" placeholder="元" :disabled="true" />
 					</div>
 				</div>
 
@@ -98,6 +100,7 @@
 					<el-button type="primary" @click="handleEditIntegral">确 定</el-button>
 				</span>
 			</el-dialog>
+			<!-- 积分end -->
 
 		</div>
 
@@ -163,7 +166,12 @@
 					this.invitationAwardFee = this.editData.invitationSetting.award;
 					// this.
 				}
-			}
+			},
+			dialogVisible2(val){
+				if(!val){
+					this.exchangeRate = this.editData.integralSetting.exchangeRate
+				}
+			},
 		},
 		methods: {
 			// handleInvitationAwardFee(val){
@@ -345,13 +353,24 @@
 			// 编辑合伙人
 			editHHR() {
 				console.log();
-				if (!Boolean(Number(this.expire))) {
-					return this.$message.error('请输入正确认证工人奖励')
+				if (!Boolean(Number(this.expire)) || this.expire < 1) {
+					return this.$message.error('请输入合伙人时限')
 				}
-				this.getAwardSettingupdateOne(1);
+				if(!Number(this.integral) || this.integral < 1){
+					return this.$message.error('请输入正确的积分')
+				}
+				if(!Number(this.maxRebate) || this.maxRebate < 1){
+					return this.$message.error('请输入正确个人分润上限')
+				}
+				
+				// this.getAwardSettingupdateOne(1);
 			},
 			/** 编辑积分 */
 			handleEditIntegral() {
+				if(!Number(this.exchangeRate) || this.exchangeRate < 1){
+					return this.$message.error('请输入正确的积分')
+				}
+				
 				this.getAwardSettingupdateOne(3);
 			},
 			// 编辑邀请好友
@@ -388,6 +407,12 @@
 			.ipt-unit {
 				height: 40px;
 				width: 40px;
+				text-align: center;
+				margin-left: 10px;
+			}
+			.ipt-currency{
+				height: 40px;
+				width: 80px;
 				text-align: center;
 				margin-left: 10px;
 			}
