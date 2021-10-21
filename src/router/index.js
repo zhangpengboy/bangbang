@@ -420,6 +420,13 @@ export const constantRoutes = [
 				meta: {
 					title: '协议管理'
 				}
+			}, {
+				path: 'construct-list',
+				name: 'constructList',
+				component: () => import('@/views/workerManagement/constructManage/constructList'),
+				meta: {
+					title: '施工费用管理'
+				}
 			}
 
 		]
@@ -893,6 +900,13 @@ export const asyncRoutes = [{
 			component: () => import('@/views/workerManagement/projectManage/managementEdit'),
 			meta: {
 				title: '协议管理'
+			}
+		}, {
+			path: 'construct-list',
+			name: 'constructList',
+			component: () => import('@/views/workerManagement/constructManage/constructList'),
+			meta: {
+				title: '施工费用管理'
 			}
 		}]
 	},
