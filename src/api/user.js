@@ -983,7 +983,7 @@ export function userMemberApplyupdateStatus(data) {
 // 系统设置-获取奖励设置信息接口
 export function awardSettingGet(params) {
 	return request({
-		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/get`,	
+		url: `/api/marketing/admin/marketing/setting/v1.0.2/get`,	
 		method: 'get',
 		params
 	})
@@ -999,7 +999,7 @@ export function getregion(params) {
 // 系统设置-邀请奖励设置信息接口
 export function awardSettingupdateOne(data) {
 	return request({
-		url: `/api/marketing/admin/marketing/partner/awardSetting/v1.0.1/updateOne`,
+		url: `/api/marketing/admin/marketing/setting/v1.0.2/update`,
 		method: 'post',
 		data
 	})

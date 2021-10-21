@@ -1290,7 +1290,7 @@
 			},
 			/** 获取地址 */
 			getDetailsAdderss(form) {
-				// this.$nextTick(() => {
+				this.$nextTick(() => {
 					const {
 						lng,
 						lat
@@ -1320,7 +1320,7 @@
 						})
 					})
 
-				// })
+				})
 
 			},
 			/** 搜索充值 */
