@@ -45,7 +45,7 @@
         <template slot="handle">
           <el-table-column label="操作" :width="220">
             <template slot-scope="{row}">
-              <el-button type="text">费用明细</el-button>
+              <el-button type="text" @click="seeCost(row.id, 1)">费用明细</el-button>
               <el-button type="text" @click="seeRecord(row.id, 1)">对账记录</el-button>
             </template>
           </el-table-column>
@@ -65,7 +65,7 @@
         <template slot="handle">
           <el-table-column label="操作" :width="220">
             <template slot-scope="{row}">
-              <el-button type="text">费用明细</el-button>
+              <el-button type="text" @click="seeCost(row.id, 2)">费用明细</el-button>
               <el-button type="text" @click="seeRecord(row.id, 2)">对账记录</el-button>
             </template>
           </el-table-column>
@@ -203,6 +203,9 @@
       },
       seeRecord(id, type) {
           this.$router.push({path: type === 1 ? '/workerManagement/bnRecord' : '/workerManagement/ownRecord',  query: { id }})
+      },
+      seeCost(id, type) {
+          this.$router.push({path: type === 1 ? '/workerManagement/bnCost' : '/workerManagement/ownCost',  query: { id }})
       }
     }
   }

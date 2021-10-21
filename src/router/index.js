@@ -443,6 +443,22 @@ export const constantRoutes = [
 				meta: {
 					title: '自建项目对账记录'
 				}
+			},{
+				path: 'ownCost',
+				component: () => import('@/views/workerManagement/constructManage/ownCost'),
+				name: 'ownCost',
+				hidden: true,
+				meta: {
+					title: '自建项目费用明细'
+				}
+			},{
+				path: 'bnCost',
+				component: () => import('@/views/workerManagement/constructManage/bnCost'),
+				name: 'bnCost',
+				hidden: true,
+				meta: {
+					title: '邦宁项目费用明细'
+				}
 			}
 
 		]
@@ -939,6 +955,22 @@ export const asyncRoutes = [{
 			hidden: true,
 			meta: {
 				title: '自建项目对账记录'
+			}
+		},{
+			path: 'ownCost',
+			component: () => import('@/views/workerManagement/constructManage/ownCost'),
+			name: 'ownCost',
+			hidden: true,
+			meta: {
+				title: '自建项目费用明细'
+			}
+		},{
+			path: 'bnCost',
+			component: () => import('@/views/workerManagement/constructManage/bnCost'),
+			name: 'bnCost',
+			hidden: true,
+			meta: {
+				title: '邦宁项目费用明细'
 			}
 		}]
 	},
