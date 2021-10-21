@@ -32,7 +32,7 @@
     </div>
     <!-- 班组管理 -->
     <div v-if="tabPosition == 'bzgl'" class="demand-service">
-      <workIndex />
+      <teamList />
 
     </div>
     <!-- 消息中心 -->
@@ -53,6 +53,7 @@
   import workSignin from '../component/workSignin.vue'
   import workYsgl from '../component/workYsgl.vue'
 import msgCenter from '../component/msgCenter.vue'
+import teamList from '../component/teamList.vue'
 
   export default {
     components: {
@@ -60,7 +61,8 @@ import msgCenter from '../component/msgCenter.vue'
       workProPeople,
       workSignin,
       workYsgl,
-      msgCenter
+      msgCenter,
+      teamList
     },
     data() {
       return {
