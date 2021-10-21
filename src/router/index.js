@@ -427,6 +427,22 @@ export const constantRoutes = [
 				meta: {
 					title: '施工费用管理'
 				}
+			},{
+				path: 'bnRecord',
+				component: () => import('@/views/workerManagement/constructManage/bnRecord'),
+				name: 'bnRecord',
+				hidden: true,
+				meta: {
+					title: '邦宁项目对账记录'
+				}
+			},{
+				path: 'ownRecord',
+				component: () => import('@/views/workerManagement/constructManage/ownRecord'),
+				name: 'ownRecord',
+				hidden: true,
+				meta: {
+					title: '自建项目对账记录'
+				}
 			}
 
 		]
@@ -907,6 +923,22 @@ export const asyncRoutes = [{
 			component: () => import('@/views/workerManagement/constructManage/constructList'),
 			meta: {
 				title: '施工费用管理'
+			}
+		},{
+			path: 'bnRecord',
+			component: () => import('@/views/workerManagement/constructManage/bnRecord'),
+			name: 'bnRecord',
+			hidden: true,
+			meta: {
+				title: '邦宁项目对账记录'
+			}
+		},{
+			path: 'ownRecord',
+			component: () => import('@/views/workerManagement/constructManage/ownRecord'),
+			name: 'ownRecord',
+			hidden: true,
+			meta: {
+				title: '自建项目对账记录'
 			}
 		}]
 	},

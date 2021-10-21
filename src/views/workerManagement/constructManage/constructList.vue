@@ -46,7 +46,7 @@
           <el-table-column label="操作" :width="220">
             <template slot-scope="{row}">
               <el-button type="text">费用明细</el-button>
-              <el-button type="text">对账记录</el-button>
+              <el-button type="text" @click="seeRecord(row.id, 1)">对账记录</el-button>
             </template>
           </el-table-column>
         </template>
@@ -66,7 +66,7 @@
           <el-table-column label="操作" :width="220">
             <template slot-scope="{row}">
               <el-button type="text">费用明细</el-button>
-              <el-button type="text">对账记录</el-button>
+              <el-button type="text" @click="seeRecord(row.id, 2)">对账记录</el-button>
             </template>
           </el-table-column>
         </template>
@@ -200,6 +200,9 @@
       },
       exportTable() {
 
+      },
+      seeRecord(id, type) {
+          this.$router.push({path: type === 1 ? '/workerManagement/bnRecord' : '/workerManagement/ownRecord',  query: { id }})
       }
     }
   }

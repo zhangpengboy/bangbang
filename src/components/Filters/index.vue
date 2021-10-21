@@ -17,6 +17,19 @@
               type="date"
               placeholder="选择日期">
             </el-date-picker>
+            <span v-if="item.type === 'daterange'">
+              <el-date-picker
+                v-model="form[item.prop]"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+              <span>~</span>
+              <el-date-picker
+                v-model="form[item.prop2]"
+                type="date"
+                placeholder="选择日期">
+              </el-date-picker>
+            </span>
           </div>
         </div>
         <div class="top-content-btn">
