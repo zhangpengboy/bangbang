@@ -32,17 +32,24 @@
 			<!-- 表格end -->
 
 			<!-- 合伙人弹窗 -->
-			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible" width="30%">
+			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible" width="576px">
 				<div class="popList">
 					<div class="item flex alCen">
-						<p class="tit">认证工人奖励</p>
+						<p class="tit">合伙人时限</p>
 						<input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入认证工人奖励"
-							v-model="authAwardFee" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" value="" />
+							v-model="expire" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" />
+						<input type="text" class=" ipt-unit" placeholder="年" :disabled="true" />
 					</div>
 					<div class="item flex alCen">
-						<p class="tit">施工费用分佣</p>
-						<input type="text" name="" class="ipt" :disabled="dialogtype" placeholder="请输入施工费用分佣"
-							v-model="commissionAward" value="" />
+						<p class="tit">单个人分润上限</p>
+						<input type="text" name="" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+							:disabled="dialogtype" placeholder="请输入施工费用分佣" v-model="maxRebate" />
+						<input type="text" class=" ipt-unit" placeholder="元" :disabled="true" />
+					</div>
+					<div class="item flex alCen">
+						<p class="tit">成为合伙人赠送积分</p>
+						<input type="text" name="" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+							:disabled="dialogtype" placeholder="请输入施工费用分佣" v-model="integral" />
 					</div>
 				</div>
 
@@ -55,12 +62,12 @@
 				</span>
 			</el-dialog>
 			<!-- 邀请好友弹窗 -->
-			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible1" width="30%">
+			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible1" width="576px">
 				<div class="popList">
 					<div class="item flex alCen">
 						<p class="tit">奖励</p>
-						<input type="text" class="ipt" oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)" :disabled="dialogtype" placeholder="请输入邀请好友奖励"
-							v-model="invitationAwardFee"  />
+						<input type="text" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+							:disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="invitationAwardFee"   />
 					</div>
 				</div>
 
@@ -70,6 +77,25 @@
 				<span slot="footer" class="dialog-footer" v-else>
 					<el-button @click="dialogVisible1 = false">取 消</el-button>
 					<el-button type="primary" @click="editYQHY">确 定</el-button>
+				</span>
+			</el-dialog>
+
+			<!-- -->
+			<el-dialog :title="dialogtype?'查看':'编辑'" :visible.sync="dialogVisible2" width="576px">
+				<div class="popList">
+					<div class="item flex alCen">
+						<p class="tit">奖励</p>
+						<input type="text" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+							:disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="exchangeRate"   />
+					</div>
+				</div>
+
+				<span slot="footer" class="dialog-footer" v-if="dialogtype">
+					<el-button @click="dialogVisible2 = false">确 定</el-button>
+				</span>
+				<span slot="footer" class="dialog-footer" v-else>
+					<el-button @click="dialogVisible2 = false">取 消</el-button>
+					<el-button type="primary" @click="handleEditIntegral">确 定</el-button>
 				</span>
 			</el-dialog>
 
@@ -98,17 +124,25 @@
 						id: 1,
 						name: '邀请好友',
 						status: 0
+					},
+					{
+						id: 2,
+						name: '积分抵扣服务费比例',
+						status: 0
 					}
 				],
 				loading: false,
 				dialogVisible: false,
 				dialogVisible1: false,
+				dialogVisible2: false,
 				id: 0,
-				authAwardFee: '', //合伙人奖励
-				commissionAward: '', //合伙人分佣
+				expire: '', //合伙人时限 单位年
+				integral: '', //合伙人分佣
+				maxRebate: '', // 个人分润上限
 				invitationAwardFee: '', //邀请奖励
 				dialogtype: true, //编辑or查看
-				editData: {}
+				editData: {},
+				exchangeRate: ""
 
 			}
 		},
@@ -118,14 +152,16 @@
 		watch: {
 			dialogVisible(val) {
 				if (!val) {
-					this.authAwardFee = this.editData.authAwardFee;
-					this.commissionAward = this.editData.commissionAward;
-
+					console.log(this.editData)
+					this.expire = this.editData.partnerSetting.expire;
+					this.integral = this.editData.partnerSetting.integral;
+					this.maxRebate = this.editData.partnerSetting.maxRebate
 				}
 			},
 			dialogVisible1(val) {
 				if (!val) {
-					this.invitationAwardFee = this.editData.invitationAwardFee
+					this.invitationAwardFee = this.editData.invitationSetting.award;
+					// this.
 				}
 			}
 		},
@@ -142,12 +178,15 @@
 					var data = res.data
 					console.log('res', data)
 					this.id = data.id
-					this.tableData[0].status = data.partnerStatus
-					this.tableData[1].status = data.invitationStatus;
+					this.tableData[0].status = data.partnerSetting.status;
+					this.tableData[1].status = data.invitationSetting.status;
+					this.tableData[2].status = data.integralSetting.status;
 					this.editData = data;
-					this.invitationAwardFee = data.invitationAwardFee
-					this.authAwardFee = data.authAwardFee
-					this.commissionAward = data.commissionAward
+					this.invitationAwardFee = data.invitationSetting.award
+					this.expire = data.partnerSetting.expire
+					this.integral = data.partnerSetting.integral
+					this.maxRebate = data.partnerSetting.maxRebate;
+					this.exchangeRate = data.integralSetting.exchangeRate
 
 				})
 			},
@@ -175,9 +214,11 @@
 						type: 'warning'
 					}).then(() => {
 						if (row.id == 0) {
-							this.changeStatue(0, 1)
-						} else {
-							this.changeStatue(1, 1)
+							this.getAwardSettingupdateOne(1, true)
+						} else if(row.id == 1) {
+							this.getAwardSettingupdateOne(2, true)
+						} else if(row.id == 2){
+							this.getAwardSettingupdateOne(3, true)
 						}
 
 					}).catch(() => {
@@ -190,9 +231,11 @@
 						type: 'warning'
 					}).then(() => {
 						if (row.id == 0) {
-							this.changeStatue(0, 0)
-						} else {
-							this.changeStatue(1, 0)
+							this.getAwardSettingupdateOne(1, true)
+						} else if(row.id == 1) {
+							this.getAwardSettingupdateOne(2, true)
+						} else if(row.id == 2){
+							this.getAwardSettingupdateOne(3, true)
 						}
 					}).catch(() => {
 
@@ -219,7 +262,7 @@
 							message: '操作成功!'
 						})
 						this.dialogVisible = false
-						this.loadDate();
+						// this.loadDate();
 					}
 
 				})
@@ -231,11 +274,11 @@
 				if (row.id == 0) {
 					console.log('合伙人')
 					this.dialogVisible = true
-
-				} else {
+				} else if (row.id == 1) {
 					console.log('邀请好友')
 					this.dialogVisible1 = true
-
+				} else {
+					this.dialogVisible2 = true;
 				}
 
 			},
@@ -248,64 +291,76 @@
 					console.log('合伙人')
 					this.dialogVisible = true
 
-				} else {
+				} else if (row.id == 1) {
 					console.log('邀请好友')
 					this.dialogVisible1 = true
-
+				} else {
+					this.dialogVisible2 = true;
 				}
 
 			},
-
-			// 编辑合伙人
-			editHHR() {
-				console.log();
-				if (!Boolean(Number(this.authAwardFee))) {
-					return this.$message.error('请输入正确认证工人奖励')
+			getTypeStatus(status){
+				
+			},
+			/** 编辑方法 */
+			getAwardSettingupdateOne(type, isEdit) {
+				var params = {}
+				switch (type) {
+					case 1:
+						params.partnerSetting = {
+							expire: this.expire,
+							integral: this.integral,
+							maxRebate: this.maxRebate,
+							status: isEdit ? Number(!this.tableData[0].status) : this.tableData[0].status
+						}
+						break;
+					case 2:
+						params.invitationSetting = {
+							award: this.invitationAwardFee,
+							status:isEdit ? Number(!this.tableData[1].status) : this.tableData[1].status
+						}
+						break;
+					case 3:
+						params.integralSetting = {
+							exchangeRate: this.exchangeRate,
+							status: isEdit? Number(!this.tableData[2].status): this.tableData[2].status
+						}
+						break;
 				}
-				var params = {
-					id: this.id,
-					authAwardFee: this.authAwardFee,
-					commissionAward: this.commissionAward
-				}
+					
+		
 				awardSettingupdateOne(params).then(res => {
 					if (res.code == 200) {
 						this.$message({
 							type: 'success',
 							message: '操作成功!'
 						})
-						this.dialogVisible = false
+						this.dialogVisible = false;
+						this.dialogVisible1 = false;
+						this.dialogVisible2 = false;
 						this.loadDate();
 					}
-
 				})
+			},
+			// 编辑合伙人
+			editHHR() {
+				console.log();
+				if (!Boolean(Number(this.expire))) {
+					return this.$message.error('请输入正确认证工人奖励')
+				}
+				this.getAwardSettingupdateOne(1);
+			},
+			/** 编辑积分 */
+			handleEditIntegral() {
+				this.getAwardSettingupdateOne(3);
 			},
 			// 编辑邀请好友
 			editYQHY() {
 				if (!Boolean(Number(this.invitationAwardFee))) {
 					return this.$message.error('请输入正确邀请好友奖励')
 				}
-
-				// 
-				var params = {
-					id: this.id,
-					invitationAwardFee: this.invitationAwardFee,
-				}
-				awardSettingupdateOne(params).then(res => {
-					if (res.code == 200) {
-						this.$message({
-							type: 'success',
-							message: '操作成功!'
-						})
-						this.dialogVisible1 = false
-						this.loadDate();
-					}
-
-				})
+				this.getAwardSettingupdateOne(2);
 			}
-
-
-
-
 		}
 	}
 </script>
@@ -328,6 +383,13 @@
 				flex: 1;
 				border: 1px solid #d9d9d9;
 				padding-left: 8px;
+			}
+
+			.ipt-unit {
+				height: 40px;
+				width: 40px;
+				text-align: center;
+				margin-left: 10px;
 			}
 
 		}
