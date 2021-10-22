@@ -174,9 +174,9 @@
 
 <script>
   import {
-    getCollectionClass
-  } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+    getProjectList
+  } from '@/api/project'
+
   export default {
     data() {
       return {
@@ -233,17 +233,17 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadDate();
+      this.loadDate();
     },
     methods: {
       loadDate(status){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
-          status:status
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
+          // status:status
         }
-        getCollectionClass(params).then(res => {
+        getProjectList(params).then(res => {
           this.loading = false;
           var data = res.data.list
           console.log('res', data)
