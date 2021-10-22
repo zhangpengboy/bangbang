@@ -55,11 +55,11 @@
 						{{pageSize * (pageIndex -1) +1 + scope.$index}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="userId" label="用户ID " width="200">
+				<el-table-column prop="userId" label="用户ID " width="160">
 				</el-table-column>
-				<el-table-column prop="userName" label="名称 " width="200">
+				<el-table-column prop="userName" label="名称 " width="150">
 				</el-table-column>
-				<el-table-column prop="phone" label="联系方式 " width="200">
+				<el-table-column prop="phone" label="联系方式 " width="130">
 				</el-table-column>
 				<el-table-column prop="invitationNum" label="邀请人数 " width="80">
 				</el-table-column>
@@ -68,11 +68,18 @@
 						{{formatDateTime(scope.row.approvedTime)}}
 					</template>
 				</el-table-column>
+				<el-table-column prop="id" label="合伙人结束时间 ">
+					<template slot-scope="scope">
+						{{formatDateTime(scope.row.expireTime)}}
+					</template>
+				</el-table-column>
 				<el-table-column prop="cityName" label="地区 ">
 				</el-table-column>
-				<el-table-column label="申请状态 ">
+				<el-table-column label="申请状态 " width="80">
 					<template slot-scope="scope">
-						{{scope.row.status == 0 ?'正常':'禁用'}}
+						<p v-if="scope.row.status == 0">正常</p>
+						<p v-if="scope.row.status == 1" class="color-error">禁用</p>
+						<p v-if="scope.row.status == 2" class="color-error">到期</p>
 					</template>
 				</el-table-column>
 				<el-table-column prop="reason" label="理由 " width="200">
@@ -83,7 +90,10 @@
 							查看
 						</el-button>
 						<el-button type="text" size="small" @click="handleSumbitRelationship(scope.row)">
-							{{scope.row.status == 0?'禁用合伙人':' 恢复合伙人'}}
+							<!-- {{scope.row.status == 0?'禁用合伙人':' 恢复合伙人'}} -->
+							<template v-if="scope.row.status == 0">禁用合伙人</template>
+							<template v-if="scope.row.status == 1">恢复合伙人</template>
+							<template v-if="scope.row.status == 2">续期</template>
 						</el-button>
 					</template>
 				</el-table-column>
@@ -106,7 +116,8 @@
 		getPartnerList,
 		getPartnerExport,
 		getPartnerUpdateStatus,
-		getregion
+		getregion,
+		getPartnerRenew
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -124,6 +135,9 @@
 				}, {
 					label: "冻结",
 					value: 1
+				}, {
+					label: "到期",
+					value: 2
 				}],
 				pageIndex: 1, // 页码
 				pageSize: 10, // 显示多少条数据
@@ -158,9 +172,33 @@
 					this.addressList = [...this.addressList, ...res.data[0].children]
 				})
 			},
+			/** 续期 */
+			async getPartnerRenew(id,status=0){
+				try{
+					this.loading = true;
+					let res = await getPartnerRenew({id,status});
+					this.$message.success('操作成功');
+					this.loading = false;
+					this.getPartnerList();
+				}catch(e){
+					this.loading = false;
+					//TODO handle the exception
+				}
+				
+			},
 			/** 修改当前列表状态 */
 			handleSumbitRelationship(row) {
-				console.log(row)
+				if(row.status == 2){
+					console.log(row)
+					this.$confirm('是否续期当前合伙人', '确认提示', {
+						confirmButtonText: '确定',
+						cancelButtonText: '取消',
+						type: 'warning'
+					}).then(() => {
+						this.getPartnerRenew(row.id);
+					}).catch(() => {});
+					return;
+				}
 				let param = {};
 				param.id = row.id;
 				param.status = row.status == 0 ? 1 : 0;

@@ -1248,7 +1248,8 @@ export function getPartnerRebateExport(data) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/export`,
 		method: 'post',
-		data
+		data,
+		responseType: 'blob'
 	})
 }
 
@@ -1284,7 +1285,8 @@ export function getPartnerRebateDetailsExport(data) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit/detail/export`,
 		method: 'post',
-		data
+		data,
+		responseType: 'blob'
 	})
 }
 
@@ -1310,6 +1312,7 @@ export function getPartnerRebateAudit(data) {
 	return request({
 		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit`,
 		method: 'post',
-		data
+		data,
+		
 	})
 }

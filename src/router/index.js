@@ -445,7 +445,7 @@ export const constantRoutes = [
 			component: () => import('@/views/Content/HotActive'),
 			name: 'HotActive',
 			meta: {
-				title: '热门活动'
+				title: '精彩推荐'
 
 			}
 		}, {
@@ -602,6 +602,13 @@ export const constantRoutes = [
 			name: 'systemSetup',
 			meta: {
 				title: '系统管理'
+			}
+		},{
+			path: 'unit',
+			component: () => import('@/views/System/Unit'),
+			name: 'unit',
+			meta: {
+				title: '单位设置'
 			}
 		}]
 	}
@@ -932,7 +939,7 @@ export const asyncRoutes = [{
 			component: () => import('@/views/Content/HotActive'),
 			name: 'HotActive',
 			meta: {
-				title: '热门活动'
+				title: '精彩推荐'
 
 			}
 		}, {
@@ -1081,6 +1088,13 @@ export const asyncRoutes = [{
 			name: 'systemSetup',
 			meta: {
 				title: '系统管理'
+			}
+		},{
+			path: 'unit',
+			component: () => import('@/views/System/Unit'),
+			name: 'unit',
+			meta: {
+				title: '单位设置'
 			}
 		}]
 	}

@@ -6,8 +6,8 @@
 			<div class="problen-type ">
 				<div class="problen-type-title bold">类型</div>
 				<div class="problen-type-list flex fvertical">
-					<div class="problen-type-list-item flex fvertical">
-						<div class="problen-type-list-item-conter flex fvertical">
+					<div class="problen-type-list-item flex fvertical ">
+						<div class="problen-type-list-item-conter flex fvertical active">
 							<img src="" />
 							<span>常见问题</span>
 						</div>
@@ -62,13 +62,34 @@
 		<!-- 添加类型end -->
 
 		<!-- 添加子问题 -->
-		<el-dialog title="提示" :visible.sync="isProblem" width="30%" :before-close="handleCloseProblem">
+		<el-dialog title="提示" :visible.sync="isProblem" width="800px" :before-close="handleCloseProblem">
+			<el-form :model="problem"  ref="problem" label-width="100px" class="demo-ruleForm">
+				
+				<el-form-item label="活动区域" prop="region">
+				  <el-select v-model="problem.region" placeholder="请选择上级类型" style="width: 100%;">
+				    <el-option label="区域一" value="shanghai"></el-option>
+				    <el-option label="区域二" value="beijing"></el-option>
+				  </el-select>
+				</el-form-item>
+				
+			  <el-form-item label="子问题名称" prop="name">
+			    <el-input v-model="problem.name" placeholder="请输入子问题名称"></el-input>
+			  </el-form-item>
+			  <el-form-item label="子问题名称" prop="name">
+			    <Wangeditor @catchData="hadnleCatchData" ref="wangeditor" />
+			    
+			  </el-form-item>
+			  
+			</el-form>
 			
+			<span slot="footer" class="dialog-footer ">
+				<el-button @click="isProblem = false">取 消</el-button>
+				<el-button type="primary" @click="handleProblemSbumit">确 定</el-button>
+			</span>
 		</el-dialog>
 		<!-- 添加子问题end -->
 		
-		<Wangeditor @catchData="hadnleCatchData" />
-
+		
 	</div>
 </template>
 
@@ -82,13 +103,17 @@
 				ruleForm: {},
 				dialogVisible: false,
 				catchData:"",
-				imageUrl:"" // 图片路径
+				imageUrl:"" ,// 图片路径
+				problem:{},
 			}
 		},
 		components:{
 			Wangeditor
 		},
 		methods: {
+			handleProblemSbumit(){
+				this.$refs.wangeditor.getInfo();
+			},
 			/** 关闭类型 */
 			handleClose() {
 				this.dialogVisible = false;
@@ -153,8 +178,12 @@
 
 	.problen-type-list {
 		.problen-type-list-item {
+			
 
 			.problen-type-list-item-conter {
+				&.active{
+					border: 1px solid #0079FE;
+				}
 				border: 1px solid #ccc;
 				padding: 0 10px;
 				margin-right: 15px;

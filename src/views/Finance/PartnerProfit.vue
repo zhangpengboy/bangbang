@@ -74,64 +74,77 @@
 		</div>
 
 		<!-- 对话框  -->
-		<el-dialog :close-on-click-modal="false" top="5vh"  :visible.sync="dialogVisible" width="1000px"
+		<el-dialog :close-on-click-modal="false" top="5vh" :visible.sync="dialogVisible" width="1000px"
 			:before-close="handleClose">
-			<div class="profit-dialog flex fvertical fbetween">
-				<div class="f1 flex fvertical">
-					<span class="bold">张三的分润明细：</span>
-					<div class="profit-dialog-date">
-						<el-date-picker  v-model="DetailsDate" type="daterange" range-separator="至" start-placeholder="开始日期"
-							end-placeholder="结束日期">
-						</el-date-picker>
+			<div v-loading="digLoding">
+				<div class="profit-dialog flex fvertical fbetween">
+					<div class="f1 flex fvertical">
+						<span class="bold">{{userName}}的分润明细：</span>
+						<div class="profit-dialog-date">
+							<el-date-picker v-model="DetailsDate" type="daterange" range-separator="至"
+								start-placeholder="开始日期" end-placeholder="结束日期">
+							</el-date-picker>
+						</div>
+
+						<div class="profit-dialog-btn">
+							<el-button type="primary" @click="handelDialogSearch"> 查询</el-button>
+							<el-button @click="handleDialogReset">重置</el-button>
+						</div>
 					</div>
-					
-					<div class="profit-dialog-btn">
-						<el-button type="primary" @click="handelDialogSearch"> 查询</el-button>
-						<el-button @click="handleDialogReset">重置</el-button>
-					</div>
+
+					<el-button @click="handleDialogExport">导出</el-button>
 				</div>
-				
-				<el-button @click="handleDialogExport">导出</el-button>
+				<el-table ref="multipleTable" :data="dialogTableData" height="600" tooltip-effect="dark"
+					style="width: 100%" @selection-change="handleSelectionChange" border>
+					<el-table-column type="selection" width="55">
+					</el-table-column>
+					<el-table-column prop="date" label="序号" width="60">
+						<template slot-scope="scope">
+							{{scope.$index+1}}
+						</template>
+					</el-table-column>
+					<el-table-column prop="userId" label="用户ID" width="160">
+					</el-table-column>
+					<el-table-column prop="userName" label="推荐工人名称">
+					</el-table-column>
+					<el-table-column prop="phone" label="手机号码" width="120">
+					</el-table-column>
+					<el-table-column prop="typeName" label="收益类型" width="120">
+					</el-table-column>
+					<el-table-column prop="fee" label="收益金额" width="120">
+					</el-table-column>
+					<el-table-column label="收益时间">
+						<template slot-scope="scope">
+							{{formatDateTime(scope.row.incomeTime)}}
+						</template>
+					</el-table-column>
+				</el-table>
+				<div class="profit-dialog-foot flex fvertical fcenter">
+					<el-button type="primary" plain @click="dialogVisible = false">取消</el-button>
+					<el-button type="primary" @click="handleSelectSubmit">确定</el-button>
+				</div>
 			</div>
-			<el-table ref="multipleTable" :data="dialogTableData" height="600" tooltip-effect="dark" style="width: 100%"
-				@selection-change="handleSelectionChange" border>
-				<el-table-column prop="date" label="序号" width="60">
-					<template slot-scope="scope">
-						{{scope.$index}}
-					</template>
-				</el-table-column>
-				<el-table-column prop="userId" label="用户ID" width="200">
-				</el-table-column>
-				<el-table-column prop="userName" label="推荐工人名称">
-				</el-table-column>
-				<el-table-column prop="phone" label="手机号码">
-				</el-table-column>
-				<el-table-column prop="phone" label="收益类型">
-				</el-table-column>
-				<el-table-column prop="phone" label="收益金额">
-				</el-table-column>
-				<el-table-column prop="phone" label="收益时间">
-				</el-table-column>
-			</el-table>
-			<div class="profit-dialog-foot flex fvertical fcenter">
-				 <el-button type="primary" plain @click="dialogVisible = false">取消</el-button>
-				  <el-button type="primary">确定</el-button>
-			</div>
+
 		</el-dialog>
 		<!-- 对话框end -->
-		
+
 
 	</div>
 </template>
 
 <script>
 	import {
-		getPartnerRebate
+		getPartnerRebate,
+		getPartnerRebateDetails,
+		getPartnerRebateDetailsExport,
+		getPartnerRebateAudit,
+		getPartnerRebateExport
 	} from '../../api/user.js'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
-				DetailsDate:"", // 分润明细时间
+				DetailsDate: "", // 分润明细时间
 				dialogVisible: false,
 				keyword: "", // 搜索条件
 				date: "", // 日期
@@ -143,6 +156,9 @@
 				dialogTableData: [],
 				tableData: [], // 数组列表
 				loading: false, // 是否加载
+				digLoding: false,
+				selectList: [],
+				userName:""
 
 			}
 		},
@@ -150,21 +166,85 @@
 			this.getPartnerRebate();
 		},
 		methods: {
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			formatDate(value) {
+				return value ? moment(value).format('YYYY-MM-DD') : '';
+			},
 			/** 明细搜索 */
-			handelDialogSearch(){
-				
+			handelDialogSearch() {
+				this.getPartnerRebateDetails();
 			},
 			/** 明细重置 */
-			handleDialogReset(){
-				
+			handleDialogReset() {
+				this.DetailsDate = '';
+				this.getPartnerRebateDetails();
 			},
 			/** 导出明细  */
-			handleDialogExport(){
+			async handleDialogExport() {
 				console.log('导出明细');
+				let param = {};
+				param.status = this.status;
+				param.userId = this.userId
+				if (this.DetailsDate) {
+					param.createTimeBegin = Date.parse(this.DetailsDate[0])
+					param.createTimeEnd = Date.parse(this.DetailsDate[1])
+				}
+				let res = await getPartnerRebateDetailsExport(param);
+				console.log(res);
+				const blob = new Blob([res.data], {
+					type: "application/vnd.ms-excel"
+				}); //,{type: 'application/vnd.ms-excel;charset=utf-8'}
+				let fileName = this.userName+'明细.xlsx';
+				const elink = document.createElement('a');
+				elink.download = fileName;
+				elink.style.display = 'none';
+				elink.href = URL.createObjectURL(blob);
+				document.body.appendChild(elink);
+				elink.click();
+				URL.revokeObjectURL(elink.href); // 释放URL 对象
+				document.body.removeChild(elink);
+				this.loading = false;
+
+			},
+			/** 获取核对的方法 */
+			async getPartnerRebateAudit(arr) {
+				this.digLoding = true;
+				try {
+					let res = await getPartnerRebateAudit(arr);
+					this.dialogVisible = false;
+					this.digLoding = false;
+					this.$message.success('操作成功')
+				} catch (e) {
+					this.digLoding = false;
+					//TODO handle the exception
+				}
+
+			},
+			/** 确定已核对信息 */
+			handleSelectSubmit() {
+				if (this.selectList.length == 0) {
+					return this.$message.error('请选择核对信息');
+				}
+				let arr = [];
+				for (let i = 0; i < this.selectList.length; i++) {
+					console.log(this.selectList[i])
+					arr.push(this.selectList[i].id)
+				}
+				this.$confirm('是否确认核对当前筛选账目', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(() => {
+					this.getPartnerRebateAudit(arr);
+
+				}).catch(() => {});
 			},
 			/** 已选择核对信息 */
 			handleSelectionChange(e) {
 				console.log(e)
+				this.selectList = e;
 			},
 			/** 关闭对话框 */
 			handleClose() {
@@ -173,14 +253,45 @@
 			/** 打开核对详情 */
 			handleOpenDetalis(row) {
 				console.log('打开核对详情', row)
+				this.$router.push({
+					path: '/finance/PartnerProfitDetalis',
+					query: {
+						userId: row.userId,
+						userName: row.userName,
+						fee: row.fee
+					}
+				})
 			},
 			/** 核对 */
 			handleSumbit(row) {
 				console.log(row)
+				this.userName = row.userName
+				this.dialogVisible = true;
+				this.userId = row.userId
+				this.getPartnerRebateDetails();
+			},
+			/** 获取明细 */
+			async getPartnerRebateDetails() {
+				this.digLoding = true;
+				try {
+					let param = {};
+					param.status = this.status;
+					param.userId = this.userId
+					if (this.DetailsDate) {
+						param.createTimeBegin = Date.parse(this.DetailsDate[0])
+						param.createTimeEnd = Date.parse(this.DetailsDate[1])
+					}
+					let res = await getPartnerRebateDetails(param);
+					this.dialogTableData = res.data.list;
+					this.digLoding = false;
+				} catch (e) {
+					console.log(e)
+					//TODO handle the exception
+					this.digLoding = false;
+				}
 			},
 			/** 切换tab */
 			handleRadioGroup(val) {
-				console.log(val)
 				if (this.radio == '未核对') {
 					this.status = 1;
 				} else {
@@ -202,8 +313,8 @@
 					param.status = this.status;
 					param.keyword = this.keyword;
 					if (this.date) {
-						param.createTimeBegin = this.date[0];
-						param.createTimeEnd = this.date[1];
+						param.createTimeBegin = Date.parse(this.date[0]);
+						param.createTimeEnd = Date.parse(this.date[1]);
 					}
 					// console.log(param);
 					let res = await getPartnerRebate(param);
@@ -229,7 +340,38 @@
 				this.getPartnerRebate();
 			},
 			/** 导出 */
-			handleExport() {},
+			async handleExport() {
+				this.loading = true;
+				try {
+					let param = {};
+					param.pageNum = this.pageIndex;
+					param.pageSize = this.pageSize;
+					param.status = this.status;
+					param.keyword = this.keyword;
+					if (this.date) {
+						param.createTimeBegin = Date.parse(this.date[0]);
+						param.createTimeEnd = Date.parse(this.date[1]);
+					}
+					let res = await getPartnerRebateExport(param);
+					const blob = new Blob([res.data], {
+						type: "application/vnd.ms-excel"
+					}); //,{type: 'application/vnd.ms-excel;charset=utf-8'}
+					let fileName = '分润列表.xlsx';
+					const elink = document.createElement('a');
+					elink.download = fileName;
+					elink.style.display = 'none';
+					elink.href = URL.createObjectURL(blob);
+					document.body.appendChild(elink);
+					elink.click();
+					URL.revokeObjectURL(elink.href); // 释放URL 对象
+					document.body.removeChild(elink);
+					this.loading = false;
+				} catch (e) {
+					console.log(e)
+					this.loading = false;
+					//TODO handle the exception
+				}
+			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.pageSize = e;
@@ -249,21 +391,25 @@
 	.select-btn {
 		padding-bottom: 20px;
 	}
-	
-	.profit-dialog-foot{
+
+	.profit-dialog-foot {
 		margin-top: 15px;
-		.el-button{
+
+		.el-button {
 			width: 180px;
 			margin-right: 30px;
 		}
 	}
-	.profit-dialog{
+
+	.profit-dialog {
 		padding: 15px 0;
 	}
-	.profit-dialog-date{
+
+	.profit-dialog-date {
 		padding: 0 40px 0 20px;
 	}
-	.profit-dialog-btn{
+
+	.profit-dialog-btn {
 		padding-right: 30px;
 	}
 
