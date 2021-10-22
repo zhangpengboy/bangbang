@@ -17,7 +17,7 @@
           <el-table-column label="操作">
             <template slot-scope="{row}">
               <el-button type="text" @click="handleEdit(row.id)">编辑</el-button>
-              <el-button type="text">查看</el-button>
+              <el-button type="text" @click="seeDetail(row.id)">查看</el-button>
             </template>
           </el-table-column>
         </template>
@@ -244,6 +244,9 @@
       addTeam(){
           this.form.teams.push({title: '', jobStartTime: '', jobEndTime: '', restStartTime: '', restEndTime: ''})
       },
+      seeDetail(id) {
+          this.$router.push({path: '/workerManagement/workRules', query: { id }})
+      }
     
     }
   }

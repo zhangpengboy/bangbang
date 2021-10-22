@@ -459,6 +459,14 @@ export const constantRoutes = [
 				meta: {
 					title: '邦宁项目费用明细'
 				}
+			},{
+				path: 'workRules',
+				component: () => import('@/views/workerManagement/projectManage/workRules'),
+				name: 'workRules',
+				hidden: true,
+				meta: {
+					title: '考勤规则'
+				}
 			}
 
 		]
@@ -971,6 +979,14 @@ export const asyncRoutes = [{
 			hidden: true,
 			meta: {
 				title: '邦宁项目费用明细'
+			}
+		},{
+			path: 'workRules',
+			component: () => import('@/views/workerManagement/projectManage/workRules'),
+			name: 'workRules',
+			hidden: true,
+			meta: {
+				title: '考勤规则'
 			}
 		}]
 	},

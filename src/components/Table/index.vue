@@ -1,10 +1,11 @@
 <template>
-    <el-table v-bind="$attrs" :stripe="stripe" :border="border" style="width: 100%">
+    <el-table v-bind="$attrs" v-on="$listeners" :stripe="stripe" :border="border" style="width: 100%">
         <template v-for="item in columns">
             <el-table-column
                 :key="item.prop"
                 :type="item.type"
                 :width="item.width"
+                :align="item.align"
                 v-if="item.type === 'selection'"
         ></el-table-column>
              <slot
@@ -18,6 +19,7 @@
                 :type="item.type"
                 :width="item.width"
                 :fixed="item.fixed "
+                :align="item.align"
                 :sortable="item.sortable"></el-table-column>
         </template>
     </el-table>
