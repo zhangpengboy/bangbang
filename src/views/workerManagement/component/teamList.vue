@@ -164,11 +164,9 @@
              teams: [{title: '', jobStartTime: '', jobEndTime: '', restStartTime: '', restEndTime: ''}]
          },
          rules: {
-             name: [{required: true, message: '请输入班组名称', trigger: 'blur'}],
+            name: [{required: true, message: '请输入班组名称', trigger: 'blur'}],
             address: [{required: true, message: '请输入考勤地点', trigger: 'blur'}],
             range: [{required: true, message: '请输入考勤范围', trigger: 'blur'}],
-            title: [{required: true, message: '输入考勤组名称', trigger: 'blur'}],
-            title: [{required: true, message: '输入考勤组名称', trigger: 'blur'}],
             title: [{required: true, message: '输入考勤组名称', trigger: 'blur'}],
             jobStartTime: [{required: true, message: '请选择考勤时间', trigger: 'blur'}],
             jobEndTime: [{required: true, message: '请选择考勤时间', trigger: 'blur'}],
@@ -245,7 +243,7 @@
           this.form.teams.push({title: '', jobStartTime: '', jobEndTime: '', restStartTime: '', restEndTime: ''})
       },
       seeDetail(id) {
-          this.$router.push({path: '/workerManagement/workRules', query: { id }})
+          this.$router.push({path: '/workerManagement/teamInfo', query: { id }})
       }
     
     }

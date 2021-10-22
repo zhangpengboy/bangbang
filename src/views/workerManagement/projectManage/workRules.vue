@@ -147,7 +147,7 @@ export default {
                 {date: '2021/09/09', time: '休息'},
                 {date: '2021/09/09', time: '休息'}
             ],
-            visible: true,
+            visible: false,
             isRest: false,
             form: {
                 date: ''

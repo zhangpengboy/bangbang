@@ -467,6 +467,14 @@ export const constantRoutes = [
 				meta: {
 					title: '考勤规则'
 				}
+			},{
+				path: 'teamInfo',
+				component: () => import('@/views/workerManagement/projectManage/teamInfo'),
+				name: 'teamInfo',
+				hidden: true,
+				meta: {
+					title: '查看班组信息'
+				}
 			}
 
 		]
@@ -987,6 +995,14 @@ export const asyncRoutes = [{
 			hidden: true,
 			meta: {
 				title: '考勤规则'
+			}
+		},{
+			path: 'teamInfo',
+			component: () => import('@/views/workerManagement/projectManage/teamInfo'),
+			name: 'teamInfo',
+			hidden: true,
+			meta: {
+				title: '查看班组信息'
 			}
 		}]
 	},
