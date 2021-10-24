@@ -13,6 +13,13 @@
       </div>
       <!-- 表格  -->
       <Table :data="tableData" :columns="columns" :height="clientHeight+'px'">
+        <template slot="createTime">
+          <el-table-column label="创建时间">
+            <template slot-scope="{row}">
+              <span>{{row.createTime | formatDate('YYYY-MM-DD')}}</span>
+            </template>
+          </el-table-column>
+        </template>
         <template slot="handle">
           <el-table-column label="操作">
             <template slot-scope="{row}">
@@ -125,6 +132,10 @@
 <script>
   import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
+  import {
+    getTeamList
+  } from '@/api/project'
+
   export default {
     components: {
       Filters,
@@ -139,11 +150,11 @@
         columns: [
           {label: '序号', type: "index", width: 60},
           {prop: 'name', label: '班组名称'},
-          {prop: 'name', label: '班组负责人'},
-          {prop: 'name', label: '创建时间'},
-          {prop: 'name', label: '创建人'},
-          {prop: 'name', label: '班组人数'},
-          {prop: 'name', label: '关联考勤组'},
+          {prop: 'name1', label: '班组负责人'},
+          {slot: 'createTime'},
+          {prop: 'creatorName ', label: '创建人'},
+          {prop: 'name1', label: '班组人数'},
+          {prop: 'name1', label: '关联考勤组'},
           {slot: "handle"},
         ],
          tableData:[
@@ -179,11 +190,20 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadData('');
+      this.loadData();
     },
     methods: {
       loadData(){
-        console.log('加载数据！！')
+        this.loading = true;
+        let params = {
+          pageSize: this.pageSize,
+          pageNum: this.current,
+        }
+        getTeamList(params).then(res => {
+          this.loading = false;
+          var data = res.data.list
+          this.tableData = data
+        })
       },
       search(e) {
         console.log('查询', e)

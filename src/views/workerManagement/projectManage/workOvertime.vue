@@ -17,7 +17,7 @@
         <template slot="project">
           <el-table-column label="所属项目"  width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.name}}</p>
+            <p>{{scope.row.projectId}}</p>
             <p class="label" v-if="scope.row.status == 0">
               <span class="lableTxt">邦宁</span>
             </p>
@@ -116,6 +116,10 @@
   import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
   import moment from 'moment'
+  import {
+    getOvertimeList,
+    getOvertimeXls
+  } from '@/api/project'
 
   export default {
     components: {
@@ -135,13 +139,12 @@
           {label: '序号', type: "index", width: 60},
           {slot: "project"},
           {prop: 'name', label: '项目地点'},
-          {prop: 'name', label: '所属服务单'},
-          {prop: 'name', label: '申请人'},
-          {prop: 'name', label: '账号'},
-          {prop: 'name', label: '申请日期'},
-          {prop: 'name', label: '加班开始时间'},
-          {prop: 'name', label: '加班开始时间'},
-          {prop: 'name', label: '加班结束时间'},
+          {prop: 'overtimeApplyId', label: '所属服务单'},
+          {prop: 'creatorName', label: '申请人'},
+          {prop: 'workerId', label: '账号'},
+          {prop: 'createTime', label: '申请日期'},
+          {prop: 'overtimeBegin', label: '加班开始时间'},
+          {prop: 'overtimeEnd', label: '加班结束时间'},
           {prop: 'name', label: '加班时长'},
           {prop: 'name', label: '加班人数'},
           {slot: "status"},
@@ -177,11 +180,20 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadData('');
+      this.loadData();
     },
     methods: {
       loadData(){
-        console.log('加载数据！！')
+        this.loading = true;
+        let params = {
+          pageSize: this.pageSize,
+          pageNum: this.current,
+        }
+        getOvertimeList(params).then(res => {
+          this.loading = false;
+          var data = res.data.list
+          this.tableData = data
+        })
       },
       search(e) {
         console.log('查询', e)
@@ -226,7 +238,18 @@
           console.log('取消')
         })
       },
-      exportTable() {},
+      exportTable() {
+        this.loading = true;
+        let params = {
+          pageSize: this.pageSize,
+          pageNum: this.current,
+        }
+        getOvertimeXls(params).then(res => {
+          console.log("🚀 ~ file: workOvertime.vue ~ line 248 ~ getOvertimeList ~ res", res)
+        }).finally(()=>{
+            this.loading = false;
+          })
+      },
       edit() {
         this.editVisible = true
       },

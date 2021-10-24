@@ -73,15 +73,20 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border>
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="name" label="姓名"/>
+        <el-table-column prop="creatorName" label="姓名"/>
         <el-table-column prop="name" label="手机号" width="120"/>
         <el-table-column prop="name" label="工种"/>
-        <el-table-column prop="name" label="工作模式"/>
+        <el-table-column prop="workType" label="工作模式">
+          <template slot-scope="{row}">
+            <span v-if="row.workType === 1">计件</span>
+            <span v-if="row.workType === 2">计时</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="班组负责人"/>
-        <el-table-column prop="name" label="进场时间"/>
-        <el-table-column prop="name" label="退场时间"/>
-        <el-table-column prop="name" label="身份证号"/>
-        <el-table-column prop="name" label="银行卡号"/>
+        <el-table-column prop="enterStartTime" label="进场时间"/>
+        <el-table-column prop="enterEndTime" label="退场时间"/>
+        <el-table-column prop="name1" label="身份证号"/>
+        <el-table-column prop="name1" label="银行卡号"/>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
             <p v-if="scope.row.status == 1">在场</p>
@@ -89,8 +94,8 @@
           </template>
          </el-table-column>
          <el-table-column label="工资标准">
-          <template slot-scope="scope">
-            <p style="color: #D9001B;">{{scope.row.name}}</p>
+          <template slot-scope="{row}">
+            <p style="color: #D9001B;">{{row.unitPrice}}/{{row.workType === 1 ? '平方' : '元'}}</p>
           </template>
          </el-table-column>
         <el-table-column label="操作" width="160">
@@ -281,6 +286,11 @@
 </template>
 
 <script>
+import {
+    getTeamTypeCsv,
+    getTeamTypeList
+  } from '@/api/project'
+
  export default{
  	props:{
 
@@ -335,12 +345,24 @@
 
    },
    mounted() {
-
+      this.loadData();
    },
    methods:{
+     loadData() {
+       this.loading = true;
+        let params = {
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
+        }
+        getTeamTypeList(params).then(res => {
+          this.loading = false;
+          var data = res.data.list
+          this.tableData = data
+        })
+     },
      search() {
        console.log('查询')
-       this.loadDate();
+       this.loadData();
      },
      // 操作记录
      seeRecoed(){
@@ -361,7 +383,7 @@
      raLoad(){
        this.statusvalue = '';
        this.PageIndex = 1;
-       this.loadDate();
+       this.loadData();
      },
      // 导出
      exportTable(){
@@ -371,12 +393,12 @@
      handleSizeChange(e) {
        this.PageSize = e
        this.PageIndex = 1
-       this.loadDate()
+       this.loadData()
      },
      /** 点击分页 */
      handleCurrentChange(e) {
        this.PageIndex = e
-       this.loadDate()
+       this.loadData()
      },
      // 编辑工资
      editWages(row){

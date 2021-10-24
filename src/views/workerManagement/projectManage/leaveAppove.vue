@@ -17,7 +17,7 @@
         <template slot="project">
           <el-table-column label="项目名称"  width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.name}}</p>
+            <p>{{scope.row.projectId}}</p>
             <p class="label" v-if="scope.row.status == 0">
               <span class="lableTxt">邦宁</span>
             </p>
@@ -26,15 +26,15 @@
         </template>
         <template slot="endDate">
           <el-table-column label="退场时间">
-            <template slot-scope="{row}"><span style="color: #f00;">{{row.endDate}}</span></template>
+            <template slot-scope="{row}"><span style="color: #f00;">{{row.exitDate}}</span></template>
           </el-table-column>
         </template>
         <template slot="status">
           <el-table-column label="状态">
             <template slot-scope="{row}">
-              <span v-if="row.status === 0" style="color: #f00;">等待确认</span>
-              <span v-if="row.status === 1">已驳回</span>
-              <span v-if="row.status === 2">已离队</span>
+              <span v-if="row.status === 1" style="color: #f00;">审核中</span>
+              <span v-if="row.status === 2">已通过</span>
+              <span v-if="row.status === 3">已驳回</span>
             </template>
           </el-table-column>
         </template>
@@ -42,8 +42,8 @@
           <el-table-column label="操作" :width="140">
             <template slot-scope="{row}">
               <el-button type="text">去对账</el-button>
-              <el-button type="text" v-if="row.status === 0" @click="handleApprove(row)">审批</el-button>
-              <el-button type="text" v-if="row.status === 1" style="color: #f00;" @click="handleApprove(row)">重新审批</el-button>
+              <el-button type="text" v-if="row.status === 1" @click="handleApprove(row)">审批</el-button>
+              <el-button type="text" v-if="row.status === 3" style="color: #f00;" @click="handleApprove(row)">重新审批</el-button>
             </template>
           </el-table-column>
         </template>
@@ -74,6 +74,12 @@
 <script>
   import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
+  import {
+    getProjectExitList,
+    getProjectExitCsv,
+    postUpdateStatus
+  } from '@/api/project'
+
   export default {
     components: {
       Filters,
@@ -87,12 +93,12 @@
           {type: 'date', prop: 'startDate', title: '进场时间', placeholder: '请选择时间'},
           {type: 'date', prop: 'endDate', title: '退场时间', placeholder: '请选择时间'},
           {type: 'select', prop: 'status', title: '状态', 
-            options: [{label: '等待确认', value: 1}, {label: '已驳回', value: 2}, {label: '已离队', value: 3}]},
+            options: [{label: '审核中', value: 1}, {label: '已通过', value: 2}, {label: '已驳回', value: 3}]},
         ],
         columns: [
           {label: '序号', type: "index", width: 60},
-          {prop: 'name', label: '申请人'},
-          {prop: 'name', label: '账号'},
+          {prop: 'creatorName', label: '申请人'},
+          {prop: 'userId', label: '账号'},
           {slot: "project"},
           {prop: 'name', label: '所属班组'},
           {prop: 'name', label: '项目地点'},
@@ -118,11 +124,20 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadData('');
+      this.loadData();
     },
     methods: {
       loadData(){
-        console.log('加载数据！！')
+        this.loading = true;
+        let params = {
+          pageSize: this.pageSize,
+          pageNum: this.current,
+        }
+        getProjectExitList(params).then(res => {
+          this.loading = false;
+          var data = res.data.list
+          this.tableData = data
+        })
       },
       search(e) {
         console.log('查询', e)
@@ -163,11 +178,31 @@
           cancelButtonText: '驳回',
         }).then(()=>{
           console.log('确认')
+          this.loading = true
+          postUpdateStatus({id: row.id, result: row.status === 3 ? false : true})
+          .then(res =>{
+            console.log("🚀 ~ file: leaveAppove.vue ~ line 183 ~ handleApprove ~ res", res)
+          })
+          .finally(()=>{
+            this.loading = false
+          })
         }).catch(()=>{
           console.log('取消')
         })
       },
-      exportTable() {}
+      exportTable() {
+         this.loading = true;
+          let params = {
+            pageSize: this.pageSize,
+            pageNum: this.current,
+          }
+          getProjectExitCsv(params).then(res => {
+            console.log("🚀 ~ file: leaveAppove.vue ~ line 200 ~ getProjectExitCsv ~ res", res)
+          })
+          .finally(()=>{
+            this.loading = false;
+          })
+      }
     }
   }
 </script>
