@@ -1,35 +1,25 @@
 <template>
   <div class="attendance"  v-loading="loading">
     <!-- 头部  -->
-    <!-- <div class="top" id="top">
+    <div class="top" id="top">
       <div class="top-title ">数据筛选</div>
       <Filters :data="filterData" @search="search" />
-    </div> -->
+    </div>
     <!-- 头部end  -->
 
     <div class="box">
       <div class="box-top flex fbetween fvertical" id="boxTop">
         <div class="bold">数据列表</div>
-        <el-button type="primary">新增模板</el-button>
+        <el-button type="primary" @click="exportTable">导出</el-button>
       </div>
       <!-- 表格  -->
       <Table :data="tableData" :columns="columns" :height="clientHeight+'px'">
-        <template slot="status">
-          <el-table-column label="状态">
-            <template slot-scope="{row}">
-              <span v-if="row.status === 1"><el-switch :value="true" style="margin-right: 5px;"></el-switch>启用中</span>
-              <span v-else><el-switch :value="false" style="margin-right: 5px;"></el-switch>关闭中</span>
-            </template>
-          </el-table-column>
-        </template>
-        <template slot="handle">
-          <el-table-column label="操作">
-            <template slot-scope="{row}">
-              <el-button type="text">预览</el-button>
-              <el-button type="text">编辑</el-button>
-              <el-button type="text">删除</el-button>
-            </template>
-          </el-table-column>
+        <template slot="money">
+          <el-table-column label="对账金额">
+          <template slot-scope="scope">
+            <span style="color: #f00">12304.00元</span>
+          </template>
+        </el-table-column>
         </template>
       </Table>
       <!-- 表格end -->
@@ -56,32 +46,34 @@
 </template>
 
 <script>
-  // import Filters from '../../../components/Filters/index.vue'
+  import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
+
   export default {
     components: {
-      // Filters,
+      Filters,
       Table
     },
     data() {
       return {
         filterData: [
-          {type: 'input',prop: 'no', title: '合同编号', placeholder: '输入合同编号'},
-          {type: 'input', prop: 'jia', title: '甲方', placeholder: '输入名字/手机号'},
-          {type: 'input', prop: 'yi', title: '乙方', placeholder: '输入名字/手机号'},
-          {type: 'select', prop: 'status', title: '状态', placeholder: '输入名字/手机号', options: [{label: '生效中', value: 1}, {label: '已到期', value: 2}]},
+            {type: 'daterange', prop: 'startDate', prop: 'endDate', title: '对账日期'},
+            {type: 'input',prop: 'id', title: '用户名', placeholder: '输入姓名/手机号'}
         ],
         columns: [
           {label: '序号', type: "index", width: 60},
-          {prop: 'name', label: '协议编号'},
-          {prop: 'name', label: '协议模板名称'},
-          {slot: "status"},
-          {prop: 'name', label: '更新时间'},
-          {slot: "handle"},
+          {prop: 'name', label: '姓名'},
+          {prop: 'name', label: '手机号'},
+          {prop: 'name', label: '所属班组'},
+          {prop: 'name', label: '对账日期'},
+          {prop: 'name', label: '对账工时'},
+          {slot: 'money'},
+          {prop: 'name', label: '对账人'},
+          {prop: 'name', label: '对账备注'}
         ],
          tableData:[
-           {name: '你好', status: 0},
-           {name: '你好a', status: 1}
+           {name: '你好', status: 0, endDate: '2021-10-31'},
+           {name: '你好a', status: 1, endDate: '2021-11-30'}
          ],
          loading:false,
          clientHeight:0,
@@ -117,20 +109,22 @@
       /** 计算页面高度 */
       getWebHeing() {
       	this.$nextTick(() => {
-      		this.clientHeight = document.documentElement.clientHeight - document.getElementById('page')
+      		this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      			.offsetHeight - document.getElementById('page')
       			.offsetHeight - document.getElementById('boxTop')
       			.offsetHeight - 180;
       	})
       	window.addEventListener('resize', () => {
       		if(document.getElementById('top')!=null){
-      		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('page')
+      		  this.clientHeight = document.documentElement.clientHeight - document.getElementById('top')
+      		  	.offsetHeight - document.getElementById('page')
       		  	.offsetHeight - document.getElementById('boxTop')
       		  	.offsetHeight - 180;
       		  this.$forceUpdate();
       		}
       	})
       },
-
+      exportTable() {}
     }
   }
 </script>

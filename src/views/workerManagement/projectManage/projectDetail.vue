@@ -106,7 +106,7 @@
             </div>
             <div class="box boxYellow">
               <div class="item">
-                <p class="tit">待结施工费用</p>
+                <p class="tit">订单余额</p>
                 <p class="money">2020202</p>
               </div>
             </div>
@@ -167,11 +167,11 @@
               <!-- 计时 -->
               <el-table-column prop="name" label="工时" v-if="mNavItemIndex==1"/>
               <!-- 管理 -->
-              <el-table-column prop="name" label="上班工时" v-if="mNavItemIndex==2"/>
+              <el-table-column prop="name" label="带班管理提成" v-if="mNavItemIndex==2"/>
               <el-table-column prop="name" label="带班管理费" v-if="mNavItemIndex==2"/>
 
               <el-table-column prop="name" label="施工费用" v-if="mNavItemIndex==0||mNavItemIndex==1"/>
-              <el-table-column prop="name" label="工资标准"/>
+              <el-table-column prop="name" label="工资标准"  v-if="mNavItemIndex !==2" />
               <el-table-column prop="name" label="已对账"/>
               <el-table-column prop="name" label="未对账"/>
             </el-table>

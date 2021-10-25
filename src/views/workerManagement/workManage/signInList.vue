@@ -53,6 +53,10 @@
       <div class="top-content flex fvertical fbetween">
         <div class="top-content-item flex fvertical">
           <div class="flex fvertical top-content-item-status">
+            <span>所属项目：</span>
+            <el-input v-model="serach" clearable class="top-content-item-input" placeholder="输入项目名称/服务单号" />
+          </div>
+          <div class="flex fvertical top-content-item-status">
             <span>查询时间：</span>
             <div class="flex alCen flex1">
               <el-date-picker
@@ -103,7 +107,7 @@
         <el-table-column prop="name" label="签到用户"/>
         <el-table-column prop="name" label="手机号"/>
         <el-table-column prop="name" label="签到日期"/>
-        <el-table-column prop="name" label="班组考勤时间"/>
+        <el-table-column prop="name" label="班组考勤时间" width="120"/>
         <el-table-column prop="name" label="签到地点" width="200"/>
         <el-table-column prop="name" label="上班签到">
           <template slot-scope="scope">

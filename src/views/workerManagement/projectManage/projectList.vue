@@ -69,27 +69,27 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'" :cell-style="cellStyle">
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="name" label="项目ID" />
+        <el-table-column prop="briefId" label="项目ID" />
         <el-table-column label="项目名称"  width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.name}}</p>
+            <p>{{scope.row.title}}</p>
             <p class="label" v-if="scope.row.status == 0">
               <span class="lableTxt">邦宁</span>
             </p>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="项目人数" />
-        <el-table-column prop="name" label="所属服务单"/>
-        <el-table-column prop="name" label="项目联系人"/>
+        <el-table-column prop="totalNum" label="项目人数" />
+        <el-table-column prop="orderId" label="所属服务单"/>
+        <el-table-column prop="creatorName" label="项目联系人"/>
         <el-table-column prop="name" label="进场时间"/>
         <el-table-column prop="name" label="竣工时间"/>
         <el-table-column prop="name" label="服务周期"/>
         <el-table-column prop="name" label="延期天数">
           <template slot-scope="scope">
-            <p :style="scope.row.status == 1?'color: #D9001B;':''">30天</p>
+            <!-- <p :style="scope.row.status == 1?'color: #D9001B;':''">30天</p> -->
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="项目地点" width="200"/>
+        <el-table-column prop="address" label="项目地点" width="200"/>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
             <p v-if="scope.row.status == 1" style="color: #D9001B">延期中</p>
@@ -174,9 +174,10 @@
 
 <script>
   import {
-    getCollectionClass
-  } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+    getProjectList,
+    getProjectCsv
+  } from '@/api/project'
+
   export default {
     data() {
       return {
@@ -233,22 +234,22 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadDate();
+      this.loadDate();
     },
     methods: {
       loadDate(status){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
-          status:status
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
+          // status:status
         }
-        getCollectionClass(params).then(res => {
-          this.loading = false;
+        getProjectList(params).then(res => {
           var data = res.data.list
           console.log('res', data)
           this.tableData = data
-
+        }).finally(()=>{
+          this.loading = false;
         })
       },
       search() {
@@ -267,7 +268,15 @@
       },
       // 导出
       exportTable(){
-
+        this.loading = true;
+        getProjectCsv({
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
+        }).then(res=>{
+        console.log("🚀 ~ file: projectList.vue ~ line 275 ~ exportTable ~ res", res)
+        }).finally(()=>{
+          this.loading = false
+        })
       },
       // 编辑
       edit(){

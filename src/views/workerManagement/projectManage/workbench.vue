@@ -4,7 +4,7 @@
     <el-radio-group v-model="tabPosition" style="margin-bottom: 30px;">
       <el-radio-button label="xmsy">项目首页</el-radio-button>
       <el-radio-button label="xmry">项目人员</el-radio-button>
-      <el-radio-button label="ysgl">验收管理</el-radio-button>
+      <el-radio-button label="ysgl">工程进度管理</el-radio-button>
       <el-radio-button label="qdtj">签到统计</el-radio-button>
       <el-radio-button label="bzgl">班组管理</el-radio-button>
       <el-radio-button label="xxzx">消息中心</el-radio-button>
@@ -32,12 +32,12 @@
     </div>
     <!-- 班组管理 -->
     <div v-if="tabPosition == 'bzgl'" class="demand-service">
-      <workIndex />
+      <teamList />
 
     </div>
     <!-- 消息中心 -->
     <div v-if="tabPosition == 'xxzx'" class="demand-service">
-      <workIndex />
+      <msgCenter />
 
     </div>
 
@@ -52,12 +52,17 @@
   import workProPeople from '../component/workProPeople.vue'
   import workSignin from '../component/workSignin.vue'
   import workYsgl from '../component/workYsgl.vue'
+import msgCenter from '../component/msgCenter.vue'
+import teamList from '../component/teamList.vue'
+
   export default {
     components: {
       workIndex,
       workProPeople,
       workSignin,
-      workYsgl
+      workYsgl,
+      msgCenter,
+      teamList
     },
     data() {
       return {
