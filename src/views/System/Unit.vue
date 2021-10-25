@@ -1,5 +1,5 @@
 <template>
-	<div class="main">
+	<div class="main" v-loading="loading">
 		<div class="top" id="top">
 			<div class="top-title ">数据筛选</div>
 			<div class="top-content flex fvertical fbetween">
@@ -43,7 +43,12 @@
 				</el-table-column>
 				<el-table-column prop="updateName" label="操作时间">
 				</el-table-column>
-				<el-table-column prop="updateName" label="操作">
+				<el-table-column label="操作">
+					<template slot-scope="scope">
+						<el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
+						<el-button type="text" @click="handleStatus(scope.row)">启用</el-button>
+						<el-button type="text" @click="handleDetele(scope.row)">删除</el-button>
+					</template>
 				</el-table-column>
 			</el-table>
 			<!-- 表格end -->
@@ -59,14 +64,15 @@
 
 		</div>
 
-		<el-dialog title="新增" :close-on-click-modal="false" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+		<el-dialog title="新增" :close-on-click-modal="false" :visible.sync="dialogVisible" width="30%"
+			:before-close="handleClose">
 			<div class="flex fvertical">
-				<span >单位：</span>
-				<el-input class="f1"  type="text" placeholder="请输入单位" ref="name"></el-input>
+				<span>单位：</span>
+				<el-input class="f1" type="text" placeholder="请输入单位" ref="name" v-model="unit"></el-input>
 			</div>
 			<span slot="footer" class="dialog-footer">
 				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+				<el-button type="primary" @click="handleSumibt">确 定</el-button>
 			</span>
 		</el-dialog>
 
@@ -74,25 +80,42 @@
 </template>
 
 <script>
+	import {
+		getUnitList,
+		getUnitAdd,
+		getUnitUpdate,
+		getUnitUpdateStatus,
+		getUnitDelete
+	} from '../../api/user.js'
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
 				pageIndex: 1,
 				pageSize: 10,
 				pageCount: 0,
+				unit: "",
 				status: "", // 状态
-				statusList: [], // 状态列表
+				statusList: [{
+					label: "全部",
+					value: ""
+				}, {
+					label: "停用",
+					value: 0
+				}, {
+					label: "启用",
+					value: 1
+				}], // 状态列表
 				clientHeight: 0,
 				tableData: [],
-				dialogVisible: false
+				dialogVisible: false,
+				loading: false,
 			}
 		},
-		watch:{
-			dialogVisible(val){
-				if(val){
-					console.log('-----------------')
-					// console.log()
-					this.$nextTick(()=>{
+		watch: {
+			dialogVisible(val) {
+				if (val) {
+					this.$nextTick(() => {
 						this.$refs.name.focus()
 					})
 				}
@@ -100,8 +123,62 @@
 		},
 		mounted() {
 			this.getWebHeing();
+			this.getUnitList();
 		},
 		methods: {
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
+			},
+			formatDate(value) {
+				return value ? moment(value).format('YYYY-MM-DD') : '';
+			},
+			/** 编辑 */
+			handleEdit(row) {
+				console.log('--------------')
+				console.log(row.unit)
+				console.log('--------------')
+			},
+			/** 停用/启用 */
+			handleStatus(row) {
+				let text = row.status ? '是否确定停用':'是否确定启用';
+				this.$confirm(text, '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(async () => {
+					let param = {};
+					param.id = row.id;
+					param.status = row.status ? 0 :1
+					let res = await getUnitUpdateStatus(param)
+					this.$message.success('操作成功');
+					this.getUnitList();
+				}).catch(() => {});
+			},
+			/** 删除 */
+			handleStatus(row) {
+				this.$confirm('是否确定删除', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'warning'
+				}).then(async () => {
+					let res = await getUnitDelete({id:row.id})
+					this.$message.success('操作成功');
+					this.getUnitList();
+				}).catch(() => {});
+			},
+			/** 提交对话框 */
+			async handleSumibt() {
+				if (this.unit.trim() == '') {
+					return this.$message.error('请输入单位')
+				}
+				let res = await getUnitAdd({
+					unit: this.unit
+				});
+				console.log(res);
+				this.$message.success('操作成功');
+				this.getUnitList();
+
+			},
 			/** 计算页面高度 */
 			getWebHeing() {
 				this.$nextTick(() => {
@@ -117,26 +194,45 @@
 						.offsetHeight - 180;
 				})
 			},
+			/** 获取列表数据 */
+			async getUnitList() {
+				this.loading = true;
+				try {
+					let param = {};
+					param.pageNum = this.pageIndex;
+					param.pageSize = this.pageSize;
+					let res = await getUnitList(param);
+					this.pageCount = res.data.total;
+					this.tableData = res.data.list;
+					this.loading = false;
+				} catch (e) {
+					this.loading = false;
+					//TODO handle the exception
+				}
+			},
 			/** 搜索 */
 			handleSearch() {
-
+				this.pageIndex = 1;
+				this.getUnitList();
 			},
 			/** 重置 */
 			handleRaLoad() {
-				this.pageIndex =1;
+				this.pageIndex = 1;
 				this.status = ''
 			},
 			/** 选择分页 */
 			handleSizeChange(e) {
 				this.pageSize = e;
 				this.pageIndex = 1;
+				this.getUnitList();
 			},
 			/** 点击分页 */
 			handleCurrentChange(e) {
 				this.pageIndex = e;
+				this.getUnitList();
 			},
 			/** 取消对话框 */
-			handleClose(){
+			handleClose() {
 				this.dialogVisible = false;
 			}
 		}

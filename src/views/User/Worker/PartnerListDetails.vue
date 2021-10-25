@@ -7,7 +7,7 @@
 					<img v-if="info && info.headPortrait" :src="info.headPortrait" alt="">
 					<i class="el-icon-s-custom" v-else></i>
 				</div>
-				<p >{{info&&info.userName?info.userName:''}}</p>
+				<p>{{info&&info.userName?info.userName:''}}</p>
 			</div>
 			<div class="details-top-info f1 flex fvertical">
 				<div class="details-top-info-list">
@@ -36,7 +36,8 @@
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">成为合伙人时间</span>
-						<span class="details-top-info-list-item-date">{{info && info.approvedTime ? formatDateTime(info.approvedTime):''}}</span>
+						<span
+							class="details-top-info-list-item-date">{{info && info.approvedTime ? formatDateTime(info.approvedTime):''}}</span>
 					</div>
 				</div>
 			</div>
@@ -114,8 +115,8 @@
 		<div class="partne-bill main" v-show="radio1 == '账单详情'">
 			<!-- 头部  -->
 			<div class="top">
-				<p class="bold top-content">数据筛选</p>
-				<div class="top-content flex fvertical fbetween">
+				<p v-if="billRadio != '积分明细'" class="bold top-content">数据筛选</p>
+				<div v-if="billRadio != '积分明细'" class="top-content flex fvertical fbetween">
 					<div class="top-content-item flex fvertical ">
 						<div class="flex fvertical top-content-item-status">
 							<span>输入查询：</span>
@@ -157,6 +158,7 @@
 						<el-radio-button label="已获得收入"></el-radio-button>
 						<el-radio-button label="未结算收入"></el-radio-button>
 						<el-radio-button label="提现记录"></el-radio-button>
+						<el-radio-button label="积分明细"></el-radio-button>
 					</el-radio-group>
 				</div>
 				<div class="partne-bill-title flex fbetween fvertical">
@@ -171,11 +173,17 @@
 				<!--  已获得收入 / 未结算收入 end -->
 
 				<!-- 提现记录 -->
-				<recordList v-else :recordTable="recordTable" :recordCount="recordCount" :recordSize="recordSize"
-					:recordIndex="recordIndex" v-loading="recordLoading"
+				<recordList v-else-if="billRadio == '提现记录'" :recordTable="recordTable" :recordCount="recordCount"
+					:recordSize="recordSize" :recordIndex="recordIndex" v-loading="recordLoading"
 					@handleSizeChangeRecord="handleSizeChangeRecord"
 					@handleCurrentChangeRecord="handleCurrentChangeRecord" />
 				<!-- 提现记录end -->
+
+				<!--- 积分明细 -->
+				<integralList v-else-if="billRadio == '积分明细'" :tableData="tableDataIntegral" :pageIndex="inteIndex"
+					:pageSize="inteSize" v-loading="loading" :pageCount="inteCount" @handleSizeChange="handleSizeChangeIntegral"
+					@handleCurrentChange="handleCurrentChangeIntegral" />
+				<!--- 积分明细end -->
 			</div>
 			<!-- 头部end -->
 
@@ -253,16 +261,21 @@
 		getInviteList,
 		getTaskList,
 		getTaskExport,
-		getIncomeDetailExport
+		getIncomeDetailExport,
+		getIntegralList
 	} from '../../../api/user.js'
 	import billList from '../components/partner/bill-list.vue'
 	import recordList from '../components/partner/record-list.vue'
 	import inviteList from '../components/partner/invite-list.vue'
 	import inviteTask from '../components/partner/invite-task.vue'
+	import integralList from '../components/partner/integral-list.vue'
 	import moment from 'moment'
 	export default {
 		data() {
 			return {
+				inteIndex:1,
+				inteSize:10,
+				inteCount:0,
 				taskIndex: 1,
 				taskSize: 10,
 				taskCount: 0,
@@ -360,16 +373,18 @@
 				recordCount: 0, // 总条数
 				recordTable: [], // 提现记录
 				recordLoading: false, // 是否加载提现记录列表
+				tableDataIntegral:[], // 积分列表
 			}
 		},
 		watch: {
-		
+
 		},
 		components: {
 			billList,
 			recordList,
 			inviteList,
-			inviteTask
+			inviteTask,
+			integralList
 		},
 		mounted() {
 			// console.log('this.$route',this.$route.query.userId)
@@ -380,7 +395,8 @@
 			this.getInvitationIncome();
 			this.getInviteList();
 			this.getTaskList();
-			
+			this.getIntegralList();
+
 		},
 		methods: {
 			/** 邀请列表-搜索 */
@@ -536,6 +552,10 @@
 						this.type = '';
 						this.getRecordList();
 						break;
+					case '积分明细':
+						this.getIntegralList();
+						this.inteIndex = 1;
+						break;
 				}
 			},
 			/** 查询 */
@@ -579,6 +599,11 @@
 				this.taskIndex = 1;
 				this.getTaskList();
 			},
+			handleSizeChangeIntegral(e){
+				this.inteSize = e;
+				this.inteIndex = 1;
+				this.getIntegralList()
+			},
 			/** 点击分页 */
 			handleCurrentChange(e) {
 				this.pageIndex = e;
@@ -595,6 +620,29 @@
 			handleCurrentChangeTask(e) {
 				this.taskIndex = e;
 				this.getTaskList();
+			},
+			handleCurrentChangeIntegral(e){
+				this.inteIndex = e;
+				this.getIntegralList();
+			},
+			/** 获取积分明细 */
+			async getIntegralList(){
+				console.log('获取积分明细')
+				this.loading = true;
+				try{
+					let param = {};
+					param.pageNum = this.inteIndex;
+					param.pageSize = this.inteSize;
+					param.userId = this.userId;
+					let res = await getIntegralList(param)
+					this.inteCount = res.data.total;
+					this.tableDataIntegral = res.data.list;
+					this.loading = false
+				}catch(e){
+					//TODO handle the exception
+					this.loading = false
+				}
+			
 			},
 			/** 获取账号详情列表 */
 			async getIncomeDetail() {
@@ -636,30 +684,33 @@
 			},
 			/** 计算百分比 */
 			getPercent(curNum, totalNum, isHasPercentStr = true) {
-			        curNum = parseFloat(curNum);
-			        totalNum = parseFloat(totalNum);
-			
-			        if (isNaN(curNum) || isNaN(totalNum)) {
-			            return '-';
-			        }
-			
-			        return isHasPercentStr ?
-			            totalNum <= 0 ? '0%' : (Math.round(curNum / totalNum * 10000) / 100.00 + '%') :
-			            totalNum <= 0 ? 0 : (Math.round(curNum / totalNum * 10000) / 100.00);
-			    },
+				curNum = parseFloat(curNum);
+				totalNum = parseFloat(totalNum);
+
+				if (isNaN(curNum) || isNaN(totalNum)) {
+					return '-';
+				}
+
+				return isHasPercentStr ?
+					totalNum <= 0 ? '0%' : (Math.round(curNum / totalNum * 10000) / 100.00 + '%') :
+					totalNum <= 0 ? 0 : (Math.round(curNum / totalNum * 10000) / 100.00);
+			},
 			/** 图表 */
 			setChart() {
 				let myChart = this.$echarts.init(document.getElementById('partneChart'))
 				let data = [{
 						value: this.teamInfo.authNum,
 						name: '认证工人',
-						percent:this.getPercent(this.teamInfo.authNum,(this.teamInfo.authNum+this.teamInfo.unAuthNum))
+						percent: this.getPercent(this.teamInfo.authNum, (this.teamInfo.authNum + this.teamInfo
+							.unAuthNum))
 					},
 					{
 						value: this.teamInfo.unAuthNum,
 						name: '未认证工人',
-						percent:this.getPercent(this.teamInfo.unAuthNum,(this.teamInfo.authNum+this.teamInfo.unAuthNum))
-					}]
+						percent: this.getPercent(this.teamInfo.unAuthNum, (this.teamInfo.authNum + this.teamInfo
+							.unAuthNum))
+					}
+				]
 				let option = {
 					tooltip: {
 						trigger: 'item',
@@ -673,13 +724,13 @@
 							let num = 0;
 							let percent = 0;
 							// console.log('data',data)
-							for(let i = 0 ; i < data.length ; i++){
-								if(data[i].name == name){
+							for (let i = 0; i < data.length; i++) {
+								if (data[i].name == name) {
 									num = data[i].value
 									percent = data[i].percent
 								}
 							}
-							return name + '   ' + num + '     '+percent
+							return name + '   ' + num + '     ' + percent
 						}
 
 					},

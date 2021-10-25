@@ -1313,6 +1313,86 @@ export function getPartnerRebateAudit(data) {
 		url: `/api/marketing/admin/marketing/partner/v1.0.2/rebate/audit`,
 		method: 'post',
 		data,
-		
+
 	})
 }
+
+/** 
+ * 获取积分明细
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} userId 合伙人用户Id  
+ *  */
+export function getIntegralList(params) {
+	return request({
+		url: `/api/marketing/admin/partner/integral/detail/v1.0.2/page`,
+		params
+	})
+}
+
+/** 
+ * 获取单位设置
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} 状态（0：停用 1：启用）  
+ *  */
+export function getUnitList(params) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/page`,
+		params
+	})
+}
+
+
+/**
+ * 添加单位设置
+ * @param {String} unit  单位名称
+ *  */
+export function getUnitAdd(data) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/insert`,
+		method: 'post',
+		data,
+	})
+}
+
+/**
+ * 修改单位设置
+ * @param {String} unit  单位名称
+ * @param {Number} id 当前订单ID  
+ *  */
+export function getUnitUpdate(data) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/page`,
+		method: 'post',
+		data,
+	})
+}
+
+
+/**
+ * 修改单位设置（启用/停用）
+ * @param {Number} status  状态（0.停用, 1.启用）
+ * @param {Number} id 当前订单ID  
+ *  */
+export function getUnitUpdateStatus(data) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/updateStatus`,
+		method: 'post',
+		data,
+	})
+}
+
+
+/**
+ * 删除单位设置
+ * @param {Number} id 当前订单ID  
+ *  */
+export function getUnitDelete(data) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/page`,
+		method: 'post',
+		data,
+	})
+}
+
