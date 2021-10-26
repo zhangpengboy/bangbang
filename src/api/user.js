@@ -1363,7 +1363,7 @@ export function getUnitAdd(data) {
  *  */
 export function getUnitUpdate(data) {
 	return request({
-		url: `/api/commons/admin/unit/v1.0.2/page`,
+		url: `/api/commons/admin/unit/v1.0.2/update`,
 		method: 'post',
 		data,
 	})
@@ -1388,11 +1388,305 @@ export function getUnitUpdateStatus(data) {
  * 删除单位设置
  * @param {Number} id 当前订单ID  
  *  */
-export function getUnitDelete(data) {
+export function getUnitDelete(params) {
 	return request({
-		url: `/api/commons/admin/unit/v1.0.2/page`,
+		url: `/api/commons/admin/unit/v1.0.2/remove`,
 		method: 'post',
-		data,
+		params,
 	})
 }
 
+/** 
+ * 获取精彩推荐
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 状态（0：停用 1：启用
+ * @param {String} keyword 搜索关键字（标题名称） 
+ *  */
+export function getRecommend(params) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/page`,
+		params
+	})
+}
+
+/** 
+ * 新增精彩推荐
+ * @param {String} imgUrl 图片Url 
+ * @param {String} link 链接
+ * @param {Number} sorted 编码
+ * @param {String} status 状态
+ * @param {String} subTitle 小标题
+ * @param {String} title 标题  
+ *  */
+export function getAddRecommend(data) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/insert`,
+		method: 'post',
+		data
+	})
+}
+
+/** 
+ * 编辑精彩推荐
+ * @param {String} id 当前列表ID 
+ * @param {String} imgUrl 图片Url 
+ * @param {String} link 链接
+ * @param {Number} sorted 编码
+ * @param {String} status 状态
+ * @param {String} subTitle 小标题
+ * @param {String} title 标题  
+ *  */
+export function getEditRecommend(data) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/update`,
+		method: 'post',
+		data
+	})
+}
+
+/** 
+ * 删除精彩推荐
+ * @param {String} id 当前列表ID 
+ *  */
+export function getDetelRecommend(params) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/remove`,
+		method: 'post',
+		params
+	})
+}
+
+/** 
+ * 修改状态精彩推荐
+ * @param {String} id 当前列表ID
+ * @param {Number} status 状态（0：停用 1：启用
+ *  */
+export function getUpdateStatusRecommend(data) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+/** 
+ * 查询单个精彩推荐
+ * @param {String} id 当前列表ID
+ * 
+ *  */
+export function getSingleRecommend(id) {
+	return request({
+		url: `/api/commons/admin/recommend/v1.0.2/get/` + id
+	})
+}
+
+/** 
+ * 获取问题类型
+ *  */
+export function getQuestionType() {
+	return request({
+		url: `/api/commons/admin/question/type/v1.0.2/list`
+	})
+}
+
+/** 
+ * 添加问题类型
+ * @param {Stirng} imgUrl 图标url
+ * @param {String} name 类型名称  
+ *  */
+export function getAddQuestionType(data) {
+	return request({
+		url: `/api/commons/admin/question/type/v1.0.2/insert`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 编辑问题类型
+ * @param {String} id 当前列表ID 
+ * @param {Stirng} imgUrl 图标url
+ * @param {String} name 类型名称  
+ *  */
+export function getEditQuestionType(data) {
+	return request({
+		url: `/api/commons/admin/question/type/v1.0.2/update`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 删除问题类型
+ * @param {String} id 当前列表ID  
+ *  */
+export function getDeteleQuestionType(params) {
+	return request({
+		url: `/api/commons/admin/question/type/v1.0.2/remove`,
+		method: 'post',
+		params
+	})
+}
+
+/** 
+ * 获取子问题列表
+ * @param {Number} typeId  问题类型的ID
+ *  */
+export function getQuestion(typeId) {
+	return request({
+		url: `/api/commons/admin/question/v1.0.2/list/${typeId}`
+	})
+}
+
+/** 
+ * 新增子问题
+ * @param {String}  content 内容
+ * @param {String}  title 标题
+ * @param {Number}  typeId 问题类型的ID
+ *  */
+export function getAddQuestion(data) {
+	return request({
+		url: `/api/commons/admin/question/v1.0.2/insert`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 编辑子问题
+ * @param {String}  id 当前列表ID 
+ * @param {String}  content 内容
+ * @param {String}  title 标题
+ * @param {Number}  typeId 问题类型的ID
+ *  */
+export function getEditQuestion(data) {
+	return request({
+		url: `/api/commons/admin/question/v1.0.2/update`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 删除子问题
+ * @param {String}  id 当前列表ID 
+ *  */
+export function getDeteleQuestion(params) {
+	return request({
+		url: `/api/commons/admin/question/v1.0.2/remove`,
+		method: 'post',
+		params
+	})
+}
+
+/** 获取客服信息 */
+export function getCustomerService() {
+	return request({
+		url: `/api/commons/admin/customerService/staff/v1.0.2/get`
+	})
+}
+
+/** 
+ * 修改客服信息
+ * @param {Number} id 当前列表ID
+ * @param {String} imgUrl 图片地址 
+ * @param {String} phone 电话号码
+ * @param {String} wechat 微信号    
+ *  */
+export function getEditCustomerService(data) {
+	return request({
+		url: `/api/commons/admin/customerService/staff/v1.0.2/update`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 获取banner轮播图列表
+ * @param {Number} pageNum 页码
+ * @param {Number} pageSize  页面大小
+ * @param {Number} status 状态（0：停用 1：启用
+ * @param {String} keyword 搜索关键字（标题名称） 
+ * @param {Number} type 类型（1：无跳转 2：外部链接）
+ * @param {Number} scene 位置（1：工人端 2：企业端-首页 3：企业端-我的） 
+ *  */
+export function getBanner(params) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/page`,
+		params
+	})
+}
+
+/**
+ * 查询单个banner轮播图
+ * @param {String} id 当前列表ID
+ * 
+ *  */
+export function getSingleBanner(params) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/get`,
+		params
+	})
+}
+
+/** 
+ * 新增banner轮播图列表
+ * @param {String} imgUrl  图片URL
+ * @param {String} link 链接
+ * @param {Number} scene 位置（1：工人端 2：企业端-首页 3：企业端-我的）
+ * @param {Number} sorted  排序编码
+ * @param {String} title  标题
+ * @param {Number} type 类型 
+ *   
+ *  */
+export function getAddBanner(data) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/insert`,
+		method: 'post',
+		data
+	})
+}
+
+/** 
+ * 编辑banner轮播图列表
+ * @param {String} id 当前列表ID 
+ * @param {String} imgUrl  图片URL
+ * @param {String} link 链接
+ * @param {Number} scene 位置（1：工人端 2：企业端-首页 3：企业端-我的）
+ * @param {Number} sorted  排序编码
+ * @param {String} title  标题
+ * @param {Number} type 类型    
+ *  */
+export function getEditBanner(data) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/update`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 修改轮播图状态
+ * @param {String} id 当前列表ID
+ * @param {Number} status  状态（0：停用 1：启用） 
+ *  */
+export function getUpdateStatusBanner(data) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/updateStatus`,
+		method: 'post',
+		data
+	})
+}
+
+/**
+ * 删除轮播图
+ * @param {String} id 当前列表ID
+ *  */
+export function getDeteleBanner(params) {
+	return request({
+		url: `/api/commons/admin/banner/v1.0.2/remove`,
+		method: 'post',
+		params
+	})
+}

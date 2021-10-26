@@ -2,20 +2,16 @@
 	<div class="main custome">
 		<div class="custome-top flex fbetween  fvertical">
 			<span class="bold">客服信息</span>
-			<el-button type="primary" v-if="!show" @click="show = true">编辑</el-button>
+			<el-button type="primary" v-if="!show" @click="handlesShowEdit">编辑</el-button>
 		</div>
 		<div class="custome-table">
 			<div class="custome-table-item flex fvertical">
 				<div class="custome-table-item-title">客服二维码</div>
 				<div class="custome-table-item-conter f1" :class="!show?'active':''">
-					<!-- <img src="" alt=""> -->
 
-					<el-upload :disabled="!show" class="avatar-uploader"
-						action="https://jsonplaceholder.typicode.com/posts/" :show-file-list="false"
-						:on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
-						<img v-if="imageUrl" :src="imageUrl" class="avatar">
-						<i v-else class="el-icon-plus avatar-uploader-icon"></i>
-					</el-upload>
+					<UploadsImg  v-if="imgUrl" @handleLookImg="handleLookImg" @handleDeteleImg="handleDeteleImg" :imgUrl="imgUrl" :show="show"  />
+
+					<Uploads v-else :show="!show" @handleAvatarSuccess="handleAvatarSuccess" />
 
 				</div>
 			</div>
@@ -23,56 +19,122 @@
 			<div class="custome-table-item flex fvertical">
 				<div class="custome-table-item-title">客服微信</div>
 				<div class="custome-table-item-conter f1" :class="!show?'active':''">
-					<input type="" name="" id="" value="SiTuKaiYang93" :disabled="!show" />
+					<input type="" name="" id="" v-model="info.wechat" :disabled="!show" />
 				</div>
 			</div>
 
 			<div class="custome-table-item flex fvertical">
 				<div class="custome-table-item-title">客服热线</div>
 				<div class="custome-table-item-conter f1" :class="!show?'active':''">
-					<input type="" name="" id="" value="17665451752" :disabled="!show" />
+					<input type="" name="" id="" v-model="info.phone" :disabled="!show" />
 				</div>
 			</div>
 
 			<div class="custome-table-item flex fvertical">
 				<div class="custome-table-item-title">操作人</div>
 				<div class="custome-table-item-conter f1" :class="!show?'active':''">
-					<input type="" name="" id="" value="客服A" :disabled="!show" />
+					<input type="" name="" id="" :disabled="true" v-model="info.updaterName" />
 				</div>
 			</div>
 
 		</div>
 		<div class="custome-btn flex fvertical fcenter" v-if="show">
-			<el-button type="primary">保存</el-button>
+			<el-button type="primary" @click="handleSumibt">保存</el-button>
 			<el-button type="primary" plain @click="show = false">取消</el-button>
 		</div>
+
+		<el-dialog title="提示" :visible.sync="dialogVisible" width="30%" :before-close="handleClose">
+			<el-image :src="imgUrl">
+			</el-image>
+		</el-dialog>
+
 	</div>
 </template>
 
 <script>
+	import {
+		getCustomerService,
+		getEditCustomerService
+	} from '../../../api/user.js'
+	import Uploads from '../../../components/Upload/Pulibc.vue'
+	import UploadsImg from '../../../components/UploadImg/UploadImg.vue'
 	export default {
 		data() {
 			return {
 				show: false,
-				imageUrl: ""
+				info: {},
+				imgUrl: "",
+				current: false,
+				dialogVisible:false,
+				editData:{}
 			}
 		},
-		methods: {
-			handleAvatarSuccess(res, file) {
-				this.imageUrl = URL.createObjectURL(file.raw);
-			},
-			beforeAvatarUpload(file) {
-				const isJPG = file.type === 'image/jpeg' || 'image/png';
-				const isLt2M = file.size / 1024 / 1024 < 2;
-
-				if (!isJPG) {
-					this.$message.error('上传头像图片只能是 JPG或者png 格式!');
+		components: {
+			Uploads,
+			UploadsImg
+		},
+		watch:{
+			show(val){
+				if(!val){
+					this.info = this.editData;
+					this.imgUrl = this.editData.imgUrl
 				}
-				if (!isLt2M) {
-					this.$message.error('上传头像图片大小不能超过 2MB!');
-				}
-				return isJPG && isLt2M;
 			}
+		},
+		mounted() {
+			this.getServiceInfo();
+		},
+		methods: {
+			getCopyObj(copyObj){
+				return JSON.parse(JSON.stringify(copyObj));
+			},
+			/** 关闭对话框 */
+			handleClose(){
+				this.dialogVisible = false
+			},
+			/** 显示编辑 */
+			handlesShowEdit(){
+				this.editData = this.getCopyObj(this.info);
+				this.editData.imgUrl = this.getCopyObj(this.imgUrl);
+				this.show = true;
+			},
+			/** 查看图片 */
+			handleLookImg() {
+				this.dialogVisible = true;
+			},
+			/** 删除图片 */
+			handleDeteleImg() {
+				this.imgUrl = '';
+			},
+			
+			/** 获取客服信息 */
+			async getServiceInfo() {
+				let res = await getCustomerService();
+				console.log('getServiceInfo::', res);
+				this.info = res.data ? res.data : {},
+					this.imgUrl = res.data.imgUrl ? res.data.imgUrl : ''
+			},
+			/** 图片上传成功 */
+			handleAvatarSuccess(file) {
+				this.imgUrl = file;
+			},
+			/** 保存客服信息 */
+			async handleSumibt() {
+				
+				try {
+					let param = this.info;
+					param.imgUrl = this.imgUrl
+					let res = await getEditCustomerService(param);
+					this.$message.success('操作成功');
+					this.show = false;
+					this.getServiceInfo();
+				} catch (e) {
+					console.log('获取异常....')
+					console.log(e)
+					//TODO handle the exception
+				}
+			},
+
 		}
 	}
 </script>
@@ -81,7 +143,10 @@
 	.custome {
 		width: 800px;
 	}
-	.custome-top{
+
+	
+
+	.custome-top {
 		height: 40px;
 	}
 
@@ -121,32 +186,6 @@
 				background-color: #FFFFFF;
 				border-left: 1px solid #ccc;
 
-				.avatar-uploader {
-					padding: 10px 0 10px 20px;
-
-					.el-upload {
-						border: 1px dashed #d9d9d9;
-						border-radius: 6px;
-						cursor: pointer;
-						position: relative;
-						overflow: hidden;
-					}
-				}
-
-				.avatar-uploader .el-upload:hover {
-					border-color: #409EFF;
-				}
-
-				.avatar-uploader-icon {
-					font-size: 28px;
-					color: #8c939d;
-					width: 60px;
-					height: 60px;
-					line-height: 60px;
-					text-align: center;
-					border: 1px dashed #d9d9d9;
-					border-radius: 6px;
-				}
 
 				.avatar {
 					width: 60px;
@@ -157,7 +196,6 @@
 				img {
 					width: 60px;
 					height: 60px;
-					background-color: #0000FF;
 					// padding-left: 40;
 					margin-left: 40px;
 				}

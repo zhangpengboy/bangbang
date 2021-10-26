@@ -35,19 +35,23 @@
 				</el-table-column>
 				<el-table-column prop="id" label="ID" width="200">
 				</el-table-column>
-				<el-table-column prop="createName" label="计件单位">
+				<el-table-column prop="unit" label="计件单位">
 				</el-table-column>
-				<el-table-column prop="createName" label="状态">
+				<el-table-column label="状态">
+					<template slot-scope="scope">
+						<p v-if="scope.row.status == 0" style="color: red;">停用</p>
+						<p v-if="scope.row.status  == 1">启用</p>
+					</template>
 				</el-table-column>
-				<el-table-column prop="updateName" label="操作人">
+				<el-table-column prop="updaterName" label="操作人">
 				</el-table-column>
-				<el-table-column prop="updateName" label="操作时间">
+				<el-table-column prop="updateTime" label="操作时间">
 				</el-table-column>
 				<el-table-column label="操作">
 					<template slot-scope="scope">
-						<el-button type="text" @click="handleEdit(scope.row)">编辑</el-button>
-						<el-button type="text" @click="handleStatus(scope.row)">启用</el-button>
-						<el-button type="text" @click="handleDetele(scope.row)">删除</el-button>
+						<!-- <el-button type="text" @click="handleEdit(scope.row)">编辑</el-button> -->
+						<el-button type="text" @click="handleStatus(scope.row)">{{scope.row.status?'停用':'启用'}}</el-button>
+						<!-- <el-button type="text" @click="handleDetele(scope.row)">删除</el-button> -->
 					</template>
 				</el-table-column>
 			</el-table>
@@ -64,7 +68,7 @@
 
 		</div>
 
-		<el-dialog title="新增" :close-on-click-modal="false" :visible.sync="dialogVisible" width="30%"
+		<el-dialog :title="editData?'编辑':'新增'" :close-on-click-modal="false" :visible.sync="dialogVisible" width="30%"
 			:before-close="handleClose">
 			<div class="flex fvertical">
 				<span>单位：</span>
@@ -110,6 +114,7 @@
 				tableData: [],
 				dialogVisible: false,
 				loading: false,
+				editData:""
 			}
 		},
 		watch: {
@@ -118,6 +123,9 @@
 					this.$nextTick(() => {
 						this.$refs.name.focus()
 					})
+				}else{
+					this.unit = '';
+					this.editData = ''
 				}
 			}
 		},
@@ -134,9 +142,9 @@
 			},
 			/** 编辑 */
 			handleEdit(row) {
-				console.log('--------------')
-				console.log(row.unit)
-				console.log('--------------')
+				this.dialogVisible = true;
+				this.editData = row;
+				this.unit = row.unit;
 			},
 			/** 停用/启用 */
 			handleStatus(row) {
@@ -155,7 +163,7 @@
 				}).catch(() => {});
 			},
 			/** 删除 */
-			handleStatus(row) {
+			handleDetele(row) {
 				this.$confirm('是否确定删除', '提示', {
 					confirmButtonText: '确定',
 					cancelButtonText: '取消',
@@ -171,11 +179,21 @@
 				if (this.unit.trim() == '') {
 					return this.$message.error('请输入单位')
 				}
-				let res = await getUnitAdd({
-					unit: this.unit
-				});
-				console.log(res);
-				this.$message.success('操作成功');
+				if(this.editData.id){
+					console.log(this.editData)
+					let res = await getUnitUpdate({
+						unit:this.unit,
+						id:this.editData.id
+					})
+					this.$message.success('操作成功');
+				}else{
+					let res = await getUnitAdd({
+						unit: this.unit
+					});
+					console.log(res);
+					this.$message.success('操作成功');
+				}
+				this.dialogVisible = false;
 				this.getUnitList();
 
 			},
@@ -201,6 +219,7 @@
 					let param = {};
 					param.pageNum = this.pageIndex;
 					param.pageSize = this.pageSize;
+					param.status = this.status;
 					let res = await getUnitList(param);
 					this.pageCount = res.data.total;
 					this.tableData = res.data.list;
