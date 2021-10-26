@@ -20,16 +20,6 @@
 						<span class="details-top-info-list-item-date">{{info&&info.phone?info.phone:''}}</span>
 					</div>
 					<div class="details-top-info-list-item">
-						<span class="details-top-info-list-item-name">地区</span>
-						<span class="details-top-info-list-item-date">{{info&&info.cityName?info.cityName:''}}</span>
-					</div>
-				</div>
-				<div class="details-top-info-list">
-					<div class="details-top-info-list-item">
-						<span class="details-top-info-list-item-name">名称</span>
-						<span class="details-top-info-list-item-date">{{info&&info.userName?info.userName:''}}</span>
-					</div>
-					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">邀请人数</span>
 						<span
 							class="details-top-info-list-item-date">{{info&&info.invitationNum?info.invitationNum:0}}人</span>
@@ -39,6 +29,27 @@
 						<span
 							class="details-top-info-list-item-date">{{info && info.approvedTime ? formatDateTime(info.approvedTime):''}}</span>
 					</div>
+					
+				</div>
+				<div class="details-top-info-list">
+					<div class="details-top-info-list-item">
+						<span class="details-top-info-list-item-name">名称</span>
+						<span class="details-top-info-list-item-date">{{info&&info.userName?info.userName:''}}</span>
+					</div>
+					<div class="details-top-info-list-item">
+						<span class="details-top-info-list-item-name">积分数量</span>
+						<span class="details-top-info-list-item-date">{{info&&info.integral?info.integral:''}}</span>
+					</div>
+					<div class="details-top-info-list-item">
+						<span class="details-top-info-list-item-name">地区</span>
+						<span class="details-top-info-list-item-date">{{info&&info.cityName?info.cityName:''}}</span>
+					</div>
+					<div class="details-top-info-list-item">
+						<span class="details-top-info-list-item-name">合伙人结束时间</span>
+						<span class="details-top-info-list-item-date">{{info&&info.expireTime?info.expireTime:''}}</span>
+					</div>
+					
+					
 				</div>
 			</div>
 		</div>
@@ -769,19 +780,15 @@
 
 <style lang="scss">
 	.details-top {
-		height: 150px;
+		// height: 150px;
 		border: 1px solid #ccc;
 		overflow: hidden;
 
 		.details-top-img {
 			width: 300px;
-			height: 150px;
 			text-align: center;
 			display: inline-block;
-			border-right: 1px solid #ccc;
-			background-color: #f1f1f1;
 			padding-left: 20px;
-
 			p {
 				font-size: 18px;
 				margin-top: 10px;

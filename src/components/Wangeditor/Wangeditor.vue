@@ -47,7 +47,7 @@
 		methods:{
 			/** 获取富文本值 */
 			getInfo(){
-				console.log(this.editor.txt.html());
+				return this.editor.txt.html()
 			},
 			/** 设置富文本值 */
 			setInfo(data){
