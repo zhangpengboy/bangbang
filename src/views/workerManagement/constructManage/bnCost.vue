@@ -198,7 +198,7 @@
          current: 1, // 页码
          pageSize: 10, // 显示多少条数据
          total: 0, // 总条数
-         reVisible: true,
+         reVisible: false,
          month: null,
          form: {
              total: '',
