@@ -978,54 +978,6 @@ export const asyncRoutes = [{
 			meta: {
 				title: '施工费用管理'
 			}
-		},{
-			path: 'bnRecord',
-			component: () => import('@/views/workerManagement/constructManage/bnRecord'),
-			name: 'bnRecord',
-			hidden: true,
-			meta: {
-				title: '邦宁项目对账记录'
-			}
-		},{
-			path: 'ownRecord',
-			component: () => import('@/views/workerManagement/constructManage/ownRecord'),
-			name: 'ownRecord',
-			hidden: true,
-			meta: {
-				title: '自建项目对账记录'
-			}
-		},{
-			path: 'ownCost',
-			component: () => import('@/views/workerManagement/constructManage/ownCost'),
-			name: 'ownCost',
-			hidden: true,
-			meta: {
-				title: '自建项目费用明细'
-			}
-		},{
-			path: 'bnCost',
-			component: () => import('@/views/workerManagement/constructManage/bnCost'),
-			name: 'bnCost',
-			hidden: true,
-			meta: {
-				title: '邦宁项目费用明细'
-			}
-		},{
-			path: 'workRules',
-			component: () => import('@/views/workerManagement/projectManage/workRules'),
-			name: 'workRules',
-			hidden: true,
-			meta: {
-				title: '考勤规则'
-			}
-		},{
-			path: 'teamInfo',
-			component: () => import('@/views/workerManagement/projectManage/teamInfo'),
-			name: 'teamInfo',
-			hidden: true,
-			meta: {
-				title: '查看班组信息'
-			}
 		}]
 	},
 	{
