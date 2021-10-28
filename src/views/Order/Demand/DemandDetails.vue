@@ -224,21 +224,21 @@
 													<el-input class="f1" onkeyup="value=this.value.replace(//D+/g,'')"
 														v-model="teams.totalUnit" :disabled="true">
 													</el-input>
-													<el-select style="width: 120px;margin-left: 10px;"
+													<!-- <el-select style="width: 120px;margin-left: 10px;"
 														v-model="teams.unit" placeholder="请选择">
 														<el-option v-for="item in companyList" :key="item.value"
 															:label="item.label" :value="item.value">
 														</el-option>
-													</el-select>
+													</el-select> -->
 												</div>
 											</el-form-item>
-											<el-form-item label="计件单价" prop="unitPrice">
+											<!-- <el-form-item label="计件单价" prop="unitPrice">
 												<div class="flex">
 													<el-input class="f1" v-model="teams.unitPrice"
 														@input="handleTeamsUniprice(index,inx,teams)"></el-input>
 													<span>元/{{geUnit(teams.unit)}}</span>
 												</div>
-											</el-form-item>
+											</el-form-item> -->
 										</div>
 
 										<div class="flex  demand-service-plan-box-info-data">
@@ -397,23 +397,42 @@
 															v-model="teamTypes.personalQuantity"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
-														<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
+														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 													</div>
 												</el-form-item>
 												<el-form-item label="计件单价" prop="unitPrice">
 													<div class="flex">
-														<el-input :disabled="true" style="width: 200px;"
-															v-model="teams.unitPrice"></el-input>
+														<el-input  style="width: 200px;"
+															v-model="teamTypes.unitPrice"
+															@input="handleQuantity(index,inx,types_index,teamTypes)">
+															></el-input>
 														<span
-															style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
+															style="padding-left: 20px;">元/
+															<el-select style="width: 80px;margin-left: 10px;"
+														v-model="teamTypes.unit" placeholder="请选择">
+														<el-option v-for="item in companyList" :key="item.value"
+															:label="item.label" :value="item.value">
+														</el-option>
+													</el-select>
+													</span>
+															
 													</div>
 												</el-form-item>
+												
 												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 200px;" v-model="teamTypes.number"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
 														<span style="padding-left: 20px;">人</span>
+													</div>
+												</el-form-item>
+												<el-form-item label="计件每日收入" prop="dailyFee">
+													<div class="flex">
+														<el-input style="width: 150px;" v-model="teamTypes.dailyFee"
+															@input="handleQuantity(index,inx,types_index,teamTypes)">
+														</el-input>
+														<span style="padding-left: 20px;">元/天</span>
 													</div>
 												</el-form-item>
 											</div>
@@ -428,15 +447,22 @@
 															v-model="teamTypes.personalQuantity"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
-														<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
+														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 													</div>
 												</el-form-item>
 												<el-form-item label="计件单价" prop="unitPrice">
 													<div class="flex">
-														<el-input :disabled="true" style="width: 150px;"
-															v-model="teams.unitPrice"></el-input>
+														<el-input  style="width: 150px;"
+															v-model="teamTypes.unitPrice"></el-input>
 														<span
-															style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
+															style="padding-left: 20px;">元/
+															<el-select style="width: 80px;margin-left: 10px;"
+														v-model="teamTypes.unit" placeholder="请选择">
+														<el-option v-for="item in companyList" :key="item.value"
+															:label="item.label" :value="item.value">
+														</el-option>
+													</el-select>
+													</span>
 													</div>
 												</el-form-item>
 												<el-form-item label="人数" prop="number">
@@ -447,6 +473,15 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
+													<el-form-item label="计件每日收入" prop="dailyFee">
+													<div class="flex">
+														<el-input style="width: 150px;" v-model="teamTypes.dailyFee"
+															@input="handleQuantity(index,inx,types_index,teamTypes)">
+														</el-input>
+														<span style="padding-left: 20px;">/元</span>
+													</div>
+												</el-form-item>
+												
 												<el-form-item label="带班服务费" prop="leaderFee">
 													<div class="flex">
 														<el-input @input="handleServiceFee(index,inx,types_index,teamTypes)" style="width: 80px;"  min="0" max="100"  type="number" v-model="teamTypes.leaderRate">
@@ -554,28 +589,56 @@
 									<!-- <span> 施工服务费</span> -->
 									<el-input class="f1" :value="item.serverTotal" :disabled="true"></el-input>
 								</el-form-item>
-								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="信息服务费"
-									prop="serviceFeeRate">
-									<!-- <span>信息服务费</span> -->
-									<div class="flex">
-										<el-input class="f1 demand-service-plan-box-foot-item-server"
-											@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
-											placeholder="请输入信息服务费比例">
+								<el-form-item class=" flex fvertical" label="平台服务费"
+									prop="serviceFeeRateNum">
+									<div style="width: 100%;display: flex;">
+										<el-select style="width: 100px"
+											v-model="item.serviceFeeType" placeholder="请选择">
+										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
+											:label="item.label" :value="item.value">
+										</el-option>
+										</el-select>
+										<el-input v-show="item.serviceFeeType == 2" style="width: 170px; margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
+										placeholder="请输入平台服务费比例">
 										</el-input>
-										<el-input value="%" :disabled="true"
-											class="f1 demand-service-plan-box-foot-item-company"></el-input>
-										<!-- <span class="f1">{{item.serviceFeeRateNum}}元</span> -->
-										<div class="flex fvertical">
+										<el-input v-show="item.serviceFeeType == 1"  style="width: 170px;margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										@input="handleInputToals(index,item)" v-model="item.serviceFeeRateNum"
+										placeholder="请输入平台服务费">
+										</el-input>
+											<div class="flex fvertical" style="width: 120px; margin-left:10px">
 											<el-input :value="item.serviceFeeRateNum" :disabled="true"
 												class="f1 demand-service-plan-box-foot-item-company">
 											</el-input>
 											<span style="padding-left: 10px;">元</span>
 										</div>
 									</div>
+									<!-- <span>信息服务费</span> -->
+									<!-- <div class="flex"> -->
+										<!-- <div style="width: 80px;"> -->
+										<!-- <el-select style="width: 80px"
+											v-model="item.serviceFeeType" placeholder="请选择">
+											<el-option v-for="item in serviceFeeTypeList" :key="item.value"
+												:label="item.label" :value="item.value">
+											</el-option>
+										</el-select> -->
+										<!-- </div> -->
+										<!-- <el-input style="width: 80px;" class="f1 demand-service-plan-box-foot-item-server"
+											@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
+											placeholder="请输入平台服务费比例">
+										</el-input> -->
+										
+										<!-- <div class="flex fvertical">
+											<el-input :value="item.serviceFeeRateNum" :disabled="true"
+												class="f1 demand-service-plan-box-foot-item-company">
+											</el-input>
+											<span style="padding-left: 10px;">元</span>
+										</div> -->
+									<!-- </div> -->
 								</el-form-item>
-								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="税费"
+								<!-- <el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="税费"
 									prop="taxRate">
-									<!-- <span>税费</span> -->
+									<span>税费</span>
 									<div class="flex">
 										<el-input class="f1" v-model="item.taxRate"
 											@input="handleInputToals(index,item)" placeholder="请输入信息服务费比例"></el-input>
@@ -586,10 +649,10 @@
 									</div>
 								</el-form-item>
 								<el-form-item class="demand-service-plan-box-foot-item flex fvertical" label="总费用">
-									<!-- <span>总费用</span> -->
+									<span>总费用</span>
 									<el-input class="f1" v-model="item.totalFee" :disabled="true" placeholder="元">
 									</el-input>
-								</el-form-item>
+								</el-form-item> -->
 							</div>
 							<!-- 总费用end -->
 						</el-form>
@@ -686,6 +749,16 @@
 					number: [{
 						required: true,
 						message: '请输入入人数',
+						trigger: 'blur'
+					}],
+					unitPrice:[{
+						required: true,
+						message: '请输入计件单价',
+						trigger: 'blur'
+					}],
+					dailyFee:[{
+						required: true,
+						message: '请输入计件每日收入',
 						trigger: 'blur'
 					}],
 					leaderFee: [{
@@ -819,6 +892,13 @@
 					label: '个',
 					value: 7,
 				}],
+				serviceFeeTypeList:[ {
+					label: '一次性',
+					value: 1,
+				}, {
+					label: '周期',
+					value: 2,
+				}],
 				company: "", // 选中工程量
 				options: [],
 				value: "",
@@ -856,8 +936,9 @@
 					enterStartTime: "", //方案进场时间
 					enterEndTime: "", // 方案退场时间
 					enterDay: "", // 方案工期
-					serviceFeeRate: "", // 信息服务率
-					serviceFeeRateNum: "", //  信息服务费
+					serviceFeeRate: "", // 平台服务服务率
+					serviceFeeType:1, // 平台服务费类型
+					serviceFeeRateNum: "", //  平台服务服务费
 					taxRate: "", // 税率
 					taxRateNum: "", // 税费
 					serverTotal: "", // 施工服务费
@@ -873,7 +954,7 @@
 						restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
 						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
-						unitPrice: "", // 计件单价
+						// unitPrice: "", // 计件单价
 						unit: 1, // 单位
 						enterStartTime: "", //进场时间
 						enterEndTime: "", // 退场时间
@@ -891,6 +972,7 @@
 								enterDay: "", //工种工期
 								personalQuantity: "", // 个人工程量
 								unitPrice: '', //单价 
+								unit:1,//计件单位 
 								number: "", // 人数
 								leaderFee: "", // 带班费
 								leaderRate:'',// 带班费%
@@ -1144,8 +1226,7 @@
 						}
 					}
 					if (teamTypes[i].workTypeVal == '计件') {
-						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.schemes[data.index].teams[data
-							.inx].unitPrice
+						total += teamTypes[i].number * teamTypes[i].personalQuantity * teamTypes[i].unitPrice
 						if (teamTypes[i].tag == '班组长') {
 							// total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
 							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
@@ -1167,8 +1248,13 @@
 			// 计算总费用
 			handleInputToals(index, val) {
 				val.taxRate = val.taxRate.replace(/[^0-9.]/g, '');
+				if(val.serviceFeeType == 1){
+					//一次性
+				}else{
 				val.serviceFeeRate = val.serviceFeeRate.replace(/[^0-9.]/g, '');
 				this.getTotal(index)
+				}
+				
 			},
 			// 计算总的社工服务费
 			getTotal(index) {
@@ -1180,27 +1266,30 @@
 						if (data.workTypeVal == '计时' && data.dailyFee && data.enterDay && data
 							.number) {
 							total += data.dailyFee * data.enterDay * data.number;
-							if (data.tag == '班组长') {
+							// if (data.tag == '班组长') {
 								// total += data.enterDay * data.leaderFee * data.number;
-								total += data.leaderFee?data.leaderFee:0
-							}
+								// total += data.leaderFee?data.leaderFee:0
+							// }
 						}
 						if (data.workTypeVal == '计件') {
-							total += data.number * data.personalQuantity * item.unitPrice
-							if (data.tag == '班组长') {
+							total += data.number * data.personalQuantity * data.unitPrice
+							// if (data.tag == '班组长') {
 								// total += data.enterDay * data.leaderFee * data.number;
-								total += data.leaderFee?data.leaderFee:0
-							}
+								// total += data.leaderFee?data.leaderFee:0
+							// }
 						}
-						if (data.workTypeVal == '管理') {
+						// if (data.workTypeVal == '管理') {
 							// total += data.enterDay * data.leaderFee * data.number;
-							total += data.leaderFee?data.leaderFee:0
-						}
+							// total += data.leaderFee?data.leaderFee:0
+						// }
 					})
 				})
 				this.schemes[index].serverTotal = total;
+				//平台服务费类型为2 周期才需要算 
+				if(this.schemes[index].serviceFeeType == 2){
 				this.schemes[index].serviceFeeRateNum = ((Number(this.schemes[index].serverTotal) * Number(this
 					.schemes[index].serviceFeeRate) / 100));
+				}
 				let taxRate = Number(this.schemes[index].taxRate);
 				let totals = Number(this.schemes[index].serverTotal) + Number(this.schemes[index]
 					.serviceFeeRateNum);
@@ -1234,8 +1323,8 @@
 					restStartTime: "", // 午休开始时间
 					restEndTime: "", // 午休结束时间
 					restTimelen: 1, // 午休时长
-					unitPrice: "", // 计件单价
-					unit: 1, // 单位
+					// unitPrice: "", // 计件单价
+					// unit: 1, // 单位
 					enterStartTime: "", //进场时间
 					enterEndTime: "", // 退场时间
 					enterDay: "", // 班组工期
@@ -1252,6 +1341,7 @@
 							enterDay: "", //工种工期
 							personalQuantity: "", // 个人工程量
 							unitPrice: '', //单价 
+							unit: 1, // 单位
 							number: "", // 人数
 							leaderFee: "", // 带班费
 							leaderRate:'',// 带班费%
@@ -1275,6 +1365,7 @@
 					enterDay: "", //工种工期
 					personalQuantity: "", // 个人工程量
 					unitPrice: '', //单价 
+					unit: 1, // 单位
 					number: "", // 人数
 					leaderFee: "", // 带班费
 					description: "", // 描述
@@ -1541,10 +1632,12 @@
 				// 定位到对应的班组索引循环计算班组长的服务费
 				this.schemes[index].teams[inx].teamTypes.forEach(item => {
 				item.leaderFee = 0
+				console.log(item)
 				if(item.workType == 1 ){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
-				item.leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
+				item.leaderFee = (this.schemes[index].teams[inx].totalFee + (item.unitPrice?item.unitPrice:0)*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
+				console.log(this.schemes[index].teams[inx].totalFee,item.unitPrice,item.personalQuantity,item.leaderRate)
 				}else if(item.workType == 2){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
@@ -1737,9 +1830,9 @@
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
-							if(schemes[i].teams[j].teamTypes[k].workType == 1){
-								schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
-							}
+							// if(schemes[i].teams[j].teamTypes[k].workType == 1){
+							// 	schemes[i].teams[j].teamTypes[k].unitPrice = schemes[i].teams[j].unitPrice
+							// }
 							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].dailyHours
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
@@ -2213,7 +2306,7 @@
 			.demand-service-plan-box-foot-item {
 				width: 50%;
 				margin-bottom: 20px;
-
+				display: flex;
 				.el-form-item__content {
 					margin-left: 0 !important;
 				}

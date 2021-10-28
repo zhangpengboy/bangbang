@@ -366,14 +366,14 @@
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
+											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
 										<div class="flex">
-											<el-input :disabled="true" style="width: 200px;" v-model="teams.unitPrice">
+											<el-input :disabled="true" style="width: 200px;" v-model="teamTypes.unitPrice">
 											</el-input>
-											<span style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
+											<span style="padding-left: 20px;">元/{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -397,14 +397,14 @@
 												v-model="teamTypes.personalQuantity"
 												@input="handleQuantity(index,inx,types_index,teamTypes)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teams.unit)}}</span>
+											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
 										<div class="flex">
-											<el-input :disabled="true" style="width: 150px;" v-model="teams.unitPrice">
+											<el-input :disabled="true" style="width: 150px;" v-model="teamTypes.unitPrice">
 											</el-input>
-											<span style="padding-left: 20px;">元/{{geUnit(teams.unit)}}</span>
+											<span style="padding-left: 20px;">元/{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">

@@ -44,6 +44,12 @@
 				</div>
 			</div>
 			<div class="demand-deltails-box-item flex">
+				<div class="demand-deltails-box-item-title">项目地址</div>
+				<div class="demand-deltails-box-item-conter f1">
+					{{info.address}}
+				</div>
+			</div>
+			<div class="demand-deltails-box-item flex">
 				<div class="demand-deltails-box-item-title">是否创建报价单</div>
 				<div class="demand-deltails-box-item-conter">
 					<span :class="info.orderId > 0?'':'color-error'">{{info.orderId >0?'已创建':'未创建'}}</span>
