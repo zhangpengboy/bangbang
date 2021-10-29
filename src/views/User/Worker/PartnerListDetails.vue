@@ -166,10 +166,7 @@
 
 				<div class="partne-bill-radio">
 					<el-radio-group v-model="billRadio" @change="handleBillRoadio">
-						<el-radio-button label="已获得收入"></el-radio-button>
-						<el-radio-button label="未结算收入"></el-radio-button>
-						<el-radio-button label="提现记录"></el-radio-button>
-						<el-radio-button label="积分明细"></el-radio-button>
+						<el-radio-button :label="item" v-for="(item,index) in billRadioList" :key="index"></el-radio-button>
 					</el-radio-group>
 				</div>
 				<div class="partne-bill-title flex fbetween fvertical">
@@ -178,7 +175,7 @@
 				</div>
 
 				<!--  已获得收入 / 未结算收入 -->
-				<billList v-loading="loading" v-if="billRadio!= '提现记录'" :show="billRadio== '已获得收入'?true:false"
+				<billList v-loading="loading" v-if="billRadio!= '提现记录' &&billRadio != '积分明细'" :show="billRadio== '已获得收入'?true:false"
 					:tableData="tableData" :pageIndex="pageIndex" :pageSize="pageSize" :pageCount="pageCount"
 					@handleSizeChange="handleSizeChange" @handleCurrentChange="handleCurrentChange" />
 				<!--  已获得收入 / 未结算收入 end -->
@@ -303,6 +300,7 @@
 				notPageSize: 10,
 				notPageCount: 0,
 				billRadio: "已获得收入",
+				billRadioList:['已获得收入','未结算收入','提现记录','积分明细'],
 				radio1: "数据统计",
 				keyword: "",
 				type: "",
@@ -388,7 +386,34 @@
 			}
 		},
 		watch: {
-
+			billRadio(val){
+				switch (val) {
+					case '已获得收入':
+						this.pageIndex = 1;
+						this.type = '';
+						this.status = 0;
+						this.keyword = '';
+						this.getIncomeDetail();
+						break;
+					case '未结算收入':
+						this.pageIndex = 1;
+						this.type = '';
+						this.status = 1;
+						this.keyword = '';
+						this.getIncomeDetail();
+						break;
+					case '提现记录':
+						this.recordIndex = 1;
+						this.keyword = '';
+						this.type = '';
+						this.getRecordList();
+						break;
+					case '积分明细':
+						this.getIntegralList();
+						this.inteIndex = 1;
+						break;
+				}
+			}
 		},
 		components: {
 			billList,
@@ -542,32 +567,8 @@
 			/** 切换账单 */
 			handleBillRoadio(e) {
 				console.log(e)
-				switch (e) {
-					case '已获得收入':
-						this.pageIndex = 1;
-						this.type = '';
-						this.status = 0;
-						this.keyword = '';
-						this.getIncomeDetail();
-						break;
-					case '未结算收入':
-						this.pageIndex = 1;
-						this.type = '';
-						this.status = 1;
-						this.keyword = '';
-						this.getIncomeDetail();
-						break;
-					case '提现记录':
-						this.recordIndex = 1;
-						this.keyword = '';
-						this.type = '';
-						this.getRecordList();
-						break;
-					case '积分明细':
-						this.getIntegralList();
-						this.inteIndex = 1;
-						break;
-				}
+				return;
+				
 			},
 			/** 查询 */
 			handelSearch() {
