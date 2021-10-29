@@ -306,6 +306,7 @@
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-date-picker :disabled="isShowEdit" v-model="teamTypes.enterStartTime"
 												type="date" value-format="yyyy-MM-dd"
+												:picker-options="pickerOptions"
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
 												:clearable="false" placeholder="请设置进场时间">
 											</el-date-picker>
@@ -373,7 +374,8 @@
 										<div class="flex">
 											<el-input style="width: 200px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
-												@input="handleQuantity(index,inx,types_index,teamTypes)">
+												@input="handleQuantity(index,inx,types_index,teamTypes)"
+												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
 											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
@@ -425,16 +427,25 @@
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="isShowEdit"
 												v-model="teamTypes.personalQuantity"
-												@input="handleQuantity(index,inx,types_index,teamTypes)">
+												@input="handleQuantity(index,inx,types_index,teamTypes)"
+												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
 											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
 										<div class="flex">
-											<el-input :disabled="true" style="width: 150px;" v-model="teamTypes.unitPrice">
+											<el-input :disabled="isShowEdit" style="width: 150px;" @input="handleQuantity(index,inx,types_index,teamTypes)" v-model="teamTypes.unitPrice">
 											</el-input>
-											<span style="padding-left: 20px;">元/{{geUnit(teamTypes.unit)}}</span>
+											<span
+												style="padding-left: 20px;">元/
+												<el-select style="width: 80px;margin-left: 10px;"
+											v-model="teamTypes.unit" :disabled="isShowEdit" placeholder="请选择">
+											<el-option v-for="item in companyList"  :key="item.value"
+												:label="item.label" :value="item.value">
+											</el-option>
+										</el-select>
+										</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -563,15 +574,18 @@
 						<span> 施工服务费</span>
 						<el-input class="f1" :value="item.serverTotal" :disabled="true"></el-input>
 					</div>
-					<div class="demand-service-plan-box-foot-item flex fvertical">
+					<div class="demand-service-plan-box-foot-item1 flex fvertical">
 						<span> 信息服务费</span>
 							<div style="display: flex;">
-										<el-select style="width: 100px"
+								<div>
+										<el-select style="width: 100px;margin-left:20px"
 											v-model="item.serviceFeeType" :disabled="isShowEdit" placeholder="请选择">
 										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
 											:label="item.label" :value="item.value">
 										</el-option>
 										</el-select>
+								</div>
+										<div>
 										<el-input :disabled="isShowEdit" v-show="item.serviceFeeType == 2" style="width: 160px; margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
 										@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
 										placeholder="请输入平台服务费比例">
@@ -580,6 +594,7 @@
 										@input="handleInputToals(index,item)" v-model="item.serviceFeeRateNum"
 										placeholder="请输入平台服务费">
 										</el-input>
+										</div>
 											<div class="flex fvertical" style="width: 120px; margin-left:10px">
 											<el-input :value="item.serviceFeeRateNum" :disabled="true"
 												class="f1 demand-service-plan-box-foot-item-company">
@@ -730,6 +745,11 @@
 					label: '周期',
 					value: 2,
 				}],
+				pickerOptions: {
+				disabledDate(time) {
+					return time.getTime() < Date.now() - 86400000
+				},
+				}
 			}
 		},
 		watch: {
@@ -1315,6 +1335,7 @@
 						}
 						if (data.workType == 1) {
 							total += data.number * data.personalQuantity * data.unitPrice
+							console.log(data.number , data.personalQuantity , data.unitPrice)
 							if (data.tag == '班组长') {
 								// total += data.enterDay * data.leaderFee * data.number;
 								total += data.leaderFee?data.leaderFee:0

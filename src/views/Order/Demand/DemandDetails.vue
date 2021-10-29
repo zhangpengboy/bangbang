@@ -328,6 +328,7 @@
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-date-picker v-model="teamTypes.enterStartTime"
 															value-format="yyyy-MM-dd "
+															:picker-options="pickerOptions"
 															@change="handleStartTime(index,inx,types_index,teamTypes)"
 															:clearable="false" type="date" placeholder="请设置进场时间">
 														</el-date-picker>
@@ -395,7 +396,8 @@
 													<div class="flex">
 														<el-input style="width: 200px;"
 															v-model="teamTypes.personalQuantity"
-															@input="handleQuantity(index,inx,types_index,teamTypes)">
+															@input="handleQuantity(index,inx,types_index,teamTypes)"
+															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 														</el-input>
 														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 													</div>
@@ -445,7 +447,8 @@
 													<div class="flex">
 														<el-input style="width: 150px;"
 															v-model="teamTypes.personalQuantity"
-															@input="handleQuantity(index,inx,types_index,teamTypes)">
+															@input="handleQuantity(index,inx,types_index,teamTypes)"
+															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 														</el-input>
 														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 													</div>
@@ -453,6 +456,7 @@
 												<el-form-item label="计件单价" prop="unitPrice">
 													<div class="flex">
 														<el-input  style="width: 150px;"
+															@input="handleQuantity(index,inx,types_index,teamTypes)"
 															v-model="teamTypes.unitPrice"></el-input>
 														<span
 															style="padding-left: 20px;">元/
@@ -478,7 +482,7 @@
 														<el-input style="width: 150px;" v-model="teamTypes.dailyFee"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
-														<span style="padding-left: 20px;">/元</span>
+														<span style="padding-left: 20px;">元/天</span>
 													</div>
 												</el-form-item>
 												
@@ -1006,7 +1010,11 @@
 					value: 3,
 				}],
 				editFrom: {},
-
+				pickerOptions: {
+				disabledDate(time) {
+					return time.getTime() < Date.now() - 86400000
+				},
+				}
 
 			}
 		},
@@ -1606,7 +1614,7 @@
 			// 计算班组工程量
 			handleQuantity(index, inx, types_index, val) {
 				val.number = val.number.replace(/^(0+)|[^\d]+/g, '')
-				val.personalQuantity = val.personalQuantity.replace(/^(0+)|[^\d]+/g, '')
+				val.personalQuantity = val.personalQuantity
 				let teamTypes = this.schemes[index].teams[inx].teamTypes;
 				let total = 0;
 				let allToal = 0;
@@ -1632,12 +1640,10 @@
 				// 定位到对应的班组索引循环计算班组长的服务费
 				this.schemes[index].teams[inx].teamTypes.forEach(item => {
 				item.leaderFee = 0
-				console.log(item)
 				if(item.workType == 1 ){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				item.leaderFee = (this.schemes[index].teams[inx].totalFee + (item.unitPrice?item.unitPrice:0)*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
-				console.log(this.schemes[index].teams[inx].totalFee,item.unitPrice,item.personalQuantity,item.leaderRate)
 				}else if(item.workType == 2){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
@@ -1648,6 +1654,7 @@
 				item.leaderFee = this.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
 				}
 						})
+				
 				
 			},
 			/** 当用户工种工期输入时 */

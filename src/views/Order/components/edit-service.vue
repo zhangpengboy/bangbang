@@ -297,6 +297,7 @@
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-date-picker :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.enterStartTime"
 												type="date" value-format="yyyy-MM-dd"
+												:picker-options="pickerOptions"
 												@change="handleStartTime(index,inx,types_index,teamTypes)"
 												:clearable="false" placeholder="请设置进场时间">
 											</el-date-picker>
@@ -364,16 +365,25 @@
 										<div class="flex">
 											<el-input style="width: 200px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.personalQuantity"
-												@input="handleQuantity(index,inx,types_index,teamTypes)">
+												@input="handleQuantity(index,inx,types_index,teamTypes)"
+												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
 											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
 										<div class="flex">
-											<el-input :disabled="true" style="width: 200px;" v-model="teamTypes.unitPrice">
+											<el-input :disabled="Boolean(teamTypes.id) || isShowEdit" style="width: 200px;" v-model="teamTypes.unitPrice">
 											</el-input>
-											<span style="padding-left: 20px;">元/{{geUnit(teamTypes.unit)}}</span>
+												<span
+												style="padding-left: 20px;">元/
+												<el-select style="width: 80px;margin-left: 10px;"
+											v-model="teamTypes.unit" placeholder="请选择" :disabled="Boolean(teamTypes.id) || isShowEdit">
+											<el-option v-for="item in companyList"  :key="item.value"
+												:label="item.label" :value="item.value">
+											</el-option>
+										</el-select>
+										</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -385,6 +395,16 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
+									<el-form-item label="计件每日收入" prop="dailyFee">
+									<div class="flex">
+										<el-input style="width: 150px;" 
+										v-model="teamTypes.dailyFee" 
+										:disabled="Boolean(teamTypes.id) || isShowEdit"
+										@input="handleQuantity(index,inx,types_index,teamTypes)">
+										</el-input>
+										<span style="padding-left: 20px;">元/天</span>
+									</div>
+								</el-form-item>
 								</div>
 								<!-- 普通工种end  -->
 
@@ -395,16 +415,25 @@
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.personalQuantity"
-												@input="handleQuantity(index,inx,types_index,teamTypes)">
+												@input="handleQuantity(index,inx,types_index,teamTypes)"
+												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
 											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
 										<div class="flex">
-											<el-input :disabled="true" style="width: 150px;" v-model="teamTypes.unitPrice">
+											<el-input :disabled="Boolean(teamTypes.id) || isShowEdit" style="width: 200px;" v-model="teamTypes.unitPrice">
 											</el-input>
-											<span style="padding-left: 20px;">元/{{geUnit(teamTypes.unit)}}</span>
+												<span
+												style="padding-left: 20px;">元/
+												<el-select style="width: 80px;margin-left: 10px;"
+											v-model="teamTypes.unit" placeholder="请选择" :disabled="Boolean(teamTypes.id) || isShowEdit">
+											<el-option v-for="item in companyList"  :key="item.value"
+												:label="item.label" :value="item.value">
+											</el-option>
+										</el-select>
+										</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="人数">
@@ -416,6 +445,16 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
+									<el-form-item label="计件每日收入" prop="dailyFee">
+									<div class="flex">
+										<el-input style="width: 150px;" 
+										v-model="teamTypes.dailyFee" 
+										:disabled="Boolean(teamTypes.id) || isShowEdit"
+										@input="handleQuantity(index,inx,types_index,teamTypes)">
+										</el-input>
+										<span style="padding-left: 20px;">元/天</span>
+									</div>
+								</el-form-item>
 									<el-form-item label="带班服务费">
 										<div class="flex">
 											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
@@ -525,25 +564,36 @@
 						<span> 施工服务费</span>
 						<el-input class="f1" :value="item.serverTotal" :disabled="true"></el-input>
 					</div>
-					<div class="demand-service-plan-box-foot-item flex fvertical">
+				<div class="demand-service-plan-box-foot-item1 flex fvertical">
 						<span> 信息服务费</span>
-						<div class="flex">
-							<el-input class="f1 demand-service-plan-box-foot-item-server"
-								@input="handleInputToals(index)" :disabled="true" v-model="item.serviceFeeRate"
-								placeholder="请输入信息服务费比例">
-							</el-input>
-							<el-input value="%" :disabled="true" class="f1 demand-service-plan-box-foot-item-company">
-							</el-input>
-							<!-- <span class="f1">{{item.serviceFeeRateNum}}元</span> -->
-							<div class="flex fvertical">
-								<el-input :value="item.serviceFeeRateNum" :disabled="true"
-									class="f1 demand-service-plan-box-foot-item-company">
-								</el-input>
-								<span style="padding-left: 10px;">元</span>
-							</div>
-						</div>
+							<div style="display: flex;">
+								<div>
+										<el-select style="width: 100px;margin-left:20px"
+											v-model="item.serviceFeeType" :disabled="isShowEdit" placeholder="请选择">
+										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
+											:label="item.label" :value="item.value">
+										</el-option>
+										</el-select>
+								</div>
+										<div>
+										<el-input :disabled="isShowEdit" v-show="item.serviceFeeType == 2" style="width: 160px; margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
+										placeholder="请输入平台服务费比例">
+										</el-input>
+										<el-input :disabled="isShowEdit" v-show="item.serviceFeeType == 1"  style="width: 160px;margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										@input="handleInputToals(index,item)" v-model="item.serviceFeeRateNum"
+										placeholder="请输入平台服务费">
+										</el-input>
+										</div>
+											<div class="flex fvertical" style="width: 120px; margin-left:10px">
+											<el-input :value="item.serviceFeeRateNum" :disabled="true"
+												class="f1 demand-service-plan-box-foot-item-company">
+											</el-input>
+											<span style="padding-left: 10px;">元</span>
+										</div>
+									</div>
 					</div>
-					<div class="demand-service-plan-box-foot-item flex fvertical">
+					<!-- <div class="demand-service-plan-box-foot-item flex fvertical">
 						<span> 税费</span>
 						<div class="flex">
 							<el-input class="f1" :disabled="true" v-model="item.taxRate"
@@ -553,12 +603,12 @@
 							<el-input :value="item.taxRateNum" :disabled="true"
 								class="f1 demand-service-plan-box-foot-item-company"></el-input>
 						</div>
-					</div>
-					<div class="demand-service-plan-box-foot-item flex fvertical">
+					</div> -->
+					<!-- <div class="demand-service-plan-box-foot-item flex fvertical">
 						<span> 总费用</span>
 						<el-input class="f1" v-model="item.totalFee" :disabled="true" placeholder="元">
 						</el-input>
-					</div>
+					</div> -->
 				</div>
 				<!-- 总费用end -->
 			</div>
@@ -677,7 +727,19 @@
 				map: "",
 				mk: "",
 				isShowEdit: true,
-				recordFrom: {}
+				recordFrom: {},
+				serviceFeeTypeList:[{
+				label: '一次性',
+				value: 1,
+				}, {
+					label: '周期',
+					value: 2,
+				}],
+				pickerOptions: {
+				disabledDate(time) {
+					return time.getTime() < Date.now() - 86400000
+				},
+				}
 			}
 		},
 		watch: {
@@ -1202,20 +1264,18 @@
 						.number) {
 						total += teamTypes[i].dailyFee * teamTypes[i].enterDay * teamTypes[i].number;
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+							total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 					if (teamTypes[i].workType == 1) {
-						total += teamTypes[i].number * teamTypes[i].personalQuantity * this.editFrom.schemes[data.index]
-							.teams[data
-								.inx].unitPrice
+						total += teamTypes[i].number * teamTypes[i].personalQuantity * teamTypes[i].unitPrice
 						if (teamTypes[i].tag == '班组长') {
-							total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 						}
 					}
 
 					if (teamTypes[i].workType == 3) {
-						total += teamTypes[i].enterDay * teamTypes[i].leaderFee * teamTypes[i].number;
+						total += teamTypes[i].leaderFee?teamTypes[i].leaderFee:0
 					}
 					totalNumber += Number(teamTypes[i].number);
 				}
@@ -1236,17 +1296,17 @@
 							.number) {
 							total += data.dailyFee * data.enterDay * data.number;
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 1) {
-							total += data.number * data.personalQuantity * item.unitPrice
+							total += data.number * data.personalQuantity * data.unitPrice
 							if (data.tag == '班组长') {
-								total += data.enterDay * data.leaderFee * data.number;
+								total += data.leaderFee?data.leaderFee:0
 							}
 						}
 						if (data.workType == 3) {
-							total += data.enterDay * data.leaderFee * data.number;
+							total += data.leaderFee?data.leaderFee:0
 						}
 					})
 				})

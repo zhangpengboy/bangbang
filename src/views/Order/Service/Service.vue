@@ -44,14 +44,15 @@
 			<el-table :data="tableData" stripe style="width: 100%" header-align='center' align='center' border :height="clientHeight+'px'">
 				<el-table-column type="index" width="50">
 				</el-table-column>
-				<el-table-column prop="orderNum" label="ID" width="200">
+				<el-table-column prop="orderNum" label="ID" width="150">
 				</el-table-column>
 				<el-table-column prop="title" label="项目名称"  width="200">
 				</el-table-column>
 				<el-table-column  label="类型" width="120">
 					<template slot-scope="scope">
-						<p v-if="scope.row.type == 1">工人推荐</p>
+						<p v-if="scope.row.type == 1">工人推荐-委托招工</p>
 						<p v-if="scope.row.type == 2">劳务分包</p>
+						<p v-if="scope.row.type == 3">工人推荐-自主招工</p>
 					</template>
 				</el-table-column>
 				<el-table-column prop="matchNum" label="已匹配人数" width="100">
@@ -60,7 +61,7 @@
 				</el-table-column>
 				<el-table-column prop="hadPay" label="已付金额">
 				</el-table-column>
-				<el-table-column prop="totalFee" label="总金额">
+				<el-table-column prop="serviceFeeRateNum" label="平台服务费" width="100">
 				</el-table-column>
 				<el-table-column prop="city" label="地区">
 				</el-table-column>

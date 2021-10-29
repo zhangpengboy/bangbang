@@ -25,7 +25,7 @@
 			</div>
 			<div class="demand-deltails-box-item flex">
 				<div class="demand-deltails-box-item-title">类型</div>
-				<div class="demand-deltails-box-item-conter">{{info.type == 1 ?'工人推荐':'劳务分包'}}</div>
+				<div class="demand-deltails-box-item-conter">{{info.type == 1 ?'工人推荐':info.type == 2?'劳务分包':''}}</div>
 			</div>
 	
 			<div class="demand-deltails-box-item flex">
