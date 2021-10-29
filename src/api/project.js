@@ -8,6 +8,14 @@ export function getProjectList(params) {
 	})
 }
 
+export function getProjectOne(params) {
+	return request({
+		url: `/api/project/admin/project/v1.0.2/one`,
+		method: 'GET',
+		params
+	})
+}
+
 export function getProjectCsv(params) {
 	return request({
 		url: `/api/project/admin/project/v1.0.2/exportCsv`,

@@ -1,8 +1,8 @@
 <template>
-  <div class="projectDetail">
+  <div class="projectDetail" v-loading="loading">
     <div class="main flex js-sb">
       <div class="aside">
-        <p class="sign">
+        <p class="sign" v-if="detail.type === 0">
           <span class="lableTxt">邦宁项目</span>
         </p>
         <div class="head flex alCen column">
@@ -10,8 +10,8 @@
             <p class="status">计时</p>
             <img src="../../../assets/images/xiangmu.png" class="avatar">
           </div>
-          <p class="proName">中铁广州一期项目</p>
-          <p class="order">所属订单【2021948933493】</p>
+          <p class="proName">{{detail.title}}</p>
+          <p class="order">所属订单【{{detail.orderId}}】</p>
         </div>
         <div class="nav flex alCen">
           <p class="navItem" v-for="item in 4">电焊工</p>
@@ -23,11 +23,11 @@
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">项目人数</p>
-            <p class="desc" style="color: #0079fe;">456人</p>
+            <p class="desc" style="color: #0079fe;">{{detail.totalNum}}人</p>
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">项目创建者</p>
-            <p class="desc">进行中</p>
+            <p class="desc">{{detail.creatorName}}</p>
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">项目经理</p>
@@ -43,7 +43,7 @@
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">创建时间</p>
-            <p class="desc">2018-06-20 12:41:50</p>
+            <p class="desc">{{detail.createTime}}</p>
           </div>
           <div class="item flex alCen js-sb">
             <p class="tit">开始时间</p>
@@ -205,10 +205,11 @@
 
 
 <script>
-  import {
-    getCollectionClass
-  } from '../../../api/user.js'
   import { formatDate } from '@/utils/validate'
+  import {
+    getProjectOne
+  } from '@/api/project'
+
   export default {
     data() {
       return {
@@ -223,11 +224,13 @@
         PageIndex: 1, // 页码
         PageSize: 10, // 显示多少条数据
         PageCount: 0, // 总条数
+        loading: false,
+        detail: {}
 
       }
     },
     created() {
-
+      this.getProjectOne()
     },
     methods: {
       choseNav(e){
@@ -250,6 +253,15 @@
         this.PageIndex = e
         this.loadDate()
       },
+
+      getProjectOne() {
+        this.loading = true;
+        getProjectOne({id: this.$route.query.id}).then(res => {
+          this.detail = res.data
+        }).finally(()=>{
+          this.loading = false;
+        })
+      }
 
 
     }
