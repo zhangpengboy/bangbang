@@ -73,7 +73,7 @@
         <el-table-column label="项目名称"  width="120">
           <template slot-scope="scope">
             <p>{{scope.row.title}}</p>
-            <p class="label" v-if="scope.row.status == 0">
+            <p class="label" v-if="scope.row.type == 0">
               <span class="lableTxt">邦宁</span>
             </p>
           </template>
