@@ -87,3 +87,28 @@ export function getTeamTypeList(params) {
 		params
 	})
 }
+
+export function getworkerList(params) {
+	return request({
+		url: `/api/user/admin/workerManage/v1.0/queryPage`,
+		method: 'GET',
+		params
+	})
+}
+
+export function getworkerById(params) {
+	return request({
+		url: `/api/user/admin/workerManage/v1.0/queryById`,
+		method: 'GET',
+		params
+	})
+}
+
+
+export function getprojectDailyLog(params) {
+	return request({
+		url: `/api/project/admin/projectDailyLog/v1.0.2/page`,
+		method: 'GET',
+		params
+	})
+}

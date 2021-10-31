@@ -104,9 +104,9 @@
             <p style="color: #D9001B;" v-if="scope.row.status == 0">计件</p>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="签到用户"/>
+        <el-table-column prop="creatorName" label="签到用户"/>
         <el-table-column prop="name" label="手机号"/>
-        <el-table-column prop="name" label="签到日期"/>
+        <el-table-column prop="createTime" label="签到日期"/>
         <el-table-column prop="name" label="班组考勤时间" width="120"/>
         <el-table-column prop="name" label="签到地点" width="200"/>
         <el-table-column prop="name" label="上班签到">
@@ -122,7 +122,10 @@
         <el-table-column prop="name" label="当日工时"/>
         <el-table-column label="签到状态" width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.status == 0?'正常':scope.row.status == 1?'早退':''}}</p>
+            <p v-if="scope.row.abnormalStatus == 0">迟到</p>
+            <p v-if="scope.row.abnormalStatus == 1">早退</p>
+            <p v-if="scope.row.abnormalStatus == 2">下班缺卡</p>
+            <p v-if="scope.row.abnormalStatus == 3">全天缺卡</p>
           </template>
         </el-table-column>
         <el-table-column prop="name" label="确认状态">
@@ -158,9 +161,9 @@
 
 <script>
   import {
-    getCollectionClass
-  } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+    getprojectDailyLog
+  } from '@/api/project'
+
   export default {
     data() {
       return {
@@ -224,22 +227,23 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadDate();
+      this.loadDate();
     },
     methods: {
       loadDate(status){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
           status:status
         }
-        getCollectionClass(params).then(res => {
-          this.loading = false;
+        getprojectDailyLog(params).then(res => {
           var data = res.data.list
           console.log('res', data)
           this.tableData = data
 
+        }).finally(()=>{
+          this.loading = false;
         })
       },
       search() {

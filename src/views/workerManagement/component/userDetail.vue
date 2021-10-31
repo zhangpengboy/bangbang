@@ -14,7 +14,10 @@
         <div class="list">
           <div class="item flex">
             <p class="backgroud tit">工人等级</p>
-            <p class="desc flex1 col666">{{bizCardInfo.grade}}</p>
+            <p class="desc flex1 col666" v-if="bizCardInfo.workerGrade === 0">普通</p>
+            <p class="desc flex1 col666" v-if="bizCardInfo.workerGrade === 1">铜牌</p>
+            <p class="desc flex1 col666" v-if="bizCardInfo.workerGrade === 2">银牌</p>
+            <p class="desc flex1 col666" v-if="bizCardInfo.workerGrade === 3">金牌</p>
           </div>
           <div class="item flex">
             <p class="backgroud tit">工龄</p>
@@ -43,12 +46,12 @@
           <div class="item flex">
             <p class="backgroud tit">状态</p>
             <p class="desc flex1 col666 flex alCen js-sb">
-              <span>{{bizCardInfo.behavioralScore==1?'工作中':'找工中'}}</span>
+              <span>{{bizCardInfo.userStatus==1?'冻结':'正常'}}</span>
             </p>
           </div>
           <div class="item flex">
             <p class="backgroud tit">工作时长</p>
-            <p class="desc flex1 col666">{{bizCardInfo.behavioralScore}}</p>
+            <p class="desc flex1 col666">{{bizCardInfo.workDays}}</p>
           </div>
           <div class="item flex">
             <p class="backgroud tit">工人评分</p>
