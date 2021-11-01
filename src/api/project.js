@@ -112,3 +112,11 @@ export function getprojectDailyLog(params) {
 		params
 	})
 }
+
+export function getprojectAttendanceLog(params) {
+	return request({
+		url: `/api/project/admin/projectAttendanceLog/v1.0.2/page`,
+		method: 'GET',
+		params
+	})
+}

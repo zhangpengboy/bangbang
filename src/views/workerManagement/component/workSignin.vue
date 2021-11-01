@@ -97,8 +97,8 @@
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'" ref="accountTable">
         <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="name" label="账号" width="120"/>
+        <el-table-column prop="creatorName" label="姓名" />
+        <el-table-column prop="workerId" label="账号" width="120"/>
         <el-table-column prop="name" label="所属班组"/>
         <el-table-column prop="name" label="考勤日期"/>
         <el-table-column prop="name" label="到场签到"/>
@@ -108,15 +108,18 @@
         <el-table-column prop="name" label="停工时长"/>
         <el-table-column label="签到状态" width="120">
           <template slot-scope="scope">
-            <p style="color:#D9001B ;" v-if="scope.row.status == 1">早退</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">迟到</p>
-            <p style="color: #03BF16;" v-if="scope.row.status == 3">正常</p>
+            <p style="color:#03BF16 ;" v-if="scope.row.exceptionStatus == 0">正常</p>
+            <p style="color: #D9001B;" v-if="scope.row.exceptionStatus == 1">迟到</p>
+            <p style="color: #D9001B;" v-if="scope.row.exceptionStatus == 2">早退</p>
+            <p style="color: #D9001B;" v-if="scope.row.exceptionStatus == 3">异常</p>
+            <p style="color: #D9001B;" v-if="scope.row.exceptionStatus == 4">缺卡</p>
+            <p style="color: #D9001B;" v-if="scope.row.exceptionStatus == 5">工作中</p>
           </template>
         </el-table-column>
         <el-table-column label="出勤状态" width="120">
           <template slot-scope="scope">
-            <p style="color:#03BF16 ;" v-if="scope.row.status == 1">确认出勤</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">未确认</p>
+            <p style="color:#D9001B ;" v-if="scope.row.cardType == 1">下班打卡</p>
+            <p style="color: #D9001B;" v-if="scope.row.cardType == 0">上班打卡</p>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
@@ -245,9 +248,9 @@
 
 <script>
   import {
-    getCollectionClass
-  } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+    getprojectAttendanceLog
+  } from '@/api/project'
+  // import { formatDate } from '@/utils/validate'
   export default {
     data() {
       return {
@@ -262,24 +265,24 @@
              label: '早退',
              value: '2'
            }, {
-             label: '未签到',
+             label: '异常',
              value: '3'
            }, {
-             label: '未签退',
+             label: '缺卡',
              value: '4'
            }, {
-             label: '缺卡',
+             label: '工作中',
              value: '5'
            }
          ],
          statusvalue: '',
          allAttendance:[
            {
-             label: '确认出勤',
-             value: '0'
-           },{
-             label: '未确认',
+             label: '下班打卡',
              value: '1'
+           },{
+             label: '上班打卡',
+             value: '0'
            }
          ],
          AttendanceVal:'',
@@ -308,17 +311,22 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadDate();
+      this.loadDate();
     },
     methods: {
-      loadDate(status){
+      loadDate(){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
-          status:status
+          pageSize: this.PageSize,
+          pageNum: this.PageIndex,
+          statusList: this.statusvalue,
+          cardTypes: this.AttendanceVal,
+          createTimeBegin: this.StartDate,
+          createTimeEnd: this.EndDate,
+          workerId: this.serach,
+
         }
-        getCollectionClass(params).then(res => {
+        getprojectAttendanceLog(params).then(res => {
           this.loading = false;
           var data = res.data.list
           console.log('res', data)
@@ -334,6 +342,10 @@
       raLoad(){
         this.statusvalue = '';
         this.PageIndex = 1;
+        this.AttendanceVal = ''
+        this.StartDate = ''
+        this.EndDate = ''
+        this.serach = ''
         this.loadDate();
       },
       // 导出
