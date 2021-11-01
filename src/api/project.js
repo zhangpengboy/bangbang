@@ -48,11 +48,11 @@ export function getProjectExitCsv(params) {
 	})
 }
 
-export function postUpdateStatus(params) {
+export function postUpdateStatus(data) {
 	return request({
 		url: `/api/project/admin/projectExitApply/v1.0.2/updateStatus`, 
 		method: 'POST',
-		params
+		data
 	})
 }
 
