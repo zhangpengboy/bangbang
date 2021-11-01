@@ -48,11 +48,11 @@ export function getProjectExitCsv(params) {
 	})
 }
 
-export function postUpdateStatus(params) {
+export function postUpdateStatus(data) {
 	return request({
 		url: `/api/project/admin/projectExitApply/v1.0.2/updateStatus`, 
 		method: 'POST',
-		params
+		data
 	})
 }
 
@@ -108,6 +108,22 @@ export function getworkerById(params) {
 export function getprojectDailyLog(params) {
 	return request({
 		url: `/api/project/admin/projectDailyLog/v1.0.2/page`,
+		method: 'GET',
+		params
+	})
+}
+
+export function getprojectAttendanceLog(params) {
+	return request({
+		url: `/api/project/admin/projectAttendanceLog/v1.0.2/page`,
+		method: 'GET',
+		params
+	})
+}
+
+export function getprojectMonthlySettlement(params) {
+	return request({
+		url: `/api/project/admin/projectMonthlySettlement/v1.0.2/page`,
 		method: 'GET',
 		params
 	})

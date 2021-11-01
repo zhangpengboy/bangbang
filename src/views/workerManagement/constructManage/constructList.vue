@@ -21,12 +21,12 @@
         </div>
       </div>
       <!-- 表格  -->
-      <Table :data="tableData" :columns="columns" :height="clientHeight+'px'" v-if="mtype === 1">
+      <Table :data="list0" :columns="columns" :height="clientHeight+'px'" v-if="mtype === 1">
         <template slot="project">
           <el-table-column label="项目名称"  width="120">
           <template slot-scope="scope">
-            <p>{{scope.row.name}}</p>
-            <p class="label" v-if="scope.row.status == 0">
+            <p>{{scope.row.title}}</p>
+            <p class="label" v-if="scope.row.type == 0">
               <span class="lableTxt">邦宁</span>
             </p>
           </template>
@@ -38,7 +38,7 @@
               <span v-if="row.status === 0">进行中</span>
               <span v-if="row.status === 1" style="color: #f00;">已竣工</span>
               <span v-if="row.status === 2">延期中</span>
-              <span v-if="row.status === 2">待进场</span>
+              <span v-if="row.status === 3">待进场</span>
             </template>
           </el-table-column>
         </template>
@@ -51,14 +51,14 @@
           </el-table-column>
         </template>
       </Table>
-      <Table :data="tableData2" :columns="columns2" :height="clientHeight+'px'" v-else>
+      <Table :data="list1" :columns="columns2" :height="clientHeight+'px'" v-else>
         <template slot="status">
           <el-table-column label="项目状态">
             <template slot-scope="{row}">
               <span v-if="row.status === 0">进行中</span>
               <span v-if="row.status === 1" style="color: #f00;">已竣工</span>
               <span v-if="row.status === 2">延期中</span>
-              <span v-if="row.status === 2">待进场</span>
+              <span v-if="row.status === 3">待进场</span>
             </template>
           </el-table-column>
         </template>
@@ -97,6 +97,9 @@
 <script>
   import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
+  import {
+    getprojectMonthlySettlement
+  } from '@/api/project'
 
   export default {
     components: {
@@ -109,45 +112,39 @@
           {type: 'input',prop: 'id', title: '项目名称', placeholder: '输入项目名称/服务单号'},
           {type: 'input', prop: 'project', title: '项目联系人', placeholder: '输入联系人账号'},
           {type: 'select', prop: 'status', title: '项目状态', 
-            options: [{label: '进行中', value: 1}, {label: '已竣工', value: 2}, {label: '延期中', value: 3}, {label: '待进场', value: 4}]},
+            options: [{label: '进行中', value: 0}, {label: '已竣工', value: 1}, {label: '延期中', value: 2}, {label: '待进场', value: 3}]},
         ],
         columns: [
           {label: '序号', type: "index", width: 60},
           {slot: "project"},
-          {prop: 'name', label: '所属服务单'},
-          {prop: 'name', label: '项目联系人'},
-          {prop: 'name', label: '开工时间'},
-          {prop: 'name', label: '竣工时间'},
+          {prop: 'orderId', label: '所属服务单'},
+          {prop: 'creatorName', label: '项目联系人'},
+          {prop: 'enterStartTime', label: '开工时间'},
+          {prop: 'enterEndTime', label: '竣工时间'},
           {slot: "status"},
-          {prop: 'name', label: '已确认工时'},
+          {prop: 'finishTime', label: '已确认工时'},
           {prop: 'name', label: '已验收工程量'},
-          {prop: 'name', label: '已支付施工服务费'},
+          {prop: 'serverTotal', label: '已支付施工服务费'},
           {prop: 'name', label: '待支付施工服务费'},
           {prop: 'name', label: '已对账施工服务费'},
           {prop: 'name', label: '未对账施工服务费'},
           {slot: "handle"},
         ],
          tableData:[
-           {name: '你好', status: 0, endDate: '2021-10-31'},
-           {name: '你好a', status: 1, endDate: '2021-11-30'}
          ],
           columns2: [
           {label: '序号', type: "index", width: 60},
-          {prop: 'name', label: '项目名称'},
-          {prop: 'name', label: '项目联系人'},
-          {prop: 'name', label: '开工时间'},
-          {prop: 'name', label: '竣工时间'},
-          {prop: 'name', label: '申请日期'},
+          {prop: 'title', label: '项目名称'},
+          {prop: 'creatorName', label: '项目联系人'},
+          {prop: 'enterStartTime', label: '开工时间'},
+          {prop: 'enterEndTime', label: '竣工时间'},
+          {prop: 'createTime', label: '申请日期'},
           {slot: "status"},
-          {prop: 'name', label: '已确认工时'},
+          {prop: 'finishTime', label: '已确认工时'},
           {prop: 'name', label: '已对账施工服务费'},
           {prop: 'name', label: '未对账施工服务费'},
           {slot: "handle"},
         ],
-         tableData2:[
-           {name: '你好', status: 0, endDate: '2021-10-31'},
-           {name: '你好a', status: 1, endDate: '2021-11-30'}
-         ],
          loading:false,
          clientHeight:0,
          current: 1, // 页码
@@ -157,13 +154,38 @@
 
       }
     },
+    computed: {
+      list0() {
+        return this.tableData.filter(item => item.type === 0)
+      },
+       list1() {
+        return this.tableData.filter(item => item.type === 1)
+      }
+    },
+    watch: {
+      mtype(val) {
+        this.total = val === 1 ? this.list0.length : this.list1.length
+      }
+    },
     created() {
       this.getWebHeing();
-      // this.loadData('');
+      this.loadData();
     },
     methods: {
       loadData(){
-        console.log('加载数据！！')
+        // console.log('加载数据！！')
+        this.loading = true;
+        var params = {
+          pageSize: this.pageSize,
+          pageNum: this.current
+        }
+        getprojectMonthlySettlement(params).then(res => {
+          this.loading = false;
+          var data = res.data.list
+          console.log('res', data)
+          this.tableData = data
+          this.total = this.tableData.filter(item => item.type === 0).length
+        })
       },
       search(e) {
         console.log('查询', e)

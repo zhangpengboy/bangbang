@@ -32,6 +32,7 @@
         <template slot="status">
           <el-table-column label="状态">
             <template slot-scope="{row}">
+              <span v-if="row.status === 0" style="color: #f00;">已撤回</span>
               <span v-if="row.status === 1" style="color: #f00;">审核中</span>
               <span v-if="row.status === 2">已通过</span>
               <span v-if="row.status === 3">已驳回</span>
@@ -176,7 +177,7 @@
       	})
       },
       handleApprove(row) {
-        this.$confirm('您确认同意 李三的退场申请吗', '确认提示',{
+        this.$confirm(`您确认同意 ${row.creatorName}的退场申请吗`, '确认提示',{
           confirmButtonText: '确定',
           cancelButtonText: '驳回',
         }).then(()=>{
@@ -184,7 +185,10 @@
           this.loading = true
           postUpdateStatus({id: row.id, result: row.status === 3 ? false : true})
           .then(res =>{
-            console.log("🚀 ~ file: leaveAppove.vue ~ line 183 ~ handleApprove ~ res", res)
+            if (res.code === 200) {
+              this.$message.success('审批成功')
+              this.loadData()
+            }
           })
           .finally(()=>{
             this.loading = false
