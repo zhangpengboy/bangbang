@@ -1690,3 +1690,27 @@ export function getDeteleBanner(params) {
 		params
 	})
 }
+
+/**
+ * 企业认证列表
+ * 
+ *  */
+ export function getUserRealNameApply(params) {
+	return request({
+		url: `/api/user/admin/userEnterpriseCertApply/v1.0.2/page`,
+		method: 'GET',
+		params
+	})
+}
+/**
+ * 企业认证审核
+ * 
+ *  */
+ export function getUpdateEnterpriseAuthStatus(data) {
+	return request({
+		url: `/api/user/admin/userEnterpriseCertApply/v1.0.2/updateEnterpriseAuthStatus`,
+		method: 'post',
+		data,
+	})
+}
+

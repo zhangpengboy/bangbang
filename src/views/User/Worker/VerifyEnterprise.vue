@@ -37,9 +37,9 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="payee" label="ID"  width="120"/>
-        <el-table-column prop="collectionAccount" label="名称" />
-        <el-table-column prop="bankName" label="手机号码" width="120"/>
+        <el-table-column prop="id" label="ID"  width="120"/>
+        <el-table-column prop="operatorName" label="名称" />
+        <el-table-column prop="operatorMobileNo" label="手机号码" width="120"/>
         <el-table-column label="审核内容">
            <template slot-scope="scope">
              <el-button type="text" size="small" @click="agree(scope.row)">查看信息</el-button>
@@ -47,17 +47,27 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template slot-scope="scope">
-            <p style="color:#F59A23 ;" v-if="scope.row.status == 1">审核中</p>
-            <p style="color: #D9001B;" v-if="scope.row.status == 0">已驳回</p>
-            <p style="color: #03BF16;" v-if="scope.row.status == 3">审核通过</p>
+            <!-- 1：审核中；2：已通过；3：已驳回； -->
+            <p style="color:#F59A23 ;" v-if="scope.row.enterpriseAuth  == 1">审核中</p>
+            <p style="color: #D9001B;" v-if="scope.row.enterpriseAuth  == 3">已驳回</p>
+            <p style="color: #03BF16;" v-if="scope.row.enterpriseAuth  == 2">审核通过</p>
           </template>
          </el-table-column>
-         <el-table-column prop="updateTime" label="申请时间" width="200"/>
-        <el-table-column prop="updater" label="操作人"/>
-        <el-table-column prop="updateTime" label="操作时间" width="200"/>
+         <el-table-column prop="createTime" label="申请时间" width="200">
+           <template slot-scope="scope">
+						{{formatDate(scope.row.createTime)}}
+					</template>
+         </el-table-column>
+        <el-table-column prop="updaterName " label="操作人"/>
+        <el-table-column prop="updateTime" label="操作时间" width="200">
+          <template slot-scope="scope">
+						{{formatDate(scope.row.updateTime)}}
+					</template>
+        
+        </el-table-column>
         <el-table-column label="操作" width="160">
           <template slot-scope="scope">
-            <template v-if="scope.row.status == 1">
+            <template v-if="scope.row.enterpriseAuth == 1">
               <el-button type="success" size="small" @click="agree(scope.row)">同意</el-button>
               <el-button type="danger" size="small" @click="refuse(scope.row)">拒绝</el-button>
             </template>
@@ -90,22 +100,24 @@
 
 <script>
   import {
-    getCollectionClass
+    getCollectionClass,
+    getUserRealNameApply,
+    getUpdateEnterpriseAuthStatus
   } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+	import moment from 'moment'
   export default {
     data() {
       return {
          allStatus: [
            {
              label: '审核中',
-             value: '0'
-           }, {
-             label: '审核通过',
              value: '1'
            }, {
-             label: '已驳回',
+             label: '审核通过',
              value: '2'
+           }, {
+             label: '已驳回',
+             value: '3'
            }
          ],
          statusvalue: '',
@@ -153,11 +165,13 @@
           pageNum:1,
           status:status
         }
-        getCollectionClass(params).then(res => {
+        getUserRealNameApply(params).then(res => {
           this.loading = false;
+          console.log(res)
           var data = res.data.list
           console.log('res', data)
           this.tableData = data
+          this.PageCount = res.data.total
 
         })
       },
@@ -182,10 +196,18 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          getUpdateEnterpriseAuthStatus({id:row.id,result:true}).then(res=>{
+            console.log(res)
+            if(res.code == 200){
             this.$message({
               type: 'success',
               message: '操作成功!'
             })
+              this.loadDate(this.statusvalue);
+            }
+               
+          })
+         
         }).catch(() => {
 
         })
@@ -197,11 +219,19 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-
-            this.$message({
+          getUpdateEnterpriseAuthStatus({
+					id:row.id,
+          result:false
+				}).then(res=>{
+            console.log(res)
+               if(res.code == 200){
+               this.$message({
               type: 'success',
-              message: '操作成功!'
+              message: '审核已驳回!'
             })
+            this.loadDate(this.statusvalue);
+               }
+          })
         }).catch(() => {
 
         })
@@ -217,7 +247,9 @@
         this.PageIndex = e
         this.loadDate()
       },
-
+    formatDate(value) {
+				return moment(value).format('YYYY-MM-DD')
+			},
 
     }
   }
