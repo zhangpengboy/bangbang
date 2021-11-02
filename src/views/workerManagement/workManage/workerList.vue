@@ -45,10 +45,12 @@
       <!-- 表格  -->
       <el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
         <el-table-column type='index' label="序号" width="60" />
-        <el-table-column prop="name" label="ID"  width="120"/>
-        <el-table-column prop="name" label="姓名" />
-        <el-table-column prop="name" label="手机号码" width="120"/>
-        <el-table-column prop="name" label="性别" width="60"/>
+        <el-table-column prop="id" label="ID"  width="120"/>
+        <el-table-column prop="realName" label="姓名" />
+        <el-table-column prop="phone" label="手机号码" width="120"/>
+        <el-table-column prop="name" label="性别" width="60">
+          <template slot-scope="{row}">{{row.gender === 0 ? '男' : '女' }}</template>
+        </el-table-column>
         <el-table-column prop="name" label="工种"/>
         <el-table-column prop="name" label="所属项目"/>
         <el-table-column prop="name" label="工种类型"/>
@@ -68,7 +70,7 @@
          </el-table-column>
          <el-table-column label="账号状态" width="120">
            <template slot-scope="scope">
-               {{scope.row.status == 1?'正常':'禁用'}}
+               {{scope.row.userStatus == 0?'正常':'冻结'}}
            </template>
           </el-table-column>
         <el-table-column label="操作" width="100">
@@ -105,9 +107,9 @@
 
 <script>
   import {
-    getCollectionClass
-  } from '../../../api/user.js'
-  import { formatDate } from '@/utils/validate'
+    getworkerList
+  } from '@/api/project'
+
   export default {
     data() {
       return {
@@ -139,17 +141,17 @@
     },
     created() {
       this.getWebHeing();
-      // this.loadDate('');
+      this.loadDate();
     },
     methods: {
       loadDate(status){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
-          status:status
+          pageSize: this.PageIndex,
+          pageNum: this.PageIndex,
+          status: status
         }
-        getCollectionClass(params).then(res => {
+        getworkerList(params).then(res => {
           this.loading = false;
           var data = res.data.list
           console.log('res', data)

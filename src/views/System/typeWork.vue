@@ -85,7 +85,7 @@
       getGongzhong(id){
         console.log('获取工种')
         var params = {
-          pageSize:20,
+          pageSize: 1000,
           pageNum:1,
           type:0,
           parentId:id

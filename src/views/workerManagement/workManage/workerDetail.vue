@@ -27,6 +27,10 @@
 <script>
   import userDetail from '../component/userDetail.vue'
   import joinProject from '../component/joinProject.vue'
+  import {
+    getworkerById
+  } from '@/api/project'
+
   export default {
     components: {
     	userDetail,
@@ -51,11 +55,17 @@
       }
     },
     created() {
-
+      this.getworkerById()
     },
     methods: {
 
+      getworkerById() {
+        getworkerById({id: this.$route.query.id}).then(res => {
+          console.log('res', res.data)
+          this.bizCardInfo = res.data
 
+        })
+      }
 
 
     }

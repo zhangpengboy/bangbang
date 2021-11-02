@@ -32,6 +32,7 @@
         <template slot="status">
           <el-table-column label="状态">
             <template slot-scope="{row}">
+              <span v-if="row.status === 0" style="color: #f00;">已撤回</span>
               <span v-if="row.status === 1" style="color: #f00;">审核中</span>
               <span v-if="row.status === 2">已通过</span>
               <span v-if="row.status === 3">已驳回</span>
@@ -88,10 +89,10 @@
     data() {
       return {
         filterData: [
-          {type: 'input',prop: 'id', title: '申请人', placeholder: '输入名称/手机号/UID'},
-          {type: 'input', prop: 'project', title: '所属项目', placeholder: '项目名称/服务单号'},
-          {type: 'date', prop: 'startDate', title: '进场时间', placeholder: '请选择时间'},
-          {type: 'date', prop: 'endDate', title: '退场时间', placeholder: '请选择时间'},
+          {type: 'input',prop: 'userId', title: '申请人', placeholder: '输入名称/手机号/UID'},
+          {type: 'input', prop: 'projectId', title: '所属项目', placeholder: '项目名称/服务单号'},
+          {type: 'date', prop: 'createTimeBegin', title: '进场时间', placeholder: '请选择时间'},
+          {type: 'date', prop: 'createTimeEnd', title: '退场时间', placeholder: '请选择时间'},
           {type: 'select', prop: 'status', title: '状态', 
             options: [{label: '审核中', value: 1}, {label: '已通过', value: 2}, {label: '已驳回', value: 3}]},
         ],
@@ -119,6 +120,7 @@
          current: 1, // 页码
          pageSize: 10, // 显示多少条数据
          total: 0, // 总条数
+         filterParams: {}, // 过滤参数
 
       }
     },
@@ -132,6 +134,7 @@
         let params = {
           pageSize: this.pageSize,
           pageNum: this.current,
+          ...this.filterParams
         }
         getProjectExitList(params).then(res => {
           this.loading = false;
@@ -141,6 +144,7 @@
       },
       search(e) {
         console.log('查询', e)
+        this.filterParams = e
         this.loadData();
       },
       /** 选择分页 */
@@ -173,7 +177,7 @@
       	})
       },
       handleApprove(row) {
-        this.$confirm('您确认同意 李三的退场申请吗', '确认提示',{
+        this.$confirm(`您确认同意 ${row.creatorName}的退场申请吗`, '确认提示',{
           confirmButtonText: '确定',
           cancelButtonText: '驳回',
         }).then(()=>{
@@ -181,7 +185,10 @@
           this.loading = true
           postUpdateStatus({id: row.id, result: row.status === 3 ? false : true})
           .then(res =>{
-            console.log("🚀 ~ file: leaveAppove.vue ~ line 183 ~ handleApprove ~ res", res)
+            if (res.code === 200) {
+              this.$message.success('审批成功')
+              this.loadData()
+            }
           })
           .finally(()=>{
             this.loading = false
