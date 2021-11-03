@@ -42,7 +42,7 @@
         <el-table-column prop="operatorMobileNo" label="手机号码" width="120"/>
         <el-table-column label="审核内容">
            <template slot-scope="scope">
-             <el-button type="text" size="small" @click="agree(scope.row)">查看信息</el-button>
+             <el-button type="text" size="small" @click="checkdetail(scope.row)">查看信息</el-button>
            </template>
         </el-table-column>
         <el-table-column label="状态" width="120">
@@ -95,6 +95,56 @@
 
     </div>
 
+  <el-dialog
+  title="查看信息"
+  :visible.sync="detailshow"
+  width="30%"
+  :before-close="handleClose">
+ <div class="detailshow">
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 企业名称：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.enterpriseName" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 统一社会信用代码：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.businessLicenseRegistrationNo" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 法人：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.legalRepresentativeName" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+   
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 运营者姓名：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.legalRepresentativeName" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 运营者身份证号：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.operatorIdNo" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+
+   <div class="detailshow-list">
+     <div class="detailshow-list-left"> 运营者手机号码：</div>
+     <div class="detailshow-list-right"> <el-input v-model="detaildata.operatorMobileNo" :disabled="true" placeholder="请输入内容"></el-input></div>
+   </div>
+
+   <div class="detailshow-list" style="pad">
+     <div class="detailshow-list-left"> 资料照片：</div>
+     <div class="detailshow-list-right"> 
+       <div v-for="(item,i) in detaildata.fileUris" :key="i">
+          <el-image style="width: 100px; height: 100px; margin: 0 10px" :src="item"></el-image>
+       </div>
+     </div>
+   </div>
+ </div>
+  <span slot="footer" class="dialog-footer">
+    <el-button size="small" @click="detailshow = false">取 消</el-button>
+    <el-button size="small" type="primary" @click="detailshow = false">确 定</el-button>
+  </span>
+</el-dialog>
   </div>
 </template>
 
@@ -131,8 +181,9 @@
          PageIndex: 1, // 页码
          PageSize: 10, // 显示多少条数据
          PageCount: 0, // 总条数
-		 clientHeight:0,
-		 
+		     clientHeight:0,
+		    detailshow:false, //详情弹窗
+        detaildata:{},
       }
     },
     created() {
@@ -169,6 +220,10 @@
           this.loading = false;
           console.log(res)
           var data = res.data.list
+          // fileUris
+          data.forEach(item => {
+            item.fileUris = item.fileUris.split(",")
+          });
           console.log('res', data)
           this.tableData = data
           this.PageCount = res.data.total
@@ -250,7 +305,16 @@
     formatDate(value) {
 				return moment(value).format('YYYY-MM-DD')
 			},
-
+      //查看详细信息
+      checkdetail(row){
+      console.log(row)
+      this.detaildata = row
+      this.detailshow = true
+      },
+      //详细信息弹窗
+      handleClose(){
+        this.detailshow = false
+      }
     }
   }
 </script>
@@ -274,5 +338,21 @@
 
   }
 }
-
+.detailshow{
+  .detailshow-list{
+    display: flex;
+    justify-content: start;
+    height: auto;
+    line-height: 50px;
+    .detailshow-list-left{
+      width: 30%;
+      text-align: center;
+    }
+    .detailshow-list-right{
+      width: 70%;
+      display: flex;
+      justify-content: start;
+    }
+  }
+}
 </style>
