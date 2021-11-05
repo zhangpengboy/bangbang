@@ -200,13 +200,13 @@
 										</el-select>
 									</div>
 								</el-form-item>
-								<el-form-item label="计件单价">
+								<!-- <el-form-item label="计件单价">
 									<div class="flex">
 										<el-input class="f1" :disabled="Boolean(teams.id ) || isShowEdit" v-model="teams.unitPrice"
 											@input="handleTeamsUniprice(index,inx,teams)"></el-input>
 										<span>元/{{geUnit(teams.unit)}}</span>
 									</div>
-								</el-form-item>
+								</el-form-item> -->
 							</div>
 
 							<div class="flex  demand-service-plan-box-info-data">
@@ -338,7 +338,7 @@
 									</el-form-item>
 									<el-form-item label="带班服务费">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 150px;" @input="handleServiceFee(index,inx,types_index,teamTypes)"  :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
@@ -395,12 +395,19 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="计件每日收入" prop="dailyFee">
+									<el-form-item label="计件工时单价" prop="timeUnitPrice">
 									<div class="flex">
-										<el-input style="width: 150px;" 
-										v-model="teamTypes.dailyFee" 
-										:disabled="Boolean(teamTypes.id) || isShowEdit"
-										@input="handleQuantity(index,inx,types_index,teamTypes)">
+										<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.timeUnitPrice"
+											@input="handleUnitPrice(index,inx,types_index,teamTypes)">
+										</el-input>
+										<span style="padding-left: 20px;">元/小时</span>
+									</div>
+								</el-form-item>
+
+								<el-form-item label="计件每日收入" prop="dailyIncome">
+									<div class="flex">
+										<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.dailyIncome"
+											@input="handleQuantity(index,inx,types_index,teamTypes)">
 										</el-input>
 										<span style="padding-left: 20px;">元/天</span>
 									</div>
@@ -409,7 +416,7 @@
 								<!-- 普通工种end  -->
 
 								<!-- 计件/班组长 -->
-								<div class="demand-service-plan-box-list-item-group flex fbetween"
+								<div class="demand-service-plan-box-list-item-group flex "
 									v-if="teamTypes.tag == '班组长' && teamTypes.workType  == 1  ">
 									<el-form-item label="个人工程量">
 										<div class="flex">
@@ -445,19 +452,26 @@
 											<span style="padding-left: 20px;">人</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="计件每日收入" prop="dailyFee">
+										<el-form-item label="计件工时单价" prop="timeUnitPrice">
 									<div class="flex">
-										<el-input style="width: 150px;" 
-										v-model="teamTypes.dailyFee" 
-										:disabled="Boolean(teamTypes.id) || isShowEdit"
-										@input="handleQuantity(index,inx,types_index,teamTypes)">
+										<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit" v-model="teamTypes.timeUnitPrice"
+											@input="handleUnitPrice(index,inx,types_index,teamTypes)">
+										</el-input>
+										<span style="padding-left: 20px;">元/小时</span>
+									</div>
+								</el-form-item>
+
+								<el-form-item label="计件每日收入" prop="dailyIncome">
+									<div class="flex">
+										<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.dailyIncome"
+											@input="handleQuantity(index,inx,types_index,teamTypes)">
 										</el-input>
 										<span style="padding-left: 20px;">元/天</span>
 									</div>
 								</el-form-item>
 									<el-form-item label="带班服务费">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 150px;" @input="handleServiceFee(index,inx,types_index,teamTypes)"  :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
@@ -516,7 +530,7 @@
 									</el-form-item>
 									<el-form-item label="带班服务费">
 										<div class="flex">
-											<el-input style="width: 150px;" :disabled="Boolean(teamTypes.id) || isShowEdit"
+											<el-input style="width: 150px;" @input="handleServiceFee(index,inx,types_index,teamTypes)"  :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.leaderRate">
 											</el-input>
 											<span style="padding:0 10px;">%</span>
@@ -752,10 +766,13 @@
 		methods: {
 			// 计算工时单价
 			handleUnitPrice(index, inx, type_index, val) {
-				let dailyFee = (this.editFrom.schemes[index].teams[inx].workTimelen - this.editFrom.schemes[index].teams[
-						inx].restTimelen) *
-					val.unitPrice
-				val.dailyFee = dailyFee;
+				if(val.workType == 1){		
+				val.dailyIncome = ((val.dailyHours) *val.timeUnitPrice).toFixed(2);
+				}else{
+				val.dailyFee = ((val.dailyHours) *val.unitPrice).toFixed(2);
+				}
+				// let dailyFee = (this.editFrom.schemes[index].teams[inx].workTimelen - this.editFrom.schemes[index].teams[inx].restTimelen) *val.unitPrice
+				// val.dailyFee = dailyFee;
 				this.getGroupTotal({
 					index,
 					inx,
@@ -868,7 +885,7 @@
 					restEndTime: "", // 午休结束时间
 					restTimelen: 1, // 午休时长
 					unitPrice: "", // 计件单价
-					unit: 1, // 单位
+					// unit: 1, // 单位
 					enterStartTime: "", //进场时间
 					enterEndTime: "", // 退场时间
 					enterDay: "", // 班组工期
@@ -886,6 +903,9 @@
 							enterDay: "", //工种工期
 							personalQuantity: "", // 个人工程量
 							unitPrice: '', //单价 
+							unit: 1, // 单位
+							dailyIncome:'',//计件模式 每日收入
+							timeUnitPrice:'',//计件模式 工时单价
 							number: "", // 人数
 							leaderFee: "", // 带班费
 							description: "", // 描述
@@ -1093,14 +1113,41 @@
 					enterDay: "", //工种工期
 					personalQuantity: "", // 个人工程量
 					unitPrice: '', //单价 
+					dailyIncome:'',//计件模式 每日收入
+					timeUnitPrice:'',//计件模式 工时单价	
 					number: "", // 人数
 					leaderFee: "", // 带班费
 					description: "", // 描述
 					overtimeFee: "", // 加班费
 					dailyFee: "", //  每日收入
-					dailyHours: "", // 每日工时
+					dailyHours: this.editFrom.schemes[index].teams[inx].teamTypes[0].dailyHours, // 每日工时 默认取数组中的值
 				}
 				this.editFrom.schemes[index].teams[inx].teamTypes.push(param);
+			},
+			//计算班组长服务费 方案索引 index 班组索引 inx 工种索引 types_index  当前工种数据val
+			handleServiceFee(index, inx, types_index, val){
+				// 定位到对应的班组索引循环计算班组长的服务费
+				if(this.editFrom.schemes[index].teams[inx].teamTypes.length>0){
+				this.editFrom.schemes[index].teams[inx].teamTypes.forEach(item => {
+				item.leaderFee = 0
+				if(item.tag == '班组长'){
+				if( item.workType == 1 ){
+				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + item.unitPrice*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
+				}else if(item.workType == 2){
+				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = (this.editFrom.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*((item.leaderRate?item.leaderRate:0)/100)
+				} else {
+				// 纯管理 班组总费用*带班服务费百分比
+				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = this.schemes[index].teams[inx].totalFee*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
+				item.leaderFee = this.editFrom.schemes[index].teams[inx].totalFee*((item.leaderRate?item.leaderRate:0)/100)
+				}
+				}
+						})
+				}
+				
 			},
 			// 删除组
 			hanldeRemoveGroup(index, inx) {
@@ -1281,7 +1328,7 @@
 				}
 				this.editFrom.schemes[data.index].teams[data.inx].totalNum = totalNumber
 				this.editFrom.schemes[data.index].teams[data.inx].totalFee = total;
-				// console.log('this.editFrom.schemes[data.index].teams[data.inx]',this.editFrom.schemes[data.index].teams[data.inx])
+				this.handleServiceFee(data.index,data.inx,data.type_index,data.val)
 				this.getTotal(data.index);
 			},
 			// 计算总的社工服务费
@@ -1311,16 +1358,12 @@
 					})
 				})
 				this.editFrom.schemes[index].serverTotal = total;
-				let serviceFeeRateNum = (Number(this.editFrom.schemes[index].serverTotal) * Number(this.editFrom.schemes[
-					index].serviceFeeRate) / 100);
+				let serviceFeeRateNum = (Number(this.editFrom.schemes[index].serverTotal) * Number(this.editFrom.schemes[index].serviceFeeRate) / 100);
 				this.editFrom.schemes[index].serviceFeeRateNum = serviceFeeRateNum;
 				let taxRate = Number(this.editFrom.schemes[index].taxRate);
-				let totals = Number(this.editFrom.schemes[index].serverTotal) + Number(this.editFrom.schemes[index]
-					.serviceFeeRateNum);
+				let totals = Number(this.editFrom.schemes[index].serverTotal) + Number(this.editFrom.schemes[index].serviceFeeRateNum);
 				this.editFrom.schemes[index].taxRateNum = (totals * taxRate) / 100;
-				this.editFrom.schemes[index].totalFee = total + Number(this.editFrom.schemes[index].taxRateNum) + Number(
-					this.editFrom
-					.schemes[index].serviceFeeRateNum)
+				this.editFrom.schemes[index].totalFee = total + Number(this.editFrom.schemes[index].taxRateNum) + Number(this.editFrom.schemes[index].serviceFeeRateNum)
 				this.$forceUpdate()
 			},
 			// 删除方案

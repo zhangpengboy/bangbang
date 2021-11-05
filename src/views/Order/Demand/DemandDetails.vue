@@ -429,9 +429,19 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
-												<el-form-item label="计件每日收入" prop="dailyFee">
+
+												<el-form-item label="计件工时单价" prop="timeUnitPrice">
 													<div class="flex">
-														<el-input style="width: 150px;" v-model="teamTypes.dailyFee"
+														<el-input style="width: 150px;" v-model="teamTypes.timeUnitPrice"
+															@input="handleUnitPrice(index,inx,types_index,teamTypes)">
+														</el-input>
+														<span style="padding-left: 20px;">元/小时</span>
+													</div>
+												</el-form-item>
+
+												<el-form-item label="计件每日收入" prop="dailyIncome">
+													<div class="flex">
+														<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.dailyIncome"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
 														<span style="padding-left: 20px;">元/天</span>
@@ -441,7 +451,7 @@
 											<!-- 普通工种end  -->
 
 											<!-- 计件/班组长 -->
-											<div class="demand-service-plan-box-list-item-group flex fbetween"
+											<div class="demand-service-plan-box-list-item-group flex "
 												v-if="teamTypes.tag == '班组长' && teamTypes.workTypeVal == '计件'  ">
 												<el-form-item label="个人工程量" prop="personalQuantity">
 													<div class="flex">
@@ -469,6 +479,7 @@
 													</span>
 													</div>
 												</el-form-item>
+												
 												<el-form-item label="人数" prop="number">
 													<div class="flex">
 														<el-input style="width: 150px;" v-model="teamTypes.number"
@@ -477,9 +488,19 @@
 														<span style="padding-left: 20px;">人</span>
 													</div>
 												</el-form-item>
-													<el-form-item label="计件每日收入" prop="dailyFee">
+
+												<el-form-item label="计件工时单价" prop="timeUnitPrice">
 													<div class="flex">
-														<el-input style="width: 150px;" v-model="teamTypes.dailyFee"
+														<el-input style="width: 150px;" v-model="teamTypes.timeUnitPrice"
+															@input="handleUnitPrice(index,inx,types_index,teamTypes)">
+														</el-input>
+														<span style="padding-left: 20px;">元/小时</span>
+													</div>
+												</el-form-item>
+
+												<el-form-item label="计件每日收入" prop="dailyIncome">
+													<div class="flex">
+														<el-input style="width: 150px;" :disabled="true" v-model="teamTypes.dailyIncome"
 															@input="handleQuantity(index,inx,types_index,teamTypes)">
 														</el-input>
 														<span style="padding-left: 20px;">元/天</span>
@@ -752,7 +773,7 @@
 					}],
 					number: [{
 						required: true,
-						message: '请输入入人数',
+						message: '请输入人数',
 						trigger: 'blur'
 					}],
 					unitPrice:[{
@@ -976,6 +997,8 @@
 								enterDay: "", //工种工期
 								personalQuantity: "", // 个人工程量
 								unitPrice: '', //单价 
+								dailyIncome:'',//计件模式 每日收入
+								timeUnitPrice:'',//计件模式 工时单价
 								unit:1,//计件单位 
 								number: "", // 人数
 								leaderFee: "", // 带班费
@@ -1199,9 +1222,13 @@
 			// 计算工时单价
 			handleUnitPrice(index, inx, type_index, val) {
 				val.unitPrice = val.unitPrice.replace(/^\.+|[^\d.]/g, '')
-				let dailyFee = ((this.schemes[index].teams[inx].dailyHours) *
-					val.unitPrice).toFixed(2)
-				val.dailyFee = dailyFee;
+				if(val.workType == 1){
+					val.dailyIncome = ((this.schemes[index].teams[inx].dailyHours) *val.timeUnitPrice).toFixed(2);
+				}else{
+					val.dailyFee = ((this.schemes[index].teams[inx].dailyHours) *val.unitPrice).toFixed(2);
+				}
+				// let dailyFee = ((this.schemes[index].teams[inx].dailyHours) *val.unitPrice).toFixed(2)
+				// val.dailyFee = dailyFee;
 				this.getGroupTotal({
 					index,
 					inx,
@@ -1350,6 +1377,8 @@
 							personalQuantity: "", // 个人工程量
 							unitPrice: '', //单价 
 							unit: 1, // 单位
+							dailyIncome:'',//计件模式 每日收入
+							timeUnitPrice:'',//计件模式 工时单价
 							number: "", // 人数
 							leaderFee: "", // 带班费
 							leaderRate:'',// 带班费%
@@ -1373,6 +1402,8 @@
 					enterDay: "", //工种工期
 					personalQuantity: "", // 个人工程量
 					unitPrice: '', //单价 
+					dailyIncome:'',//计件模式 每日收入
+					timeUnitPrice:'',//计件模式 工时单价		
 					unit: 1, // 单位
 					number: "", // 人数
 					leaderFee: "", // 带班费
