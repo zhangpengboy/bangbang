@@ -510,6 +510,13 @@ export const constantRoutes = [
 			meta: {
 				title: '关于我们'
 			}
+		},{
+			path: 'feedback',
+			component: () => import('@/views/Content/feedback'),
+			name: 'Feedback',
+			meta: {
+				title: '意见反馈'
+			}
 		}]
 	}, {
 		path: '/info',
@@ -1010,6 +1017,13 @@ export const asyncRoutes = [{
 			name: 'About',
 			meta: {
 				title: '关于我们'
+			}
+		},{
+			path: 'feedback',
+			component: () => import('@/views/Content/feedback'),
+			name: 'Feedback',
+			meta: {
+				title: '意见反馈'
 			}
 		}]
 	}, {
