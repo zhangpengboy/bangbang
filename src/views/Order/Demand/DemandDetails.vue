@@ -1061,6 +1061,15 @@
 						this.$nextTick(() => {
 							this.$refs.editFrom.getDataInfo(this.editFrom);
 						})
+					}else{
+						let gps = this.info.gpsLocation.split(',')
+					this.form.addrPoint = {
+						Ye: "inner",
+						lat: gps[0],
+						lng: gps[1],
+					}
+					this.allAddress.city  = this.info.address
+					// this.getDetailsAdderss(this.form);
 					}
 
 				}
@@ -1895,6 +1904,7 @@
 					return this.$message.error('请输入正确的地址')
 				}
 				let point = this.form.addrPoint;
+				console.log('确认添加项目地址',point)
 				var that = this;
 				var geco = new BMap.Geocoder();
 				geco.getLocation(point, function(res) {

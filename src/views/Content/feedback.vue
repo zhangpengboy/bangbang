@@ -48,6 +48,10 @@
 				<el-table-column prop="phone" label="手机号">
 				</el-table-column>
 				<el-table-column prop="type" label="类型">
+					<template slot-scope="scope">
+						<span>{{matchingType(scope.row.type)}} </span>
+					</template>
+					
 				</el-table-column>
                 <el-table-column prop="content" label="建议内容">
 				</el-table-column>
@@ -58,6 +62,10 @@
 				</el-table-column>
                 
 				<el-table-column prop="scene" label="位置" width="100">
+					<template slot-scope="scope">
+						<div>{{scope.row.scene == 0?'企业端':'工人端'}}</div>
+					</template>
+					
 				</el-table-column>
 				<el-table-column prop="createTime" label="反馈时间" width="120">
 					<template slot-scope="scope">
@@ -85,34 +93,56 @@
 
 
 
-		<el-dialog title="提示" :visible.sync="dialogVisible" width="600px" :before-close="handleClose">
+		<el-dialog title="查看详情" :visible.sync="dialogVisible" width="600px" :before-close="handleClose">
+			<div class="detailshow">
+			<div class="detailshow-list">
+				<div class="detailshow-list-left"> 用户ID:</div>
+				<div class="detailshow-list-right"> <el-input v-model="editData.id" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
 
+			<div class="detailshow-list">
+				<div class="detailshow-list-left"> 名称:</div>
+				<div class="detailshow-list-right"> <el-input v-model="editData.creatorName" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
 
-			<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-				<el-form-item label="展示图片" prop="name">
-					<UploadImg v-if="imgUrl" :imgUrl="imgUrl" @handleDeteleImg="handleDeteleImg" />
-					<Uploads v-else @handleAvatarSuccess="handleAvatarSuccess" />
-				</el-form-item>
-				<el-form-item label="标题" prop="region">
-					<el-input type="texrt" v-model="ruleForm.title" placeholder="请输入banner标题" maxlength="15"></el-input>
-				</el-form-item>
-				<el-form-item label="小标题" prop="region">
-					<el-input type="texrt" placeholder="请输入小标题" v-model="ruleForm.subTitle" maxlength="15"></el-input>
-				</el-form-item>
-				<el-form-item label="链接" prop="region">
-					<el-input type="texrt" v-model="ruleForm.link" placeholder="请输入跳转链接"></el-input>
-				</el-form-item>
+			<div class="detailshow-list">
+				<div class="detailshow-list-left"> 手机号码：</div>
+				<div class="detailshow-list-right"> <el-input v-model="editData.phone" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
+			
+			<div class="detailshow-list">
+				<div class="detailshow-list-left"> 类型：</div>
+				<div class="detailshow-list-right"> <el-input :value="matchingType(editData.type)" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
 
-				<el-form-item label="排序" prop="region">
-					<el-input type="texrt" v-model="ruleForm.sorted" placeholder="请输入数值，数值越大，排序越前"></el-input>
-				</el-form-item>
+			<div class="detailshow-list" style="margin:10px 0">
+				<div class="detailshow-list-left"> 建议内容：</div>
+				<div class="detailshow-list-right"> <el-input v-model="editData.content" type="textarea" :autosize="{ minRows: 2, maxRows: 4}" :rows="5" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
 
+			<div class="detailshow-list" style="pad">
+				<div class="detailshow-list-left"> 图片</div>
+				<div class="detailshow-list-right"> 
+				<div v-for="(item,i) in editData.urlList" :key="i">
+					<el-image style="width: 100px; height: 100px; margin: 0 10px" :src="item" :preview-src-list="editData.urlList"></el-image>
+				</div>
+				</div>
+			</div>
+			
+			<div class="detailshow-list">
+				<div class="detailshow-list-left">位置：</div>
+				<div class="detailshow-list-right"> <el-input :value="editData.scene == 0?'企业端':'工人端'" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
 
-			</el-form>
+			<div class="detailshow-list">
+				<div class="detailshow-list-left"> 反馈时间：</div>
+				<div class="detailshow-list-right"> <el-input :value="formatDateTime(editData.createTime)" :disabled="true" placeholder="请输入内容"></el-input></div>
+			</div>
+			</div>
 
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
-				<el-button type="primary" @click="handleSumbit">确 定</el-button>
+				<el-button  size="small" @click="dialogVisible = false">取 消</el-button>
+				<el-button  size="small" type="primary" @click="dialogVisible = false">确 定</el-button>
 			</span>
 		</el-dialog>
 
@@ -137,18 +167,18 @@
 				pageSize: 10,
 				pageCount: 0,
 				dialogVisible: false,
-				ruleForm: {
-					id: null,
-					title: "", // 标题
-					imgUrl: "", // url图片
-					subTitle: "", // 小标题
-					link: "", // 链接
-					sorted: "" // 排序
-				},
-				rules: {},
-				imgUrl:"",
 				editData:{},
 				loading:false,
+				typeList:[{
+					lable:'产品功能',
+					value:1, 
+				},{
+					value:2,
+					lable:'平台规则及政策'
+				},{
+					value:99,
+					lable:'其他'
+				}]
 			}
 		},
 		mounted() {
@@ -174,80 +204,6 @@
 			}
 		},
 		methods: {
-			/** 删除图片*/
-			handleDeteleImg(){
-				this.imgUrl = '';
-				this.ruleForm.imgUrl = '';
-			},
-			/** 图片编辑 */
-			handleEdit(row) {
-				this.editData = JSON.parse(JSON.stringify(row));
-				this.dialogVisible = true;
-				this.ruleForm = this.editData;
-				this.imgUrl = row.imgUrl
-			},
-			/** 图片上传成功 */
-			handleAvatarSuccess(img){
-				this.imgUrl = img;
-				this.ruleForm.imgUrl = img;
-			},
-			/** 删除精彩推荐 */
-			async getDetelRecommend(id) {
-				let res = await getDetelRecommend({
-					id
-				});
-				this.$message.success('操作成功');
-				if (this.tableData.length == 1 && this.pageIndex > 1) {
-					this.pageIndex -= 1;
-				}
-				this.getRecommend();
-			},
-			/** 删除精彩推荐 */
-			handleDetele(row) {
-				this.$confirm('是否删除精彩推荐', '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					let res = this.getDetelRecommend(row.id)
-				}).catch(() => {});
-			},
-			/** 获取修改精彩推荐状态 */
-			async getEditRecommend(row) {
-				let param = {};
-				param.id = row.id;
-				param.status = row.status ? 0 : 1;
-				let res = await getEditRecommend(param);
-				this.$message.success('操作成功');
-				this.getRecommend();
-			},
-			/** 修改精彩推荐状态 */
-			handleStatus(row) {
-				let title = row.status ? '是否停用精彩推荐' : '是否启用精彩推荐'
-				this.$confirm(title, '提示', {
-					confirmButtonText: '确定',
-					cancelButtonText: '取消',
-					type: 'warning'
-				}).then(() => {
-					let res = this.getEditRecommend(row)
-				}).catch(() => {});
-			},
-			/*** 保存对话框 */
-			async handleSumbit() {
-				try{
-					if(this.ruleForm.id){
-						await getEditRecommend(this.ruleForm);
-					}else{
-						await getAddRecommend(this.ruleForm);
-					}
-					this.$message.success('操作成功');
-					this.getRecommend();
-					this.dialogVisible = false;
-				}catch(e){
-					//TODO handle the exception
-				}
-				
-			},
 			formatDateTime(value) {
 				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
 			},
@@ -263,10 +219,22 @@
 				param.status = this.status_name;
 				param.keyword = this.keyword;
 				let res = await getFeedback(param);
-				console.log('获取列表', res)
 				this.pageCount = res.data.total;
 				this.tableData = res.data.list;
 				this.loading = false;
+			},
+			/** 查看详情 */
+			handleEdit(row) {
+				this.editData = JSON.parse(JSON.stringify(row));
+				this.dialogVisible = true;
+				this.ruleForm = this.editData;
+				this.imgUrl = row.imgUrl
+			},
+			// 匹配类型
+			matchingType(val){
+				if(val){
+				return this.typeList.find((item) => item.value == val).lable
+				}
 			},
 			/** 取消对话框 */
 			handleClose() {
@@ -297,7 +265,7 @@
 		}
 	}
 </script>
-<style>
+<style lang="scss" scoped="scoped">
 	.avatar-uploader .el-upload {
 		border: 1px dashed #d9d9d9;
 		border-radius: 6px;
@@ -324,4 +292,21 @@
 		height: 80px;
 		display: block;
 	}
+	.detailshow{
+  .detailshow-list{
+    display: flex;
+    justify-content: start;
+    height: auto;
+    line-height: 50px;
+    .detailshow-list-left{
+      width: 30%;
+      text-align: center;
+    }
+    .detailshow-list-right{
+      width: 70%;
+      display: flex;
+      justify-content: start;
+    }
+  }
+}
 </style>
