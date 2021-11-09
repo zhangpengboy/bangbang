@@ -1415,7 +1415,7 @@
 					unitPrice: '', //单价 
 					dailyIncome:'',//计件模式 每日收入
 					timeUnitPrice:'',//计件模式 工时单价		
-					unit: 1, // 单位
+					unit: '', // 单位
 					number: "", // 人数
 					leaderFee: "", // 带班费
 					description: "", // 描述
@@ -2115,6 +2115,7 @@
 								enterDay: "", //工种工期
 								personalQuantity: "", // 个人工程量
 								unitPrice: '', //单价 
+								unit:'',//计件单位
 								number: "", // 人数
 								leaderFee: "", // 带班费
 								leaderRate:'',// 带班费%
