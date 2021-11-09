@@ -377,7 +377,7 @@
 												@input="handleQuantity(index,inx,types_index,teamTypes)"
 												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+											<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价" prop="unitPrice">
@@ -391,8 +391,8 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" placeholder="请选择" :disabled="isShowEdit">
-											<el-option v-for="item in companyList"  :key="item.value"
-												:label="item.label" :value="item.value">
+											<el-option v-for="item in companyList"  :key="item"
+												:label="item" :value="item">
 											</el-option>
 										</el-select>
 										</span>
@@ -449,8 +449,8 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" :disabled="isShowEdit" placeholder="请选择">
-											<el-option v-for="item in companyList"  :key="item.value"
-												:label="item.label" :value="item.value">
+											<el-option v-for="item in companyList"  :key="item"
+												:label="item" :value="item">
 											</el-option>
 										</el-select>
 										</span>

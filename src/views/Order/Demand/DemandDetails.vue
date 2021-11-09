@@ -399,7 +399,7 @@
 															@input="handleQuantity(index,inx,types_index,teamTypes)"
 															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 														</el-input>
-														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+														<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 													</div>
 												</el-form-item>
 												<el-form-item label="计件单价" prop="unitPrice">
@@ -412,8 +412,8 @@
 															style="padding-left: 20px;">元/
 															<el-select style="width: 80px;margin-left: 10px;"
 														v-model="teamTypes.unit" placeholder="请选择">
-														<el-option v-for="item in companyList" :key="item.value"
-															:label="item.label" :value="item.value">
+														<el-option v-for="item in companyList" :key="item"
+															:label="item" :value="item">
 														</el-option>
 													</el-select>
 													</span>
@@ -460,7 +460,7 @@
 															@input="handleQuantity(index,inx,types_index,teamTypes)"
 															oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 														</el-input>
-														<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+														<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 													</div>
 												</el-form-item>
 												<el-form-item label="计件单价" prop="unitPrice">
@@ -472,8 +472,8 @@
 															style="padding-left: 20px;">元/
 															<el-select style="width: 80px;margin-left: 10px;"
 														v-model="teamTypes.unit" placeholder="请选择">
-														<el-option v-for="item in companyList" :key="item.value"
-															:label="item.label" :value="item.value">
+														<el-option v-for="item in companyList" :key="item"
+															:label="item" :value="item">
 														</el-option>
 													</el-select>
 													</span>
@@ -728,7 +728,8 @@
 		getBriefDetail,
 		getOrderDetail,
 		gettypeWorkAllClass,
-		getAttendanceClass
+		getAttendanceClass,
+		getUnitlist
 	} from '../../../api/user.js'
 	import moment from 'moment'
 	export default {
@@ -980,7 +981,7 @@
 						restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 						restTimelen: 1, // 午休时长
 						// unitPrice: "", // 计件单价
-						unit: 1, // 单位
+						// unit: 1, // 单位
 						enterStartTime: "", //进场时间
 						enterEndTime: "", // 退场时间
 						enterDay: "", // 班组工期
@@ -999,7 +1000,7 @@
 								unitPrice: '', //单价 
 								dailyIncome:'',//计件模式 每日收入
 								timeUnitPrice:'',//计件模式 工时单价
-								unit:1,//计件单位 
+								unit:'',//计件单位 
 								number: "", // 人数
 								leaderFee: "", // 带班费
 								leaderRate:'',// 带班费%
@@ -1062,13 +1063,13 @@
 							this.$refs.editFrom.getDataInfo(this.editFrom);
 						})
 					}else{
-						let gps = this.info.gpsLocation.split(',')
-					this.form.addrPoint = {
-						Ye: "inner",
-						lat: gps[0],
-						lng: gps[1],
-					}
-					this.allAddress.city  = this.info.address
+						// let gps = this.info.gpsLocation.split(',')
+					// this.form.addrPoint = {
+					// 	Ye: "inner",
+					// 	lat: gps[0],
+					// 	lng: gps[1],
+					// }
+					// this.allAddress.city  = this.info.address
 					// this.getDetailsAdderss(this.form);
 					}
 
@@ -1084,6 +1085,7 @@
 			this.getBriefDetail(id)
 			let res = await loadBMap('oMC0LUxpTjA22qOBPc2PmfKADwHeXhin');
 			console.log(this.getYear())
+			this.getUnitlist()
 		},
 		methods: {
 			/** 获取时间日期时钟 */
@@ -2160,6 +2162,14 @@
 				this.videoUploadPercent = 0;
 				this.basicForm.images.push(file.response.data);
 			},
+			//获取计件单位
+			getUnitlist(){
+				getUnitlist().then(res=>{
+					console.log('计件danwei',res.data)
+					this.companyList = res.data
+
+				})
+			}
 		}
 	}
 </script>

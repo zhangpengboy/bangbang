@@ -85,7 +85,7 @@
 				<div class="popList">
 					<div class="item flex alCen">
 						<p class="tit">积分抵扣服费比例</p>
-						<input type="text" class="ipt-currency" :disabled="true" placeholder="100金币=">
+						<input type="text" class="ipt-currency" :disabled="true" placeholder="100积分=">
 						<input type="text" class="ipt" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
 							:disabled="dialogtype" placeholder="请输入邀请好友奖励" v-model="exchangeRate"   />
 						<input type="text" class=" ipt-unit" placeholder="元" :disabled="true" />
@@ -363,7 +363,7 @@
 					return this.$message.error('请输入正确个人分润上限')
 				}
 				
-				// this.getAwardSettingupdateOne(1);
+				this.getAwardSettingupdateOne(1);
 			},
 			/** 编辑积分 */
 			handleEditIntegral() {

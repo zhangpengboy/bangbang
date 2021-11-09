@@ -46,7 +46,7 @@
 					</div>
 					<div class="details-top-info-list-item">
 						<span class="details-top-info-list-item-name">合伙人结束时间</span>
-						<span class="details-top-info-list-item-date">{{info&&info.expireTime?info.expireTime:''}}</span>
+						<span class="details-top-info-list-item-date">{{info&&info.expireTime?formatDateTime(info.expireTime):''}}</span>
 					</div>
 					
 					

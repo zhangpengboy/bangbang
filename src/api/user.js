@@ -1725,3 +1725,16 @@ export function getDeteleBanner(params) {
 	})
 }
 
+/**
+ * 订单计件单位列表
+ * 
+ *  */
+ export function getUnitlist(params) {
+	return request({
+		url: `/api/commons/admin/unit/v1.0.2/list`,
+		method: 'GET',
+		params
+	})
+}
+
+
