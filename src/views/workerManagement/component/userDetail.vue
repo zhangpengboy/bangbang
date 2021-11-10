@@ -6,7 +6,7 @@
     <div class="demand-deltails-box user el-row">
       <el-col :span="4">
         <div class="backgroud flex alCen js-center column userCon">
-          <img src="../../../assets/images/fm.jpg" class="iocnAvatar">
+          <img :src="bizCardInfo.headPortrait? bizCardInfo.headPortrait : '../../../assets/images/fm.jpg'" class="iocnAvatar">
           <p class="mt20">{{bizCardInfo.realName}}</p>
         </div>
       </el-col>
@@ -57,7 +57,7 @@
             <p class="backgroud tit">工人评分</p>
             <p class="desc flex1 col666 flex alCen">
               <el-rate
-                v-model="bizCardInfo.behavioralScore"
+                v-model="bizCardInfo.workerScore"
                 disabled
                 show-score
                 text-color="#ff9900"
@@ -81,28 +81,28 @@
       <div class="box-demand-title">项目经验</div>
       <!-- <el-button type="primary" @click="addWork">添加</el-button> -->
     </div>
-    <div class="pro-exper mt15" >
-      <div v-for="(tiem,index) in 3" :key="index" class="experItem">
+    <div class="pro-exper mt15" v-for="(item,i) in projectList" :key="i">
+      <div  class="experItem">
         <el-row class="">
           <el-col :span="5" class="proDesc flex column js-center alCen">
-            <p class="proTit">广州中体是多少符带饭的符大项目</p>
+            <p class="proTit">{{item.title}}</p>
           </el-col>
           <el-col :span="4" class="proDesc flex column alCen js-center">
             <p class="col666">工种</p>
-            <p class="mt10 ">组长</p>
+            <p class="mt10 ">{{item.name}}</p>
           </el-col>
           <el-col :span="5" class="proDesc flex column alCen js-center">
             <p class="col666">工程时间</p>
-            <p class="mt10 ">组长</p>
+            <p class="mt10 ">{{formatDate(item.enterStartTime)}}至{{formatDate(item.enterEndTim)}}</p>
           </el-col>
           <el-col :span="6" class="proDesc flex column alCen js-center">
             <p class="col666">工作地点</p>
-            <p class="mt10 ">组长</p>
+            <p class="mt10 ">{{item.address}}</p>
           </el-col>
           <el-col :span="4" class="proDesc flex column alCen js-center">
             <p class="col666">服务评分</p>
             <el-rate
-              v-model="bizCardInfo.workYears"
+              v-model="item.score"
               class="mt10"
               disabled
               show-score
@@ -113,7 +113,7 @@
         </el-row>
         <div class="proPj">
           <p class="col666">服务评价</p>
-          <p class="col333 mt10">服务评价sdvsdg fsg森岛帆高收到符带饭的符的辅导费的罚单</p>
+          <p class="col333 mt10">{{item.content}}</p>
         </div>
       </div>
     </div>
@@ -166,6 +166,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+import { array } from 'jszip/lib/support';
   export default{
   	props:{
   		bizCardInfo:{
@@ -175,6 +177,9 @@
         type:Array
       },
       zhenshuPhotoList:{
+        type:Array
+      },
+      projectList:{
         type:Array
       }
   	},
@@ -206,7 +211,9 @@
       handleExceed(files, fileList) {
       	this.$message.warning('最多上传6张');
       },
-
+    formatDate(value) {
+				return moment(value).format('YYYY-MM-DD')
+			},
 
     }
   }

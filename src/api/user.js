@@ -1737,4 +1737,17 @@ export function getDeteleBanner(params) {
 	})
 }
 
+/**
+ * 工人项目经验
+ * 
+ *  */
+ export function getProjectExperienceList(params) {
+	return request({
+		url: `/api/bill/admin/brief/comment/projectExperienceList`,
+		method: 'GET',
+		params
+	})
+}
+
+
 

@@ -154,8 +154,8 @@
         getworkerList(params).then(res => {
           this.loading = false;
           var data = res.data.list
-          console.log('res', data)
           this.tableData = data
+          this.PageCount = res.data.total
 
         })
       },

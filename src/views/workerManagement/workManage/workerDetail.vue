@@ -15,7 +15,7 @@
 
       <!-- 用户详情 -->
       <div v-if="tabPosition == 'userdetail'" class="demand-service">
-          <userDetail :bizCardInfo="bizCardInfo" :workPhotoList="workPhotoList" :zhenshuPhotoList="zhenshuPhotoList"/>
+          <userDetail :bizCardInfo="bizCardInfo" :workPhotoList="workPhotoList" :zhenshuPhotoList="zhenshuPhotoList" :projectList="projectList"/>
 
       </div>
 
@@ -28,7 +28,8 @@
   import userDetail from '../component/userDetail.vue'
   import joinProject from '../component/joinProject.vue'
   import {
-    getworkerById
+    getworkerById,
+    getProjectExperienceList
   } from '@/api/project'
 
   export default {
@@ -47,23 +48,31 @@
         },
         adminUrl:'/api/commons/file/admin/v1/upload/public',
         isEditUserInfo:false,
-        workPhotoList:[],
-        zhenshuPhotoList:[],
-
+        workPhotoList:[], //工作照片
+        zhenshuPhotoList:[],//证书
+        projectList:[],//项目经验
 
 
       }
     },
     created() {
       this.getworkerById()
+      this.getProjectExperienceList()
     },
     methods: {
-
+      // 工人用户信息
       getworkerById() {
         getworkerById({id: this.$route.query.id}).then(res => {
-          console.log('res', res.data)
+          // console.log('res', res.data)
           this.bizCardInfo = res.data
 
+        })
+      },
+        //工人项目经验
+       getProjectExperienceList() {
+        getProjectExperienceList({userId: this.$route.query.id}).then(res => {
+          this.projectList = res.data.records
+          console.log(this.projectList)
         })
       }
 
