@@ -192,12 +192,12 @@
 									<div class="flex">
 										<el-input class="f1" v-model="teams.totalUnit" :disabled="true">
 										</el-input>
-										<el-select style="width: 120px;margin-left: 10px;" :disabled="Boolean(teams.id ) || isShowEdit"
+										<!-- <el-select style="width: 120px;margin-left: 10px;" :disabled="Boolean(teams.id ) || isShowEdit"
 											v-model="teams.unit" placeholder="请选择">
-											<el-option v-for="item in companyList" :key="item.value" :label="item.label"
-												:value="item.value">
+											<el-option v-for="item in companyList" :key="item" :label="item"
+												:value="item">
 											</el-option>
-										</el-select>
+										</el-select> -->
 									</div>
 								</el-form-item>
 								<!-- <el-form-item label="计件单价">
@@ -368,7 +368,7 @@
 												@input="handleQuantity(index,inx,types_index,teamTypes)"
 												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+											<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
@@ -379,8 +379,8 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" placeholder="请选择" :disabled="Boolean(teamTypes.id) || isShowEdit">
-											<el-option v-for="item in companyList"  :key="item.value"
-												:label="item.label" :value="item.value">
+											<el-option v-for="item in companyList"  :key="item"
+												:label="item" :value="item">
 											</el-option>
 										</el-select>
 										</span>
@@ -425,7 +425,7 @@
 												@input="handleQuantity(index,inx,types_index,teamTypes)"
 												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+											<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
@@ -436,8 +436,8 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" placeholder="请选择" :disabled="Boolean(teamTypes.id) || isShowEdit">
-											<el-option v-for="item in companyList"  :key="item.value"
-												:label="item.label" :value="item.value">
+											<el-option v-for="item in companyList"  :key="item"
+												:label="item" :value="item">
 											</el-option>
 										</el-select>
 										</span>
@@ -668,7 +668,8 @@
 	import {
 		getUpdateOrder,
 		getAttendanceClass,
-		gettypeWorkClass
+		gettypeWorkClass,
+		getUnitlist
 	} from '../../../api/user.js'
 	export default {
 		data() {
@@ -693,28 +694,7 @@
 					value: 2,
 					label: "劳务分包"
 				}], // 类型列表
-				companyList: [{ // 工程列表
-					label: '㎡',
-					value: 1,
-				}, {
-					label: 'm³',
-					value: 2,
-				}, {
-					label: '吨',
-					value: 3,
-				}, {
-					label: 'kg',
-					value: 4,
-				}, {
-					label: '根',
-					value: 5,
-				}, {
-					label: '块',
-					value: 6,
-				}, {
-					label: '个',
-					value: 7,
-				}],
+				companyList: [],
 				tagList: [{ // 工种模式
 					label: "班组长",
 					value: 1,
@@ -762,6 +742,9 @@
 					this.initMap();
 				}
 			}
+		},
+		async mounted() {
+		this.getUnitlist()
 		},
 		methods: {
 			// 计算工时单价
@@ -1327,7 +1310,7 @@
 					totalNumber += Number(teamTypes[i].number);
 				}
 				this.editFrom.schemes[data.index].teams[data.inx].totalNum = totalNumber
-				this.editFrom.schemes[data.index].teams[data.inx].totalFee = total;
+				this.editFrom.schemes[data.index].teams[data.inx].totalFee = (total).toFixed(2);
 				this.handleServiceFee(data.index,data.inx,data.type_index,data.val)
 				this.getTotal(data.index);
 			},
@@ -1357,8 +1340,8 @@
 						}
 					})
 				})
-				this.editFrom.schemes[index].serverTotal = total;
-				let serviceFeeRateNum = (Number(this.editFrom.schemes[index].serverTotal) * Number(this.editFrom.schemes[index].serviceFeeRate) / 100);
+				this.editFrom.schemes[index].serverTotal = total.toFixed(2);
+				let serviceFeeRateNum = (Number(this.editFrom.schemes[index].serverTotal) * Number(this.editFrom.schemes[index].serviceFeeRate) / 100).toFixed(2);
 				this.editFrom.schemes[index].serviceFeeRateNum = serviceFeeRateNum;
 				let taxRate = Number(this.editFrom.schemes[index].taxRate);
 				let totals = Number(this.editFrom.schemes[index].serverTotal) + Number(this.editFrom.schemes[index].serviceFeeRateNum);
@@ -1623,7 +1606,13 @@
 					objClone = JSON.parse(_obj);
 				return objClone
 			},
+			//获取计件单位
+			getUnitlist(){
+				getUnitlist().then(res=>{
+					this.companyList = res.data
 
+				})
+			}
 		}
 	}
 </script>

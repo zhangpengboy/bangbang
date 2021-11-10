@@ -2166,7 +2166,6 @@
 			//获取计件单位
 			getUnitlist(){
 				getUnitlist().then(res=>{
-					console.log('计件danwei',res.data)
 					this.companyList = res.data
 
 				})

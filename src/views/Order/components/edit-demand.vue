@@ -679,7 +679,8 @@
 	import {
 		getUpdateOrder,
 		getAttendanceClass,
-		gettypeWorkClass
+		gettypeWorkClass,
+		getUnitlist
 	} from '../../../api/user.js'
 	export default {
 		data() {
@@ -704,28 +705,7 @@
 					value: 2,
 					label: "劳务分包"
 				}], // 类型列表
-				companyList: [{ // 工程列表
-					label: '㎡',
-					value: 1,
-				}, {
-					label: 'm³',
-					value: 2,
-				}, {
-					label: '吨',
-					value: 3,
-				}, {
-					label: 'kg',
-					value: 4,
-				}, {
-					label: '根',
-					value: 5,
-				}, {
-					label: '块',
-					value: 6,
-				}, {
-					label: '个',
-					value: 7,
-				}],
+				companyList: [],
 				tagList: [{ // 工种模式
 					label: "班组长",
 					value: 1,
@@ -773,6 +753,9 @@
 					this.initMap();
 				}
 			}
+		},
+		async mounted() {
+		this.getUnitlist()
 		},
 		methods: {
 			// 计算工时单价
@@ -1673,7 +1656,13 @@
 					objClone = JSON.parse(_obj);
 				return objClone
 			},
+			//获取计件单位
+			getUnitlist(){
+				getUnitlist().then(res=>{
+					this.companyList = res.data
 
+				})
+			}
 		}
 	}
 </script>
