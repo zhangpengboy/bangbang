@@ -171,7 +171,6 @@
            }
          ],
          statusvalue: '',
-         PageIndex:1,
          tableData:[
            {name:'你好'},
            {name:'你好a'}
@@ -212,8 +211,8 @@
       loadDate(status){
         this.loading = true;
         var params = {
-          pageSize:20,
-          pageNum:1,
+          pageSize:this.PageSize,
+          pageNum:this.PageIndex,
           status:status
         }
         getUserRealNameApply(params).then(res => {
