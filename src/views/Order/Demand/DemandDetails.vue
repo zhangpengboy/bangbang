@@ -1682,11 +1682,11 @@
 				// 定位到对应的班组索引循环计算班组长的服务费
 				this.schemes[index].teams[inx].teamTypes.forEach(item => {
 				item.leaderFee = 0
-				if(item.workType == 1 ){
+				if(item.workType == 1 && item.tag == '班组长'){
 				//计件  需要加上自身计件总价(个人工程量*计件单价)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + this.schemes[index].teams[inx].unitPrice*val.personalQuantity)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				item.leaderFee = (this.schemes[index].teams[inx].totalFee + (item.unitPrice?item.unitPrice:0)*item.personalQuantity)*((item.leaderRate?item.leaderRate:0)/100)
-				}else if(item.workType == 2){
+				}else if(item.workType == 2 && item.tag == '班组长'){
 				// 计时 需要加上自身计时总价(每日收入*工作天数)*百分比  
 				// this.schemes[index].teams[inx].teamTypes[types_index].leaderFee = (this.schemes[index].teams[inx].totalFee + val.enterDay*val.dailyFee)*(this.schemes[index].teams[inx].teamTypes[types_index].leaderRate/100)
 				item.leaderFee = (this.schemes[index].teams[inx].totalFee + item.enterDay*item.dailyFee)*((item.leaderRate?item.leaderRate:0)/100)

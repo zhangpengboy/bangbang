@@ -140,6 +140,7 @@
           this.loading = false;
           var data = res.data.list
           this.tableData = data
+          this.total = res.data.total
         })
       },
       search(e) {
