@@ -19,7 +19,7 @@
 				</el-form-item>
 				<el-form-item label=" 类型">
 					<el-select v-model="editFrom.type" :disabled="isShowEdit" placeholder="选择类型">
-						<el-option v-for="item in typeList" :key="item.value" :label="item.label" :value="item.value">
+						<el-option v-for="(item,i) in typeList" :key="i" :label="item.label" :value="item.value">
 						</el-option>
 					</el-select>
 				</el-form-item>
@@ -258,7 +258,7 @@
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-select :disabled="isShowEdit" v-model="teamTypes.name" filterable
 												placeholder="请选择">
-												<el-option v-for="item in options" :key="item.labelName"
+												<el-option v-for="(item,i) in options" :key="i"
 													:label="item.labelName" :value="item.labelName">
 												</el-option>
 											</el-select>
@@ -269,7 +269,7 @@
 											<!-- <el-input v-model="ruleForm.name"></el-input> -->
 											<el-select :disabled="isShowEdit" v-model="teamTypes.tag" placeholder="请选择"
 												@change="handleTag(index,inx,types_index,teamTypes)">
-												<el-option v-for="(item) in tagList" :key="item.value" :label="item.label"
+												<el-option v-for="(item,i) in tagList" :key="i" :label="item.label"
 													:value="item.label">
 												</el-option>
 											</el-select>
@@ -282,15 +282,15 @@
 												placeholder="请选择"
 												@change="handleTypeModel(index,inx,types_index,teamTypes)">
 												<template v-if="teamTypes.tag == '班组长'">
-													<el-option v-for="item in patternList" :key="item.value"
+													<el-option v-for="(item,i) in patternList" :key="i"
 														:label="item.label" :value="item.value">
 													</el-option>
 												</template>
 
 												<template v-else>
-													<template v-for="(item,index) in patternList">
+													<template v-for="(item,index) in patternList" >
 														<el-option v-if="index != patternList.length -1"
-															:key="item.value" :label="item.label" :value="item.value">
+															:key="index" :label="item.label" :value="item.value">
 														</el-option>
 													</template>
 												</template>
@@ -391,7 +391,7 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" placeholder="请选择" :disabled="isShowEdit">
-											<el-option v-for="item in companyList"  :key="item"
+											<el-option v-for="(item,i) in companyList"  :key="i"
 												:label="item" :value="item">
 											</el-option>
 										</el-select>
@@ -438,7 +438,7 @@
 												@input="handleQuantity(index,inx,types_index,teamTypes)"
 												oninput="value=value.match(/^\d+(?:\.\d{0,2})?/)">
 											</el-input>
-											<span style="padding-left: 20px;">{{geUnit(teamTypes.unit)}}</span>
+											<span style="padding-left: 20px;">{{teamTypes.unit}}</span>
 										</div>
 									</el-form-item>
 									<el-form-item label="计件单价">
@@ -449,7 +449,7 @@
 												style="padding-left: 20px;">元/
 												<el-select style="width: 80px;margin-left: 10px;"
 											v-model="teamTypes.unit" :disabled="isShowEdit" placeholder="请选择">
-											<el-option v-for="item in companyList"  :key="item"
+											<el-option v-for="(item,i) in companyList"  :key="i"
 												:label="item" :value="item">
 											</el-option>
 										</el-select>
@@ -595,7 +595,7 @@
 								<div>
 										<el-select style="width: 100px;margin-left:20px"
 											v-model="item.serviceFeeType" :disabled="isShowEdit" placeholder="请选择">
-										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
+										<el-option v-for="(item,i) in serviceFeeTypeList" :key="i"
 											:label="item.label" :value="item.value">
 										</el-option>
 										</el-select>
@@ -813,14 +813,16 @@
 				let endTime = Date.parse(val.workTimeList[1]);
 				this.editFrom.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
-				let timeLen = val.workTimelen - val.restTimelen;
+				let timeLen = (val.workTimelen?val.workTimelen:0) - (val.restTimelen?val.restTimelen:0)
 				this.getCalculationUnitPrice(timeLen, teamTypes);
 				this.$forceUpdate();
 			},
 			// 计算工时单价
 			getCalculationUnitPrice(timeLen, list) {
+				console.log('计算工时',timeLen)
 				for (let i = 0; i < list.length; i++) {
 					list[i].dailyFee = list[i].unitPrice * timeLen
+					list[i].dailyHours = timeLen
 				}
 			},
 			// 计算时分
@@ -879,15 +881,13 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-						0)], // 上班/下班 时间数组
-					workStartTime: "", // 上班时间
-					workEndTime: "", // 下班时间
+					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,0)], // 上班/下班 时间数组
+					workStartTime: new Date(2016, 9, 10, 8, 0), // 上班时间
+					workEndTime: new Date(2016, 9, 10, 18,0), // 下班时间
 					workTimelen: 10, // 上班时长
-					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-						0)], // 午休时间数组
-					restStartTime: "", // 午休开始时间
-					restEndTime: "", // 午休结束时间
+					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,0)], // 午休时间数组
+					restStartTime: new Date(2016, 9, 10, 12, 0), // 午休开始时间
+					restEndTime: new Date(2016, 9, 10, 13,0), // 午休结束时间
 					restTimelen: 1, // 午休时长
 					// unitPrice: "", // 计件单价
 					// unit: 1, // 单位
@@ -916,7 +916,7 @@
 							description: "", // 描述
 							overtimeFee: "", // 加班费
 							dailyFee: "", //  每日收入
-							dailyHours: "", // 每日工时
+							dailyHours: 9, // 每日工时
 						}
 					]
 				}
@@ -1454,7 +1454,7 @@
 								unitPrice: "", // 计件单价
 								dailyIncome:'',//计件模式 每日收入
 								timeUnitPrice:'',//计件模式 工时单价	
-								unit: 1, // 单位
+								unit: '', // 单位
 								number: "", // 人数
 								leaderFee: "", // 带班费
 								description: "", // 描述

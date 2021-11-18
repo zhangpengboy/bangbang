@@ -28,7 +28,7 @@
 							</el-form-item>
 							<el-form-item label=" 类型">
 								<el-select v-model="basicForm.type" placeholder="选择类型">
-									<el-option v-for="item in typeList" :key="item.value" :label="item.label"
+									<el-option v-for="(item,i) in typeList" :key="i" :label="item.label"
 										:value="item.value">
 									</el-option>
 								</el-select>
@@ -280,7 +280,7 @@
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-select v-model="teamTypes.name" filterable
 															placeholder="请选择">
-															<el-option v-for="item in options" :key="item.labelName"
+															<el-option v-for="(item,i) in options" :key="i"
 																:label="item.labelName" :value="item.labelName">
 															</el-option>
 														</el-select>
@@ -291,7 +291,7 @@
 														<!-- <el-input v-model="ruleForm.name"></el-input> -->
 														<el-select v-model="teamTypes.tag" placeholder="请选择"
 															@change="handleTag(index,inx,types_index,teamTypes)">
-															<el-option v-for="item in tagList" :key="item.value"
+															<el-option v-for="(item,i) in tagList" :key="i"
 																:label="item.label" :value="item.label">
 															</el-option>
 														</el-select>
@@ -303,15 +303,15 @@
 														<el-select v-model="teamTypes.workTypeVal" placeholder="请选择"
 															@change="handleTypeModel(index,inx,types_index,teamTypes)">
 															<template v-if="teamTypes.tag == '班组长'">
-																<el-option v-for="item in patternList" :key="item.value"
+																<el-option v-for="(item, i) in patternList"  :key="i"
 																	:label="item.label" :value="item.label">
 																</el-option>
 															</template>
 
 															<template v-else>
-																<template v-for="(item,index) in patternList">
+																<template v-for="(item,index) in patternList" >
 																	<el-option v-if="index != patternList.length -1"
-																		:key="item.value" :label="item.label"
+																		:key="index" :label="item.label"
 																		:value="item.label">
 																	</el-option>
 																</template>
@@ -412,7 +412,7 @@
 															style="padding-left: 20px;">元/
 															<el-select style="width: 80px;margin-left: 10px;"
 														v-model="teamTypes.unit" placeholder="请选择">
-														<el-option v-for="item in companyList" :key="item"
+														<el-option v-for="(item,i) in companyList" :key="i"
 															:label="item" :value="item">
 														</el-option>
 													</el-select>
@@ -472,7 +472,7 @@
 															style="padding-left: 20px;">元/
 															<el-select style="width: 80px;margin-left: 10px;"
 														v-model="teamTypes.unit" placeholder="请选择">
-														<el-option v-for="item in companyList" :key="item"
+														<el-option v-for="(item,i) in companyList" :key="i"
 															:label="item" :value="item">
 														</el-option>
 													</el-select>
@@ -619,7 +619,7 @@
 									<div style="width: 100%;display: flex;">
 										<el-select style="width: 100px"
 											v-model="item.serviceFeeType" placeholder="请选择">
-										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
+										<el-option v-for="(item,i) in serviceFeeTypeList" :key="i"
 											:label="item.label" :value="item.value">
 										</el-option>
 										</el-select>

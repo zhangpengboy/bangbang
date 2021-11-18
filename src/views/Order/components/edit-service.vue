@@ -808,7 +808,7 @@
 				let endTime = Date.parse(val.workTimeList[1]);
 				this.editFrom.schemes[index].teams[inx].workTimelen = this.timeFn(stratTime, endTime);
 				let teamTypes = this.editFrom.schemes[index].teams[inx].teamTypes;
-				let timeLen = val.workTimelen - val.restTimelen;
+				let timeLen =(val.workTimelen?val.workTimelen:0) - (val.restTimelen?val.restTimelen:0)
 				this.getCalculationUnitPrice(timeLen, teamTypes);
 				this.$forceUpdate();
 			},
@@ -816,6 +816,7 @@
 			getCalculationUnitPrice(timeLen, list) {
 				for (let i = 0; i < list.length; i++) {
 					list[i].dailyFee = list[i].unitPrice * timeLen
+					list[i].dailyHours = timeLen
 				}
 			},
 			// 计算时分
@@ -867,17 +868,15 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,
-						0)], // 上班/下班 时间数组
-					workStartTime: "", // 上班时间
-					workEndTime: "", // 下班时间
+					workTimeList: [new Date(2016, 9, 10, 8, 0), new Date(2016, 9, 10, 18,0)], // 上班/下班 时间数组
+					workStartTime: new Date(2016, 9, 10, 8, 0), // 上班时间
+					workEndTime: new Date(2016, 9, 10, 18,0), // 下班时间
 					workTimelen: 10, // 上班时长
-					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,
-						0)], // 午休时间数组
-					restStartTime: "", // 午休开始时间
-					restEndTime: "", // 午休结束时间
+					restTimeList: [new Date(2016, 9, 10, 12, 0), new Date(2016, 9, 10, 13,0)], // 午休时间数组
+					restStartTime: new Date(2016, 9, 10, 12, 0), // 午休开始时间
+					restEndTime: new Date(2016, 9, 10, 13,0), // 午休结束时间
 					restTimelen: 1, // 午休时长
-					unitPrice: "", // 计件单价
+					// unitPrice: "", // 计件单价
 					// unit: 1, // 单位
 					enterStartTime: "", //进场时间
 					enterEndTime: "", // 退场时间
@@ -904,7 +903,7 @@
 							description: "", // 描述
 							overtimeFee: "", // 加班费
 							dailyFee: "", //  每日收入
-							dailyHours: "", // 每日工时
+							dailyHours: 9, // 每日工时
 						}
 					]
 				}
