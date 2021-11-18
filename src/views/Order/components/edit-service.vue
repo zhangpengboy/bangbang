@@ -59,10 +59,19 @@
 							<div class="demand-service-upload-img-mask flex fvertical fcenter"
 								v-show="!isShowEdit &&current == index">
 								<i class="el-icon-zoom-in" @click="handleLookImg(item,index)"></i>
-								<!-- <i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i> -->
+								<i class="el-icon-delete" @click="handleDeteleImg(item,index)"></i>
 							</div>
 						</div>
-					
+					<el-upload v-if="!isShowEdit && editFrom.images.length < 4" class="avatar-uploader flex"
+							action="/api/commons/file/admin/v1/upload/public" :data='{"watermarkSkip":true}' list-type="picture-card"
+							name="multipartFile" :show-file-list="false" :on-progress="handleProgress"
+							:on-remove="handleRemoveImg" :on-preview="handlePictureCardPreview"
+							:on-exceed="handleExceed" :on-success="handleSuccessImg" :limit="limit"
+							:before-upload="beforeAvatarUpload" :on-error="handleUploadError">
+							<i class="el-icon-plus avatar-uploader-icon" v-if="videoFlag == false"></i>
+							<el-progress :stroke-width="5" v-if="videoFlag == true" type="circle"
+								:percentage="videoUploadPercent" style="margin-top:12px;"></el-progress>
+						</el-upload>
 
 						<el-dialog :visible.sync="isImges">
 							<img width="100%" :src="dialogImageUrl" alt="">
@@ -584,18 +593,18 @@
 							<div style="display: flex;">
 								<div>
 										<el-select style="width: 100px;margin-left:20px"
-											v-model="item.serviceFeeType" :disabled="isShowEdit" placeholder="请选择">
+											v-model="item.serviceFeeType" :disabled="true" placeholder="请选择">
 										<el-option v-for="item in serviceFeeTypeList" :key="item.value"
 											:label="item.label" :value="item.value">
 										</el-option>
 										</el-select>
 								</div>
 										<div>
-										<el-input :disabled="isShowEdit" v-show="item.serviceFeeType == 2" style="width: 160px; margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										<el-input :disabled="true" v-show="item.serviceFeeType == 2" style="width: 160px; margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
 										@input="handleInputToals(index,item)" v-model="item.serviceFeeRate"
 										placeholder="请输入平台服务费比例">
 										</el-input>
-										<el-input :disabled="isShowEdit" v-show="item.serviceFeeType == 1"  style="width: 160px;margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
+										<el-input :disabled="true" v-show="item.serviceFeeType == 1"  style="width: 160px;margin-left:10px" class="f1 demand-service-plan-box-foot-item-server"
 										@input="handleInputToals(index,item)" v-model="item.serviceFeeRateNum"
 										placeholder="请输入平台服务费">
 										</el-input>
