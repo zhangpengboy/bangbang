@@ -1361,13 +1361,13 @@
 				// console.log(index);
 				let param = {
 					name: "", // 班组名称
-					workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组, 
-					workStartTime: "", // 上班时间
-					workEndTime: "", // 下班时间
+					workTimeList: [this.getYear(), this.getYear(64800000)], // 上班/下班 时间数组
+					workStartTime: this.formatDateTime(this.getYear()), // 上班时间
+					workEndTime: this.formatDateTime(this.getYear(64800000)), // 下班时间
 					dailyHours: 9, // 上班时长
 					restTimeList: [this.getYear(43200000), this.getYear(46800000)], // 午休时间数组
-					restStartTime: "", // 午休开始时间
-					restEndTime: "", // 午休结束时间
+					restStartTime: this.formatDateTime(this.getYear(43200000)), // 午休开始时间
+					restEndTime: this.formatDateTime(this.getYear(46800000)), // 午休结束时间
 					restTimelen: 1, // 午休时长
 					// unitPrice: "", // 计件单价
 					// unit: 1, // 单位
