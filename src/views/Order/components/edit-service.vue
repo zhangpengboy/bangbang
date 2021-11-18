@@ -14,7 +14,7 @@
 		<div class="demand-service-info">
 			<el-form :model="editFrom" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
 				<el-form-item label="项目名称">
-					<el-input :disabled="true" v-model="editFrom.title"></el-input>
+					<el-input :disabled="isShowEdit" v-model="editFrom.title"></el-input>
 
 				</el-form-item>
 				<el-form-item label=" 类型">
@@ -49,7 +49,7 @@
 				</el-form-item> -->
 
 				<el-form-item label="项目介绍">
-					<el-input type="textarea" :disabled="true" v-model="editFrom.description" :rows="4">
+					<el-input type="textarea" :disabled="isShowEdit" v-model="editFrom.description" :rows="4">
 					</el-input>
 					<div class="demand-service-upload flex">
 						<div v-for="(item,index) in editFrom.images" :key="index" class="demand-service-upload-img"
@@ -528,7 +528,7 @@
 											<span style="padding-left: 20px;">元/小时</span>
 										</div>
 									</el-form-item>
-									<el-form-item label="带班服务费">
+									<el-form-item label="带班服务费" v-if="teamTypes.tag == '班组长' || teamTypes.workType == 3">
 										<div class="flex">
 											<el-input style="width: 150px;" @input="handleServiceFee(index,inx,types_index,teamTypes)"  :disabled="Boolean(teamTypes.id) || isShowEdit"
 												v-model="teamTypes.leaderRate">
@@ -544,7 +544,8 @@
 								<!--  工作描述 -->
 								<div class="demand-service-plan-box-list-item-text">
 									<el-form-item label="工作描述">
-										<el-input :disabled="Boolean(teamTypes.id) || isShowEdit" type="textarea" placeholder="请输入"
+										<!-- Boolean(teamTypes.id) || -->
+										<el-input :disabled=" isShowEdit" type="textarea" placeholder="请输入"
 											:autosize="{ minRows: 2, maxRows: 4}" v-model="teamTypes.description">
 										</el-input>
 									</el-form-item>
@@ -1583,8 +1584,8 @@
 						schemes[i].teams[j].workEndTime = new Date(schemes[i].teams[j].workEndTime).getTime();
 						schemes[i].teams[j].workStartTime = new Date(schemes[i].teams[j].workStartTime).getTime();
 						for (let k = 0; k < schemes[i].teams[j].teamTypes.length; k++) {
-							schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
-								.teams[j].restTimelen;
+							// schemes[i].teams[j].teamTypes[k].dailyHours = schemes[i].teams[j].workTimelen - schemes[i]
+							// 	.teams[j].restTimelen;
 							schemes[i].teams[j].teamTypes[k].enterStartTime = new Date(schemes[i].teams[j].teamTypes[k]
 								.enterStartTime).getTime();
 							schemes[i].teams[j].teamTypes[k].enterEndTime = new Date(schemes[i].teams[j].teamTypes[k]
