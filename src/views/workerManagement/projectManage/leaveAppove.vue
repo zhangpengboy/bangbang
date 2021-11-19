@@ -26,7 +26,7 @@
         </template>
         <template slot="endDate">
           <el-table-column label="退场时间">
-            <template slot-scope="{row}"><span style="color: #f00;">{{row.exitDate}}</span></template>
+            <template slot-scope="{row}"><span style="color: #f00;">{{formatDateTime(row.exitDate)}}</span></template>
           </el-table-column>
         </template>
         <template slot="status">
@@ -44,7 +44,7 @@
             <template slot-scope="{row}">
               <el-button type="text">去对账</el-button>
               <el-button type="text" v-if="row.status === 1" @click="handleApprove(row)">审批</el-button>
-              <el-button type="text" v-if="row.status === 3" style="color: #f00;" @click="handleApprove(row)">重新审批</el-button>
+              <!-- <el-button type="text" v-if="row.status === 3" style="color: #f00;" @click="handleApprove(row)">重新审批</el-button> -->
             </template>
           </el-table-column>
         </template>
@@ -75,6 +75,7 @@
 <script>
   import Filters from '../../../components/Filters/index.vue'
   import Table from '@/components/Table'
+	import moment from 'moment'
   import {
     getProjectExitList,
     getProjectExitCsv,
@@ -181,13 +182,14 @@
         this.$confirm(`您确认同意 ${row.creatorName}的退场申请吗`, '确认提示',{
           confirmButtonText: '确定',
           cancelButtonText: '驳回',
-        }).then(()=>{
-          console.log('确认')
+        }).then((e)=>{
+          console.log('确认',e)
+          // 状态:1.审核中,2.已通过,3.已驳回 ,
           this.loading = true
-          postUpdateStatus({id: row.id, result: row.status === 3 ? false : true})
+          postUpdateStatus({id: row.id, result: true})
           .then(res =>{
             if (res.code === 200) {
-              this.$message.success('审批成功')
+              this.$message.success('通过审批成功')
               this.loadData()
             }
           })
@@ -196,6 +198,17 @@
           })
         }).catch(()=>{
           console.log('取消')
+            this.loading = true
+          postUpdateStatus({id: row.id, result:false})
+          .then(res =>{
+            if (res.code === 200) {
+              this.$message.success('驳回审批成功')
+              this.loadData()
+            }
+          })
+          .finally(()=>{
+            this.loading = false
+          })
         })
       },
       exportTable() {
@@ -210,7 +223,10 @@
           .finally(()=>{
             this.loading = false;
           })
-      }
+      },
+      formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD ') : '';
+			},
     }
   }
 </script>
