@@ -8,32 +8,18 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input v-model="serach" class="top-content-item-input" placeholder="用户ID/名称/手机号" clearable />
+						<el-input v-model="serach" class="top-content-item-input" placeholder="原因" clearable />
 					</div>
 					<div class="flex fvertical top-content-item-status">
-						<span>工人等级：</span>
-						<el-select v-model="gradevalue" multiple placeholder="全部" clearable>
-							<el-option v-for="item in gradeOptions" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
-					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>状态：</span>
-						<el-select v-model="statusvalue" placeholder="全部" clearable>
+						<span>类型：</span>
+						<el-select v-model="updateType"  placeholder="全部" clearable>
 							<el-option v-for="item in allStatus" :key="item.value" :label="item.label"
 								:value="item.value" />
 						</el-select>
 					</div>
 					<div class="flex fvertical top-content-item-status">
-						<span>身份标签：</span>
-						<el-select v-model="workerIdentity" placeholder="全部" clearable>
-							<el-option v-for="item in IdentityS" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
-					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>首页推荐：</span>
-						<el-select v-model="recommend" placeholder="全部" clearable>
+						<span>记录来源：</span>
+						<el-select v-model="fromType" placeholder="全部" clearable>
 							<el-option v-for="item in recommendS" :key="item.value" :label="item.label"
 								:value="item.value" />
 						</el-select>
@@ -51,12 +37,8 @@
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
 				<div>
-			<el-select v-model="sort" placeholder="全部" clearable>
-							<el-option v-for="item in sortS" :key="item.value" :label="item.label"
-								:value="item.value" />
-			</el-select>
 
-			<el-button @click="addWorker" type="primary" style="margin: 0 20px;">新增工人</el-button>
+			<el-button  type="primary" style="margin: 0 20px;" @click="addfen">新增</el-button>
 
 			<el-button @click="exportTable">导出</el-button>
 
@@ -68,60 +50,37 @@
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
 				<el-table-column type='index' label="序号" width="60" />
 				<el-table-column prop="id" label="ID" width="100" />
-				<el-table-column prop="realName" label="名称" width="150" />
-				<el-table-column prop="phone" label="手机号码" width="120" />
-				<el-table-column label="实名状态">
-					<template slot-scope="scope">
-						{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
+				<el-table-column prop="title" label="记录名称" width="150" />
+				<el-table-column prop="reason" label="备注" width="120" />
+                <el-table-column prop="updateType" label="类型" width="120" >
+                	<template slot-scope="scope">
+                        <p v-if="scope.row.scoreIncrement > 0">加分</p>
+                        <p v-if="scope.row.scoreIncrement < 0"> 减分</p>
 					</template>
 				</el-table-column>
-				<el-table-column prop="gender" label="性别">
+                
+				<el-table-column prop="scoreIncrement" label="分值">
+				</el-table-column>
+				<el-table-column prop="projectName" label="所属项目" />
+				<el-table-column prop="fromType" label="记录来源">
 					<template slot-scope="scope">
-						{{scope.row.gender == 0 ?'男':scope.row.gender == 1 ?'女':'未知'}}
+						{{scope.row.fromType == 0 ?'系统触发':scope.row.fromType == 1 ?'后台添加':'未知'}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="workerGrade" label="工人等级" :formatter="gradeFormat" />
-				<el-table-column prop="workerIdentity " label="身份标签">
-					<template slot-scope="scope">
-						{{scope.row.workerIdentity  == 0 ?'工人':scope.row.workerIdentity == 1 ?'队伍带班':scope.row.workerIdentity == 2 ?'其他':'未知'}}
+				<el-table-column prop="updateTime" label="时间" >
+                <template slot-scope="scope">
+						{{formatDateTime(scope.row.updateTime)}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="workYears" label="工龄" />
-				<el-table-column prop="workDays" label="工作时长" />
-				<el-table-column prop="behavioralScore" label="信誉分" />
-				<el-table-column label="综合评分" width="150">
-					<template slot-scope="scope">
-						<el-rate v-model="scope.row.workerScore" disabled show-score text-color="#ff9900"
-							score-template="{value}" />
-					</template>
-				</el-table-column>
-				<el-table-column prop="visitCount" label="浏览量" />
-				<el-table-column prop="homeShow " label="首页推荐">
-					<template slot-scope="scope">
-						<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
-						<el-switch v-model="scope.row.homeShow" :active-value="0" :inactive-value="1"
-							@change="workerStatusChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
-						</el-switch>
-					</template>
-				</el-table-column>
-				<el-table-column prop="workerStatus" label="状态">
-					<template slot-scope="scope">
-						<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
-						<el-switch v-model="scope.row.workerStatus" :active-value="0" :inactive-value="1"
-							@change="workerStatusChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
-						</el-switch>
-					</template>
-				</el-table-column>
-				<el-table-column prop="updaterName" label="操作人" />
-				<el-table-column prop="updateTime" label="操作时间" />
-				<el-table-column label="操作" width="220">
+               
+				<!-- <el-table-column label="操作" width="220">
 					<template slot-scope="scope">
 						<el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
 
 						<el-button v-if="scope.row.realNameAuth==0" type="text" size="small"
 							@click="reanName(scope.row)">实名</el-button>
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 			</el-table>
 			<!-- 表格end -->
 
@@ -132,10 +91,10 @@
 					:total="PageCount" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 			</div>
 			<!-- 分页end -->
-			<!-- 实名弹窗 -->
-			<el-dialog title="添加实名" :visible.sync="realNamePop" width="30%" center>
+			<!-- 新增信誉分记录 -->
+			<el-dialog title="新增信誉分记录" :visible.sync="realNamePop" width="30%" center>
 				<div class="reanNamePoplist">
-					<div class="item">
+					<!-- <div class="item">
 						<p class="tit">身份证正反面：</p>
 						<div class="popIdCard flex alCen">
 							<el-upload class="avatar-uploader" action="123" :before-upload="beforeUpload"
@@ -154,49 +113,38 @@
 
 						</div>
 
+					</div> -->
+					<div class="item">
+						<p class="tit">类型：</p>
+						<el-select v-model="Add.type" :disabled='true'  placeholder="全部" clearable>
+							<el-option v-for="item in typelist" :key="item.value" :label="item.label"
+								:value="item.value" />
+						</el-select>
 					</div>
 					<div class="item">
-						<p class="tit">姓名：</p>
-						<input type="text" name="" v-model="rnName" placeholder="请填姓名" class="ipt" value="">
+						<p class="tit">选择原因：</p>
+                        <el-select v-model="Add.eventId"  placeholder="全部" clearable @change="changeReason">
+							<el-option v-for="item in ReasonList" :key="item.id" :label="item.reason"
+								:value="item.id" />
+						</el-select>
 					</div>
 					<div class="item">
-						<p class="tit">性别：</p>
-						<input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
+						<p class="tit">分数：</p>
+						<input type="text" name="" v-model="Add.score" :disabled='true' placeholder="请输入分数" class="ipt" value="">
 					</div>
 					<div class="item">
-						<p class="tit">民族：</p>
-						<input type="text" name="" v-model="rnNation" placeholder="请输入民族" class="ipt" value="">
+						<p class="tit">所属项目：</p>
+						<input type="text" name="" v-model="Add.projectName" placeholder="请输入项目名称" class="ipt" value="">
 					</div>
 					<div class="item">
-						<p class="tit">年龄：</p>
-						<input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">身份证号：</p>
-						<input type="text" name="" v-model="rnIdnum" placeholder="请输入身份证号" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">籍贯：</p>
-						<input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">户籍地：</p>
-						<input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">身份证有效期起始时间：</p>
-						<el-date-picker v-model="rnvalidityStartTime" class="ipt" type="date" placeholder="选择起始日期">
-						</el-date-picker>
-					</div>
-					<div class="item">
-						<p class="tit">身份证有效期截止时间：</p>
-						<el-date-picker v-model="rnvalidityEndTime" class="ipt" type="date" placeholder="选择截止日期">
-						</el-date-picker>
+						<p class="tit">理由：</p>
+						<!-- <input type="textarea" name="" v-model="rnIdnum" placeholder="请输入理由" class="ipt" value=""> -->
+                        <textarea name="" id="" cols="30" v-model="Add.reason"  placeholder="请输入理由" rows="10" class="tra"></textarea>
 					</div>
 				</div>
 				<span slot="footer" class="dialog-footer">
 					<el-button @click="realNamePop = false">取 消</el-button>
-					<el-button type="primary" @click="realNameTrue">确 定</el-button>
+					<el-button type="primary" @click="postAddWorkerBehavioralLog">确 定</el-button>
 				</span>
 			</el-dialog>
 
@@ -207,16 +155,19 @@
 
 <script>
 	import {
-		gongRenQueryPage,
+		getuserWorkerBehavioralLog,
 		gongRenRealNameAuth,
 		uploadIdCard,
 		gongrenupdateUserStatus,
 		exportCsvGongren,
 		uploadIdCardByAli,
 		getPreSignFile,
-		uploadpublic
+		uploadpublic,
+        postAddWorkerBehavioralLog,
+        getCreditScore
 	} from '../../../api/user.js'
 
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
@@ -225,52 +176,30 @@
 				PageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				serach: '', // 搜索
-				gradeOptions: [ // 工人等级
-					{
-						label: '普通工人',
-						value: '0'
-					}, {
-						label: '铜牌工人',
-						value: '1'
-					}, {
-						label: '银牌工人',
-						value: '2'
-					}, {
-						label: '金牌工人',
-						value: '3'
-					}, {
-						label: '超能工人',
-						value: '4'
-					}
-				],
 				gradevalue: [],
 				allStatus: [{
 					label: '全部',
 					value: ''
 				},{
-					label: '正常',
+					label: '扣分',
 					value: '0'
 				}, {
-					label: '冻结',
+					label: '加分',
 					value: '1'
 				}],
-				IdentityS:[{
-					label: '工人',
-					value: '0'
-				},{
-					label: '队伍带班',
-					value: '1'
-				},{
-					label: '其他',
-					value: '2'
+                typelist: [{
+					label: '扣分',
+					value: 2
+				}, {
+					label: '加分',
+					value: 1
 				}],
-				workerIdentity:'',
 				recommendS:[{
-					label: '开启',
-					value: '1'
-				},{
-					label: '关闭',
+					label: '系统触发',
 					value: '0'
+				},{
+					label: '后台添加',
+					value: '1'
 				}],
 				recommend:'',
 				statusvalue: '',
@@ -292,27 +221,28 @@
 				rnvalidityStartTime: '',
 				rnvalidityEndTime: '',
 				clientHeight: 0,
-				sortS:[{
-					label: '按工人等级排序',
-					value: '0'
-				},{
-					label: '按工人好评分排序',
-					value: '1'
-				},{
-					label: '按工龄排序',
-					value: '2'
-				},{
-					label: '按信誉分排序',
-					value: '4'
-				}],
-				sort:'0'
+                fromType:'',
+                updateType:'',
+                userId:'',//用户id
+                //新增记录对象
+                Add:{
+                eventId:'',
+                projectName:'',
+                reason:'',
+                score:'',
+                type:''
+                },
+                ReasonList:[],//新增记录原因数据
 
 
 			}
 		},
 		created() {
+            this.userId = this.$route.query.id
 			this.getList();
 			this.getWebHeing();
+            // 获取原因信息
+            this.getReason()
 		},
 		methods: {
 			/** 计算页面高度 */
@@ -334,31 +264,19 @@
 
 				})
 			},
-			gradeFormat(row) {
-				if (row.workerGrade == 0) {
-					return "普通工人";
-				} else if (row.workerGrade == 1) {
-					return "铜牌工人";
-				} else if (row.workerGrade == 2) {
-					return "银牌工人";
-				} else if (row.workerGrade == 3) {
-					return "金牌工人";
-				}
-			},
 			getList() {
 				console.log(this.gradevalue.join(','))
 				var params = {
 					keyword: this.serach,
 					pageNum: this.PageIndex,
 					pageSize: this.PageSize,
-					grades: this.gradevalue.join(','),
-					userStatus: this.statusvalue,
-					workerIdentity:this.workerIdentity,
-					homeShow:this.recommend
+					updateType: this.updateType,
+					fromType:this.fromType,
+                    userId:this.userId
 				}
-				gongRenQueryPage(params).then(res => {
+				getuserWorkerBehavioralLog(params).then(res => {
 					var data = res.data
-					console.log('res', data)
+					// console.log('res', data)
 					this.PageCount = data.total
 					this.tableData = data.list
 				})
@@ -381,7 +299,7 @@
 			},
 			// 导出
 			exportTable() {
-				let url = '/api/user/admin/worker/v1.0/exportCsv';
+				let url = '/api/user/admin/userWorkerBehavioralLog/v1.1/exportXls';
 				let param =
 					`?id=${this.serach}&grades=${this.gradevalue}&pageNum=${this.PageIndex}&PageSize=${this.PageSize}&userStatus=${this.statusvalue}`
 				window.open(url+param);
@@ -509,60 +427,73 @@
 				console.log(res)
 				console.log(file)
 			},
-			// 添加实名
-			realNameTrue() {
-				if (this.idCardUp == '') {
-					this.$message({
-						type: 'warning',
-						message: '请上传身份证!'
-					})
-				} else if (this.rnName == '') {
-					this.$message({
-						type: 'warning',
-						message: '请输入姓名!'
-					})
-				} else if (IsCard(this.rnIdnum) == false) {
-					this.$message({
-						type: 'warning',
-						message: '请输入正确身份证号!'
-					})
-				} else {
-					var gender = 0;
-					if (this.rnGender == '男') {
-						gender = 0
-					} else {
-						gender = 1
-					}
-					var params = {
-						age: this.rnAge,
-						gender: gender,
-						householdRegister: this.rnHouse,
-						idCardReverseUri: this.idCardBackUp,
-						idCardUri: this.idCardUp,
-						idNo: this.rnIdnum,
-						nation: this.rnNation,
-						nativePlace: this.rnNativePlace,
-						realName: this.rnName,
-						userId: this.rnUserId,
-						validityEndTime: this.rnvalidityEndTime,
-						validityStartTime: this.rnvalidityStartTime
-					}
-					gongRenRealNameAuth(params).then(res => {
-						console.log(res)
-						if (res.code == 200) {
-							this.$message({
-								type: 'success',
-								message: '提交成功!'
-							})
-							this.realNamePop = false
-							this.getList()
-						}
-					})
-				}
-
-
+            //添加信誉分弹窗
+            addfen(){
+                this.realNamePop = true
+            },
+            //时间处理
+			formatDateTime(value) {
+				return value ? moment(value).format('YYYY-MM-DD HH:mm:ss') : '';
 			},
+            //新增记录
+            postAddWorkerBehavioralLog(){
+                    if(!this.Add.eventId){
+                        this.$message({
+							type: 'error',
+							message: '请选择原因!'
+						})
+                        return
+                    }
+                      if(!this.Add.projectName){
+                        this.$message({
+							type: 'error',
+							message: '请填写项目名称!'
+						})
+                        return
+                    }
+                      if(!this.Add.reason){
+                        this.$message({
+							type: 'error',
+							message: '请填写项目理由!'
+						})
+                        return
+                    }
 
+                postAddWorkerBehavioralLog({
+                    eventId:this.Add.eventId ,
+                    projectName:this.Add.projectName,
+                    reason:this.Add.reason,
+                    userId:this.userId,
+                }).then(res => {
+                    // console.log(res)
+						this.$message({
+							type: 'success',
+							message: '操作成功!'
+						})
+                    this.Add.eventId =''
+                    this.Add.projectName =''
+                    this.Add.reason=''
+                    this.realNamePop = false
+					this.getList()
+					
+                })
+            },
+            //获取原因数据
+            getReason(){
+                let param = {};
+					param.pageNum = 1;
+					param.pageSize = 999;
+					getCreditScore(param).then(res=>{
+                        // console.log(res.data.list)
+                       this.ReasonList = res.data.list
+                    })
+            },
+            //新增原因选择
+            changeReason(e){
+                let arrayTitles = this.ReasonList.filter((item) => item.id == e);
+                this.Add.type = arrayTitles[0].type
+                this.Add.score = arrayTitles[0].score
+            }
 
 		}
 	}
@@ -588,6 +519,10 @@
 				padding: 0 8px;
 				box-sizing: border-box;
 			}
+            .tra{
+                width: 80%;
+                padding: 10px;
+            }
 		}
 	}
 

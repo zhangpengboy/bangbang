@@ -11,33 +11,13 @@
 						<el-input v-model="serach" class="top-content-item-input" placeholder="用户ID/名称/手机号" clearable />
 					</div>
 					<div class="flex fvertical top-content-item-status">
-						<span>工人等级：</span>
+						<span>选择时间：</span>
 						<el-select v-model="gradevalue" multiple placeholder="全部" clearable>
 							<el-option v-for="item in gradeOptions" :key="item.value" :label="item.label"
 								:value="item.value" />
 						</el-select>
 					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>状态：</span>
-						<el-select v-model="statusvalue" placeholder="全部" clearable>
-							<el-option v-for="item in allStatus" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
-					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>身份标签：</span>
-						<el-select v-model="workerIdentity" placeholder="全部" clearable>
-							<el-option v-for="item in IdentityS" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
-					</div>
-					<div class="flex fvertical top-content-item-status">
-						<span>首页推荐：</span>
-						<el-select v-model="recommend" placeholder="全部" clearable>
-							<el-option v-for="item in recommendS" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
-					</div>
+					
 				</div>
 				<div class="top-content-btn">
 					<el-button type="primary" @click="search">查询</el-button>
@@ -51,12 +31,8 @@
 			<div class="box-top flex fbetween fvertical" id="boxTop">
 				<div class="bold">数据列表</div>
 				<div>
-			<el-select v-model="sort" placeholder="全部" clearable>
-							<el-option v-for="item in sortS" :key="item.value" :label="item.label"
-								:value="item.value" />
-			</el-select>
 
-			<el-button @click="addWorker" type="primary" style="margin: 0 20px;">新增工人</el-button>
+			<el-button @click="addWorker" type="primary" style="margin: 0 20px;">新增</el-button>
 
 			<el-button @click="exportTable">导出</el-button>
 
@@ -67,52 +43,24 @@
 			<!-- 表格  -->
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
 				<el-table-column type='index' label="序号" width="60" />
-				<el-table-column prop="id" label="ID" width="100" />
-				<el-table-column prop="realName" label="名称" width="150" />
-				<el-table-column prop="phone" label="手机号码" width="120" />
-				<el-table-column label="实名状态">
+				<el-table-column prop="realName" label="项目名称" width="150" />
+				<el-table-column prop="phone" label="所属工种" width="120" />
+				<el-table-column label="评分">
 					<template slot-scope="scope">
 						{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="gender" label="性别">
+				<el-table-column prop="gender" label="评价内容">
 					<template slot-scope="scope">
 						{{scope.row.gender == 0 ?'男':scope.row.gender == 1 ?'女':'未知'}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="workerGrade" label="工人等级" :formatter="gradeFormat" />
-				<el-table-column prop="workerIdentity " label="身份标签">
+				<el-table-column prop="workerGrade" label="评价图片" :formatter="gradeFormat" />
+				<el-table-column prop="workerIdentity " label="评价人">
 					<template slot-scope="scope">
 						{{scope.row.workerIdentity  == 0 ?'工人':scope.row.workerIdentity == 1 ?'队伍带班':scope.row.workerIdentity == 2 ?'其他':'未知'}}
 					</template>
 				</el-table-column>
-				<el-table-column prop="workYears" label="工龄" />
-				<el-table-column prop="workDays" label="工作时长" />
-				<el-table-column prop="behavioralScore" label="信誉分" />
-				<el-table-column label="综合评分" width="150">
-					<template slot-scope="scope">
-						<el-rate v-model="scope.row.workerScore" disabled show-score text-color="#ff9900"
-							score-template="{value}" />
-					</template>
-				</el-table-column>
-				<el-table-column prop="visitCount" label="浏览量" />
-				<el-table-column prop="homeShow " label="首页推荐">
-					<template slot-scope="scope">
-						<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
-						<el-switch v-model="scope.row.homeShow" :active-value="0" :inactive-value="1"
-							@change="workerStatusChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
-						</el-switch>
-					</template>
-				</el-table-column>
-				<el-table-column prop="workerStatus" label="状态">
-					<template slot-scope="scope">
-						<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
-						<el-switch v-model="scope.row.workerStatus" :active-value="0" :inactive-value="1"
-							@change="workerStatusChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
-						</el-switch>
-					</template>
-				</el-table-column>
-				<el-table-column prop="updaterName" label="操作人" />
 				<el-table-column prop="updateTime" label="操作时间" />
 				<el-table-column label="操作" width="220">
 					<template slot-scope="scope">

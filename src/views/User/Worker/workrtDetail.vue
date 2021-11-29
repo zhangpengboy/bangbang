@@ -196,21 +196,33 @@
 						<el-col :span="12">
 							<div class="list">
 								<div class="item flex">
+									<p class="backgroud tit">身份标签</p>
+									<!-- <p class="desc flex1 col666"> {{userInfo.workerIdentity  == 0 ?'工人':userInfo.workerIdentity == 1 ?'队伍带班':userInfo.workerIdentity == 2 ?'其他':'未知'}}</p> -->
+									<el-select class="desc flex1 col666" :disabled="isEditUserInfo==false" v-model="userInfo.workerIdentity"
+									placeholder="请选择">
+									<el-option v-for="item in IdentityS" :key="item.value" :label="item.label"
+										:value="item.value" />
+									</el-select>
+								</div>
+								<div class="item flex">
 									<p class="backgroud tit">工人等级</p>
 									<p class="desc flex1 col666">{{bizCardInfo.grade}}</p>
 								</div>
 								<div class="item flex">
-									<p class="backgroud tit">工龄</p>
-									<p class="desc flex1 col666">{{bizCardInfo.workYears}}年</p>
+									<p class="backgroud tit">工作年限</p>
+									<!-- <p class="desc flex1 col666">{{bizCardInfo.workYears}}年</p> -->
+									<input class="desc flex1 col666" type="" name="" :disabled="isEditUserInfo==false"
+									v-model="bizCardInfo.workYears" />
 								</div>
 								<div class="item flex">
-									<p class="backgroud tit">行为分</p>
+									<p class="backgroud tit">信誉分</p>
 									<p class="desc flex1 col666">{{bizCardInfo.behavioralScore}}分</p>
+									<p style="color:#1682e6;padding: 0 20px;cursor: pointer;" @click="godetail(1)">查看详情</p>
 								</div>
 								<div class="item flex">
 									<p class="backgroud tit">工种</p>
 									<div class="desc flex1 col666 flex alCen">
-										<div v-for="item in bizCardInfo.workType"
+										<div v-for="(item,i) in bizCardInfo.workType" :key="i"
 											style="margin-right: 20px;position: relative;">
 											<p class="gongzhong">{{item.labelName}}</p>
 											<img v-if="isEditUserInfo" @click="detGongZhong(item)"
@@ -245,6 +257,10 @@
 						<el-col :span="12">
 							<div class="list">
 								<div class="item flex">
+									<p class="backgroud tit">浏览量</p>
+									<p class="desc flex1 col666">{{userInfo.visitCount}}</p>
+								</div>
+								<div class="item flex">
 									<p class="backgroud tit">状态</p>
 									<p class="desc flex1 col666 flex alCen js-sb">
 										<span>{{bizCardInfo.workStatus==1?'工作中':'找工中'}}</span>
@@ -261,11 +277,13 @@
 										<el-rate v-model="userInfo.workerScore" disabled show-score text-color="#ff9900"
 											score-template="{value}" />
 									</p>
+									
+									<p style="color:#1682e6;padding: 0 20px;cursor: pointer;" @click="godetail(2)">查看详情</p>
 								</div>
 								<div class="item flex">
 									<p class="backgroud tit">期望工作地</p>
 									<div class="desc flex1 col666 flex alCen">
-										<div v-for="item in bizCardInfo.expectedPlace"
+										<div v-for="(item,i) in bizCardInfo.expectedPlace" :key="i"
 											style="margin-right: 20px;position: relative;">
 											<p class="gongzhong">{{item.labelName}}</p>
 											<img v-if="isEditUserInfo" @click="detAdr(item)"
@@ -273,10 +291,14 @@
 										</div>
 										<template v-if="bizCardInfo.expectedPlace.length<3">
 											<el-cascader v-if="isEditUserInfo" size="small" placeholder="添加工作地"
-												:options="adrOptions" v-model="selectedOptions" @change="handleChange">
+												:options="adrOptions" v-model="selectedOptions" @change="handleChange(1)">
 											</el-cascader>
 										</template>
 									</div>
+								</div>
+								<div class="item flex">
+									<p class="backgroud tit">家乡</p>
+									<p class="desc flex1 col666">{{userInfo.hometown}}</p>
 								</div>
 							</div>
 						</el-col>
@@ -305,14 +327,29 @@
 									<p class="mt10 ">组长</p>
 								</el-col>
 								<el-col :span="4" class="proDesc flex column alCen js-center">
-									<p class="col666">服务评分</p>
+									<div>
+										<p class="col666">服务评分</p>
 									<el-rate v-model="workScore" class="mt10" disabled show-score text-color="#ff9900"
 										score-template="{value}" />
+									</div>
+									
+									<el-button type="primary" style="    position: absolute;right: 5px;top: 7px;" size="small">编辑</el-button>
 								</el-col>
 							</el-row>
 							<div class="proPj">
 								<p class="col666">服务评价</p>
 								<p class="col333 mt10">服务评价sdvsdg fsg森岛帆高收到符带饭的符的辅导费的罚单</p>
+							</div>
+							<div class="proPj">
+							<div class="mt10 flex alCen">
+						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
+							:file-list="zhenshuPhotoList" :disabled="isEditUserInfo==false" list-type="picture-card"
+							:on-success="handleAvatarSuccess4" :on-preview="handlePictureCardPreview" :on-remove="handleRemove4" :limit='6'
+							:on-exceed="handleExceed">
+							<i class="el-icon-plus" />
+						</el-upload>
+					
+					</div>
 							</div>
 						</div>
 					</div>
@@ -404,6 +441,44 @@
 				<img width="100%" fit="contain" :src="yulanImg" alt="">
 			</el-dialog>
 
+
+			<!-- 添加项目 -->
+			<el-dialog title="添加项目" :visible.sync="addprojectPop" width="30%" center>
+				<div class="reanNamePoplist">
+					<div class="item">
+						<p class="tit">项目名称：</p>
+						<input type="text" name="" v-model="rnName" placeholder="请填项目名称" class="ipt" value="">
+					</div>
+					<div class="item">
+						<p class="tit">工种：</p>
+						<input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
+					</div>
+					<div class="item">
+						<p class="tit">工程开始时间：</p>
+						<el-date-picker v-model="rnvalidityStartTime" class="ipt" type="date" placeholder="选择工程开始时间">
+						</el-date-picker>
+						<el-date-picker v-model="rnvalidityEndTime" class="ipt" type="date" placeholder="选择工程结束时间">
+						</el-date-picker>
+					</div>
+					<div class="item">
+						<p class="tit">工作地点：</p>
+						<input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
+					</div>
+					<div class="item">
+						<p class="tit">服务评分：</p>
+						<el-rate v-model="userInfo.workerScore" disabled show-score text-color="#ff9900"
+											score-template="{value}" />
+					</div>
+					<div class="item">
+						<p class="tit">评价：</p>
+						<input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
+					</div>
+				</div>
+				<span slot="footer" class="dialog-footer">
+					<el-button @click="realNamePop = false">取 消</el-button>
+					<el-button type="primary" @click="realNameTrue">确 定</el-button>
+				</span>
+			</el-dialog>
 		</div>
 
 	</div>
@@ -483,6 +558,17 @@
 				],
 				dialogVisible1: false,
 				yulanImg: '',
+				IdentityS:[{
+					label: '工人',
+					value: 0
+				},{
+					label: '队伍带班',
+					value: 1
+				},{
+					label: '其他',
+					value: 2
+				}],
+				addprojectPop:false, //添加项目弹窗
 
 			}
 		},
@@ -526,7 +612,7 @@
 				})
 			},
 			// 添加期望地
-			handleChange() {
+			handleChange(v) {
 				var loc = "";
 				var code = 0;
 				for (let i = 0; i < this.selectedOptions.length; i++) {
@@ -869,7 +955,7 @@
 			},
 			// 添加项目经验
 			addWork() {
-
+				this.addprojectPop = true
 			},
 			// 添加项目
 			addProject() {
@@ -905,6 +991,8 @@
 						selfIntroduction: this.bizCardInfo.selfIntroduction,
 						userId: this.userInfo.id,
 						workResultUrl: workPhotoList.join(','),
+						workerIdentity:this.userInfo.workerIdentity,
+						hometown:this.userInfo.hometown,
 						workStatus: this.bizCardInfo.workStatus
 					}
 					workerBizCard(params).then(res => {
@@ -993,6 +1081,25 @@
 				}
 				console.log(item.content)
 				this.bizCardInfo.selfIntroduction = item.content
+			},
+			//查看分数详情
+			godetail(type){
+				if(type == 1){
+				this.$router.push({
+					path: '/User/CreditScoreList',
+					query: {
+						id: this.userInfo.id,
+					}
+				})
+				}else{
+					this.$router.push({
+					path: '/User/EvaluationScoreList',
+					query: {
+						id: this.userInfo.id,
+					}
+				})
+				}
+			
 			}
 
 
@@ -1187,5 +1294,27 @@
 
 		}
 
+	}
+
+	.reanNamePoplist {
+
+		.item {
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+			margin-bottom: 20px;
+
+			.tit {
+				width: 100px;
+				text-align: right;
+			}
+
+			.ipt {
+				flex: 1;
+				height: 35px;
+				padding: 0 8px;
+				box-sizing: border-box;
+			}
+		}
 	}
 </style>

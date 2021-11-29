@@ -1737,6 +1737,94 @@ export function getDeteleBanner(params) {
 	})
 }
 
+/**
+ * 信誉分设置列表
+ * 
+ *  */
+ export function getCreditScore(params) {
+	return request({
+		url: `/api/commons/admin/creditScore/setting/v1.1.0/page`,
+		method: 'GET',
+		params
+	})
+}
+/**
+ * 信誉分设置新增
+ * 
+ *  */
+ export function postCreditScoreinsert(data) {
+	return request({
+		url: `/api/commons/admin/creditScore/setting/v1.1.0/insert`,
+		method: 'post',
+		data,
+	})
+}
+
+/**
+ * 信誉分设置编辑
+ * 
+ *  */
+ export function postCreditScoreupdate(data) {
+	return request({
+		url: `/api/commons/admin/creditScore/setting/v1.1.0/update`,
+		method: 'post',
+		data,
+	})
+}
+
+/**
+ * 信誉分设置删除
+ * 
+ *  */
+ export function postCreditScoreremove(data) {
+	return request({
+		url: `/api/commons/admin/creditScore/setting/v1.1.0/remove/${data.id}`,
+		method: 'post',
+		data,
+	})
+}
+
+
+/**
+ * 信誉分设置更新状态
+ * 
+ *  */
+ export function postCreditScoreupdatestatus(data) {
+	return request({
+		url: `/api/commons/admin/creditScore/setting/v1.1.0/update/status`,
+		method: 'post',
+		data,
+	})
+}
+
+/**
+ * 信誉分记录列表
+ * 
+ *  */
+ export function getuserWorkerBehavioralLog(params) {
+	return request({
+		url: `/api/user/admin/userWorkerBehavioralLog/v1.1/page`,
+		method: 'GET',
+		params
+	})
+}
+
+/**
+ * 信誉分新增
+ * 
+ *  */
+ export function postAddWorkerBehavioralLog(data) {
+	return request({
+		url: `/api/user/admin/userWorkerBehavioralLog/v1.1/logBehavioral`,
+		method: 'post',
+		responseType: 'blob',
+		data
+	})
+}
+
+
+
+
 
 
 

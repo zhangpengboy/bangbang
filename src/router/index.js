@@ -175,7 +175,25 @@ export const constantRoutes = [
 				activeMenu: '/user/Worker/WorkerList'
 			},
 			hidden: true
-		}, {
+		}, ,{
+			path: 'CreditScoreList',
+			component: () => import('@/views/User/Worker/CreditScoreList'),
+			name: 'CreditScoreList',
+			meta: {
+				title: '信誉分列表',
+				activeMenu: '/user/Worker/CreditScoreList'
+			},
+			hidden: true
+		},{
+			path: 'EvaluationScoreList',
+			component: () => import('@/views/User/Worker/EvaluationScoreList'),
+			name: 'EvaluationScoreList',
+			meta: {
+				title: '评价分列表',
+				activeMenu: '/user/Worker/EvaluationScoreList'
+			},
+			hidden: true
+		},{
 			path: 'taskDetail',
 			component: () => import('@/views/User/Worker/TaskDetail'),
 			name: 'taskDetail',
@@ -672,6 +690,13 @@ export const constantRoutes = [
 			meta: {
 				title: '单位设置'
 			}
+		},{
+			path: 'reputation',
+			component: () => import('@/views/System/reputationSeting'),
+			name: 'reputation',
+			meta: {
+				title: '信誉分设置'
+			}
 		}]
 	}
 ]
@@ -756,6 +781,24 @@ export const asyncRoutes = [{
 					meta: {
 						title: '工人详情',
 						activeMenu: '/user/Worker/WorkerList'
+					},
+					hidden: true
+				},{
+					path: 'CreditScoreList',
+					component: () => import('@/views/User/Worker/CreditScoreList'),
+					name: 'CreditScoreList',
+					meta: {
+						title: '信誉分列表',
+						activeMenu: '/user/Worker/CreditScoreList'
+					},
+					hidden: true
+				},{
+					path: 'EvaluationScoreList',
+					component: () => import('@/views/User/Worker/EvaluationScoreList'),
+					name: 'EvaluationScoreList',
+					meta: {
+						title: '评价分列表',
+						activeMenu: '/user/Worker/EvaluationScoreList'
 					},
 					hidden: true
 				}]
@@ -1171,6 +1214,13 @@ export const asyncRoutes = [{
 			name: 'unit',
 			meta: {
 				title: '单位设置'
+			}
+		},{
+			path: 'reputation',
+			component: () => import('@/views/System/reputationSeting'),
+			name: 'reputation',
+			meta: {
+				title: '信誉分设置'
 			}
 		}]
 	}
