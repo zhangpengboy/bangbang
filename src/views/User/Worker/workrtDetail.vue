@@ -309,42 +309,42 @@
 						<el-button type="primary" @click="addWork">添加</el-button>
 					</div>
 					<div class="pro-exper mt15">
-						<div v-for="(tiem,index) in 3" :key="index" class="experItem">
+						<div v-for="(tiem,index) in projectDate" :key="index" class="experItem">
 							<el-row class="">
 								<el-col :span="5" class="proDesc flex column js-center alCen">
-									<p class="proTit">广州中体是多少符带饭的符大项目</p>
+									<p class="proTit">{{tiem.title}}</p>
 								</el-col>
 								<el-col :span="4" class="proDesc flex column alCen js-center">
 									<p class="col666">工种</p>
-									<p class="mt10 ">组长</p>
+									<p class="mt10 ">{{tiem.name || ''}}</p>
 								</el-col>
 								<el-col :span="5" class="proDesc flex column alCen js-center">
 									<p class="col666">工程时间</p>
-									<p class="mt10 ">组长</p>
+									<p class="mt10 ">{{formatDate(tiem.enterStartTime)}}-{{formatDate(tiem.enterEndTime)}}</p>
 								</el-col>
 								<el-col :span="6" class="proDesc flex column alCen js-center">
 									<p class="col666">工作地点</p>
-									<p class="mt10 ">组长</p>
+									<p class="mt10 ">{{tiem.address}}</p>
 								</el-col>
 								<el-col :span="4" class="proDesc flex column alCen js-center">
 									<div>
 										<p class="col666">服务评分</p>
-									<el-rate v-model="workScore" class="mt10" disabled show-score text-color="#ff9900"
+									<el-rate v-model="tiem.score" class="mt10" disabled show-score text-color="#ff9900"
 										score-template="{value}" />
 									</div>
 									
-									<el-button type="primary" style="    position: absolute;right: 5px;top: 7px;" size="small">编辑</el-button>
+									<el-button type="primary" style="position: absolute;right: 5px;top: 7px;" size="small" @click="editProject(tiem)">编辑</el-button>
 								</el-col>
 							</el-row>
 							<div class="proPj">
 								<p class="col666">服务评价</p>
-								<p class="col333 mt10">服务评价sdvsdg fsg森岛帆高收到符带饭的符的辅导费的罚单</p>
+								<p class="col333 mt10">{{tiem.description || ''}}</p>
 							</div>
 							<div class="proPj">
 							<div class="mt10 flex alCen">
 						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
-							:file-list="zhenshuPhotoList" :disabled="isEditUserInfo==false" list-type="picture-card"
-							:on-success="handleAvatarSuccess4" :on-preview="handlePictureCardPreview" :on-remove="handleRemove4" :limit='6'
+							:file-list="tiem.images"  list-type="picture-card"
+							:on-success=" function(res,flie){return projectUpimg(res,flie,index)}"  :on-preview="handlePictureCardPreview" :on-remove="function(res,flie){return projectDelimg(res,flie,index)}" :limit='6'
 							:on-exceed="handleExceed">
 							<i class="el-icon-plus" />
 						</el-upload>
@@ -443,40 +443,53 @@
 
 
 			<!-- 添加项目 -->
-			<el-dialog title="添加项目" :visible.sync="addprojectPop" width="30%" center>
+			<el-dialog :title="addProject.id?'编辑项目经验':'添加项目经验'" :visible.sync="addprojectPop" v-loading='addProjectloading' width="30%" center>
 				<div class="reanNamePoplist">
 					<div class="item">
 						<p class="tit">项目名称：</p>
-						<input type="text" name="" v-model="rnName" placeholder="请填项目名称" class="ipt" value="">
+						<input type="text" name="" v-model="addProject.title" placeholder="请填项目名称" class="ipt" value="">
 					</div>
 					<div class="item">
 						<p class="tit">工种：</p>
-						<input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
+						<el-select size="small"  v-model="addProject.teamTypeId"
+							placeholder="选择工种" @change="AddProjectselWorker">
+							<el-option v-for="item in gongZhoptions" :key="item.id"
+								:label="item.labelName" :value="Number(item.id)">
+							</el-option>
+						</el-select>
 					</div>
 					<div class="item">
 						<p class="tit">工程开始时间：</p>
-						<el-date-picker v-model="rnvalidityStartTime" class="ipt" type="date" placeholder="选择工程开始时间">
+						<el-date-picker v-model="addProject.enterStartTime " class="ipt" type="date" placeholder="选择工程开始时间">
 						</el-date-picker>
-						<el-date-picker v-model="rnvalidityEndTime" class="ipt" type="date" placeholder="选择工程结束时间">
+						<el-date-picker v-model="addProject.enterEndTime " class="ipt" type="date" placeholder="选择工程结束时间">
 						</el-date-picker>
 					</div>
 					<div class="item">
 						<p class="tit">工作地点：</p>
-						<input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
+						<input type="text" name="" v-model="addProject.address " placeholder="请输入工作地点" class="ipt" value="">
 					</div>
 					<div class="item">
 						<p class="tit">服务评分：</p>
-						<el-rate v-model="userInfo.workerScore" disabled show-score text-color="#ff9900"
-											score-template="{value}" />
+						<el-rate v-model="addProject.score"  show-score text-color="#ff9900" score-template="{value}" />
 					</div>
 					<div class="item">
-						<p class="tit">评价：</p>
-						<input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
+						<p class="tit">项目简介：</p>
+						<input type="text" name="" v-model="addProject.description " placeholder="请输入项目简介" class="ipt" value="">
+					</div>
+					<div class="item">
+						<el-upload name="multipartFile" class="avatar-uploader" :action="adminUrl"
+							:file-list="addProject.images"  list-type="picture-card"
+							:on-success="addprojectUpimg" :on-preview="handlePictureCardPreview" :on-remove="handleRemove4" :limit='6'
+							:on-exceed="handleExceed">
+							<i class="el-icon-plus" />
+						</el-upload>
+
 					</div>
 				</div>
 				<span slot="footer" class="dialog-footer">
-					<el-button @click="realNamePop = false">取 消</el-button>
-					<el-button type="primary" @click="realNameTrue">确 定</el-button>
+					<el-button @click="addprojectPop = false">取 消</el-button>
+					<el-button type="primary" @click="addProjectSubmit" >确 定</el-button>
 				</span>
 			</el-dialog>
 		</div>
@@ -503,8 +516,12 @@
 		workCardRemoveGongRen,
 		uploadIdCardByAli,
 		uploadpublic,
-		getPreSignFile
+		getPreSignFile,
+		getUserProjectExperienceList,
+		postUserProjectExperienceAdd,
+		postUserProjectExperienceUpdate
 	} from '../../../api/user.js'
+	import moment from 'moment'
 	import {
 		regionData,
 		CodeToText
@@ -569,7 +586,20 @@
 					value: 2
 				}],
 				addprojectPop:false, //添加项目弹窗
-
+				//添加项目数据
+				addProject:{
+				address: '' ,
+				description :'' ,
+				enterEndTime: '' ,
+				enterStartTime:'' ,
+				score:0,
+				images:[],
+				teamTypeId:'' ,
+				teamTypeName: ' ',
+				title: ''
+				},
+				projectDate:[], // 项目经验
+				addProjectloading:false, //添加经验loading
 			}
 		},
 		mounted() {
@@ -637,6 +667,7 @@
 			},
 			loadDate() {
 				this.getGongrenDetail();
+				this.getUserProjectExperienceList()
 			},
 			getGongrenDetail() {
 				var userInfo = this.userIdOrType;
@@ -729,7 +760,27 @@
 
 				})
 			},
-
+			// 项目经验
+			getUserProjectExperienceList(){
+				console.log(this.userInfo)
+				getUserProjectExperienceList({userId:this.userIdOrType.id}).then(res=>{
+					let data = res.data.records
+					for (var i = 0; i < data.length; i++) {
+						if(data[i].images){
+							for (var g = 0; g < data[i].images.length; g++) {
+							var obj = {};
+							obj.url = data[i].images[g]
+							obj.name = 'img' + i
+							data[i].images[g] = obj
+						}
+					}else{
+						data[i].images = []
+					}
+						
+					}
+					this.projectDate = res.data.records
+				})
+			},
 
 			// 基本信息编辑
 			edit() {
@@ -955,12 +1006,20 @@
 			},
 			// 添加项目经验
 			addWork() {
+				this.addProject = {
+				address: '' ,
+				description :'' ,
+				enterEndTime: '' ,
+				enterStartTime:'' ,
+				score:0,
+				images:[],
+				teamTypeId:'' ,
+				teamTypeName: ' ',
+				title: ''
+				}
 				this.addprojectPop = true
 			},
-			// 添加项目
-			addProject() {
-
-			},
+			
 			proSearch() {
 
 			},
@@ -1100,8 +1159,111 @@
 				})
 				}
 			
+			},
+			//时间处理
+			formatDate(value) {
+				return moment(value).format('YYYY-MM-DD')
+			},
+			//新增/编辑项目经验提交
+			addProjectSubmit(){
+				this.addProjectloading = true
+				//有id为编辑
+				if(this.addProject.id){
+				postUserProjectExperienceUpdate({
+				address: this.addProject.address,
+				description :this.addProject.description,
+				enterEndTime:this.addProject.enterEndTime,
+				enterStartTime:this.addProject.enterStartTime,
+				images:this.addProject.images.map((item) => item.url),
+				teamTypeId:this.addProject.teamTypeId,
+				teamTypeName: this.addProject.teamTypeName,
+				score:this.addProject.score,
+				title:this.addProject.title,
+				userId:this.userIdOrType.id,
+				id:this.addProject.id
+				}).then(res=>{
+					console.log(res)
+						this.$message({
+							type: 'success',
+							message: '项目经验编辑成功!'
+						})
+					
+					this.loadDate()
+					this.addProjectloading = false
+					this.addprojectPop = false
+				})
+				}else{
+				postUserProjectExperienceAdd({
+				address: this.addProject.address,
+				description :this.addProject.description,
+				enterEndTime:this.addProject.enterEndTime,
+				enterStartTime:this.addProject.enterStartTime,
+				images:this.addProject.images.map((item) => item.url),
+				teamTypeId:this.addProject.teamTypeId,
+				teamTypeName: this.addProject.teamTypeName,
+				score:this.addProject.score,
+				title:this.addProject.title,
+				userId:this.userIdOrType.id
+				}).then(res=>{
+					console.log(res)
+						this.$message({
+							type: 'success',
+							message: '项目经验新增成功!'
+						})
+					
+					this.loadDate()
+					this.addProjectloading = false
+					this.addprojectPop = false
+				})
+				}
+			
+			},
+			//新增项目选择工种
+			AddProjectselWorker(e){
+				// 反查id取出对应对象赋值
+				let data = this.gongZhoptions.filter((item) => item.id == e );
+				this.addProject.teamTypeName  = data[0].labelName
+			},
+			//新增项目经验上传图片
+			addprojectUpimg(res, file){
+				var obj = {};
+				obj.url = res.data
+				obj.name = file.raw.uid
+				this.addProject.images.push(obj)
+				// console.log('上传',this.addProject.images);
+			
+			},
+			//项目经验上传图片
+			projectUpimg(res, file,index){
+				// console.log(res, file,index)
+				var obj = {};
+				obj.url = res.data
+				obj.name = file.raw.uid
+				this.projectDate[index].images.push(obj)
+				postUserProjectExperienceUpdate({
+				images:this.projectDate[index].images.map((item) => item.url),
+				userId:this.userIdOrType.id,
+				id:this.projectDate[index].id
+				}).then(res=>{
+					console.log(res)
+						this.$message({
+							type: 'success',
+							message: '项目经验图片编辑成功!'
+						})
+					
+					this.loadDate()
+				})
+			},
+			//项目经验删除图片
+			projectDelimg(res, file,index){
+				
+			},
+			//项目编辑
+			editProject(item){
+				console.log(item)
+				this.addProject = item
+				this.addprojectPop = true
 			}
-
 
 		}
 	}

@@ -1822,6 +1822,55 @@ export function getDeteleBanner(params) {
 	})
 }
 
+/**
+ * 工人卡片 个人项目经验
+ * 
+ *  */
+ export function getUserProjectExperienceList(params) {
+	return request({
+		url: `/api/bill/admin/brief/comment/projectExperienceList`,
+		method: 'GET',
+		params
+	})
+}
+
+/**
+ * 工人卡片 项目经验新增
+ * 
+ *  */
+ export function postUserProjectExperienceAdd(data) {
+	return request({
+		url: `/api/bill/admin/brief/comment/1.1.0/projectExperience/add`,
+		method: 'post',
+		responseType: 'blob',
+		data
+	})
+}
+
+/**
+ * 工人卡片 项目经验编辑
+ * 
+ *  */
+ export function postUserProjectExperienceUpdate(data) {
+	return request({
+		url: `/api/bill/admin/brief/comment/1.1.0/projectExperience/update`,
+		method: 'post',
+		responseType: 'blob',
+		data
+	})
+}
+
+/**
+ * 评价记录列表
+ * 
+ *  */
+ export function getUserProjectCommentList(params) {
+	return request({
+		url: `/api/bill/admin/brief/comment/1.1.0/projectComment/list`,
+		method: 'get',
+		params
+	})
+}
 
 
 

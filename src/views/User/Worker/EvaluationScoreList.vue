@@ -8,14 +8,22 @@
 				<div class="top-content-item flex fvertical">
 					<div class="flex fvertical top-content-item-status">
 						<span>输入查询：</span>
-						<el-input v-model="serach" class="top-content-item-input" placeholder="用户ID/名称/手机号" clearable />
+						<el-input v-model="serach" class="top-content-item-input" placeholder="项目名称/评价人" clearable />
 					</div>
 					<div class="flex fvertical top-content-item-status">
 						<span>选择时间：</span>
-						<el-select v-model="gradevalue" multiple placeholder="全部" clearable>
-							<el-option v-for="item in gradeOptions" :key="item.value" :label="item.label"
-								:value="item.value" />
-						</el-select>
+						  <el-date-picker
+                            v-model="time"
+                            type="daterange"
+                            align="right"
+                            unlink-panels
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            :picker-options="pickerOptions"
+                            value-format="timestamp"
+                            >
+                          </el-date-picker>
 					</div>
 					
 				</div>
@@ -32,8 +40,6 @@
 				<div class="bold">数据列表</div>
 				<div>
 
-			<el-button @click="addWorker" type="primary" style="margin: 0 20px;">新增</el-button>
-
 			<el-button @click="exportTable">导出</el-button>
 
 				</div>
@@ -43,33 +49,37 @@
 			<!-- 表格  -->
 			<el-table :data="tableData" stripe style="width: 100%" border :height="clientHeight+'px'">
 				<el-table-column type='index' label="序号" width="60" />
-				<el-table-column prop="realName" label="项目名称" width="150" />
-				<el-table-column prop="phone" label="所属工种" width="120" />
+				<el-table-column prop="title" label="项目名称" width="150" />
+				<el-table-column prop="teamTypeName" label="所属工种" width="120" />
 				<el-table-column label="评分">
 					<template slot-scope="scope">
-						{{scope.row.realNameAuth == 1 ?'已实名':scope.row.realNameAuth == 2 ?'审核中':'未实名'}}
+						<el-rate v-model="scope.row.score" class="mt10" disabled show-score text-color="#ff9900" core-template="{value}" />
 					</template>
 				</el-table-column>
-				<el-table-column prop="gender" label="评价内容">
-					<template slot-scope="scope">
-						{{scope.row.gender == 0 ?'男':scope.row.gender == 1 ?'女':'未知'}}
+				<el-table-column prop="content " label="评价内容"></el-table-column>
+				<el-table-column prop="images" label="评价图片" :formatter="gradeFormat" >
+                    <template slot-scope="scope">
+                        <div class="imgList" >
+                    <el-image class="imgList-img"  v-for="(item,i) in scope.row.images" :key="i"
+                        style="width: 100px; height: 100px"
+                        :src="item" 
+                        :preview-src-list="scope.row.images">
+                    </el-image>
+                        </div>
+						
 					</template>
-				</el-table-column>
-				<el-table-column prop="workerGrade" label="评价图片" :formatter="gradeFormat" />
-				<el-table-column prop="workerIdentity " label="评价人">
-					<template slot-scope="scope">
-						{{scope.row.workerIdentity  == 0 ?'工人':scope.row.workerIdentity == 1 ?'队伍带班':scope.row.workerIdentity == 2 ?'其他':'未知'}}
+                	</el-table-column>
+				<el-table-column prop="createName" label="评价人"/>
+				<el-table-column prop="updateTime" label="操作时间" >
+                    <template slot-scope="scope">
+						{{formatDate(scope.row.updateTime)}}
 					</template>
-				</el-table-column>
-				<el-table-column prop="updateTime" label="操作时间" />
-				<el-table-column label="操作" width="220">
+                </el-table-column>
+				<!-- <el-table-column label="操作" width="220">
 					<template slot-scope="scope">
 						<el-button type="text" size="small" @click="handleLook(scope.row)">查看</el-button>
-
-						<el-button v-if="scope.row.realNameAuth==0" type="text" size="small"
-							@click="reanName(scope.row)">实名</el-button>
 					</template>
-				</el-table-column>
+				</el-table-column> -->
 			</el-table>
 			<!-- 表格end -->
 
@@ -80,73 +90,6 @@
 					:total="PageCount" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
 			</div>
 			<!-- 分页end -->
-			<!-- 实名弹窗 -->
-			<el-dialog title="添加实名" :visible.sync="realNamePop" width="30%" center>
-				<div class="reanNamePoplist">
-					<div class="item">
-						<p class="tit">身份证正反面：</p>
-						<div class="popIdCard flex alCen">
-							<el-upload class="avatar-uploader" action="123" :before-upload="beforeUpload"
-								:show-file-list="false" ref="newupload" name="multipartFile" :with-credentials='true'
-								:auto-upload="true" :on-success="upIdCard">
-								<img v-if="idCard" :src="idCard" class="avatar">
-								<i v-else class="el-icon-plus avatar-uploader-icon" />
-							</el-upload>
-							<el-upload class="avatar-uploader" style="margin-left: 10px;" action="123"
-								:before-upload="beforeUpload2" :show-file-list="false" ref="newupload"
-								name="multipartFile" :auto-upload="true" :with-credentials='true'
-								:on-success="upIdCardBack">
-								<img v-if="idCardBack" :src="idCardBack" class="avatar">
-								<i v-else class="el-icon-plus avatar-uploader-icon" />
-							</el-upload>
-
-						</div>
-
-					</div>
-					<div class="item">
-						<p class="tit">姓名：</p>
-						<input type="text" name="" v-model="rnName" placeholder="请填姓名" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">性别：</p>
-						<input type="text" name="" v-model="rnGender" placeholder="请输入性别" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">民族：</p>
-						<input type="text" name="" v-model="rnNation" placeholder="请输入民族" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">年龄：</p>
-						<input type="text" name="" v-model="rnAge" placeholder="请输入年龄" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">身份证号：</p>
-						<input type="text" name="" v-model="rnIdnum" placeholder="请输入身份证号" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">籍贯：</p>
-						<input type="text" name="" v-model="rnNativePlace" placeholder="请输入籍贯" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">户籍地：</p>
-						<input type="text" name="" v-model="rnHouse" placeholder="请输入户籍地" class="ipt" value="">
-					</div>
-					<div class="item">
-						<p class="tit">身份证有效期起始时间：</p>
-						<el-date-picker v-model="rnvalidityStartTime" class="ipt" type="date" placeholder="选择起始日期">
-						</el-date-picker>
-					</div>
-					<div class="item">
-						<p class="tit">身份证有效期截止时间：</p>
-						<el-date-picker v-model="rnvalidityEndTime" class="ipt" type="date" placeholder="选择截止日期">
-						</el-date-picker>
-					</div>
-				</div>
-				<span slot="footer" class="dialog-footer">
-					<el-button @click="realNamePop = false">取 消</el-button>
-					<el-button type="primary" @click="realNameTrue">确 定</el-button>
-				</span>
-			</el-dialog>
 
 
 		</div>
@@ -154,8 +97,9 @@
 </template>
 
 <script>
+import config from '@/store/modules/config.js';
 	import {
-		gongRenQueryPage,
+		getUserProjectCommentList,
 		gongRenRealNameAuth,
 		uploadIdCard,
 		gongrenupdateUserStatus,
@@ -165,6 +109,7 @@
 		uploadpublic
 	} from '../../../api/user.js'
 
+	import moment from 'moment'
 	export default {
 		data() {
 			return {
@@ -173,92 +118,41 @@
 				PageSize: 10, // 显示多少条数据
 				PageCount: 0, // 总条数
 				serach: '', // 搜索
-				gradeOptions: [ // 工人等级
-					{
-						label: '普通工人',
-						value: '0'
-					}, {
-						label: '铜牌工人',
-						value: '1'
-					}, {
-						label: '银牌工人',
-						value: '2'
-					}, {
-						label: '金牌工人',
-						value: '3'
-					}, {
-						label: '超能工人',
-						value: '4'
-					}
-				],
-				gradevalue: [],
-				allStatus: [{
-					label: '全部',
-					value: ''
-				},{
-					label: '正常',
-					value: '0'
-				}, {
-					label: '冻结',
-					value: '1'
-				}],
-				IdentityS:[{
-					label: '工人',
-					value: '0'
-				},{
-					label: '队伍带班',
-					value: '1'
-				},{
-					label: '其他',
-					value: '2'
-				}],
-				workerIdentity:'',
-				recommendS:[{
-					label: '开启',
-					value: '1'
-				},{
-					label: '关闭',
-					value: '0'
-				}],
-				recommend:'',
-				statusvalue: '',
-
-				realNamePop: false,
-				idCard: '',
-				idCardUp: '', //上传用的
-				idCardBack: '',
-				idCardBackUp: '',
-				// 实名认证
-				rnName: '',
-				rnGender: '',
-				rnNation: '',
-				rnAge: '',
-				rnIdnum: "",
-				rnNativePlace: '',
-				rnHouse: '',
-				rnUserId: '',
-				rnvalidityStartTime: '',
-				rnvalidityEndTime: '',
 				clientHeight: 0,
-				sortS:[{
-					label: '按工人等级排序',
-					value: '0'
-				},{
-					label: '按工人好评分排序',
-					value: '1'
-				},{
-					label: '按工龄排序',
-					value: '2'
-				},{
-					label: '按信誉分排序',
-					value: '4'
-				}],
-				sort:'0'
-
+                userId:'',
+                  pickerOptions: {
+          shortcuts: [{
+            text: '最近一周',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近一个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+              picker.$emit('pick', [start, end]);
+            }
+          }, {
+            text: '最近三个月',
+            onClick(picker) {
+              const end = new Date();
+              const start = new Date();
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+              picker.$emit('pick', [start, end]);
+            }
+          }]
+        },
+        time: '',//筛选时间
 
 			}
 		},
 		created() {
+             this.userId = this.$route.query.id
 			this.getList();
 			this.getWebHeing();
 		},
@@ -294,21 +188,20 @@
 				}
 			},
 			getList() {
-				console.log(this.gradevalue.join(','))
+                console.log(this.time)
 				var params = {
 					keyword: this.serach,
-					pageNum: this.PageIndex,
-					pageSize: this.PageSize,
-					grades: this.gradevalue.join(','),
-					userStatus: this.statusvalue,
-					workerIdentity:this.workerIdentity,
-					homeShow:this.recommend
+					pageIndex: this.PageIndex,
+                    pageSize: this.PageSize,
+                    startTime:this.time[0],
+                    endTime:this.time[1],
+                    userId:this.userId
 				}
-				gongRenQueryPage(params).then(res => {
+				getUserProjectCommentList(params).then(res => {
 					var data = res.data
 					console.log('res', data)
 					this.PageCount = data.total
-					this.tableData = data.list
+					this.tableData = data.records
 				})
 			},
 			search() {
@@ -319,19 +212,14 @@
 			// 重置
 			raLoad() {
 				this.serach = '';
-				this.reamNamevalue = '';
-				this.authvalue = '';
-				this.gradevalue = [];
-				this.loginvalue = '';
-				this.statusvalue = '';
+                this.time = ''
 				this.PageIndex = 1;
 				this.getList()
 			},
 			// 导出
 			exportTable() {
-				let url = '/api/user/admin/worker/v1.0/exportCsv';
-				let param =
-					`?id=${this.serach}&grades=${this.gradevalue}&pageNum=${this.PageIndex}&PageSize=${this.PageSize}&userStatus=${this.statusvalue}`
+				let url = '/api/bill/admin/brief/comment/1.1.0/projectComment/export';
+				let param =`?keyword=${this.serach}&startTime=${this.time[0]}&PageIndex=${this.PageIndex}&PageSize=${this.PageSize}&endTime=${this.time[1]}&userId=${this.userId}`
 				window.open(url+param);
 			},
 			/** 查看工人 */
@@ -384,25 +272,6 @@
 				})
 			},
 
-			/** 实名 */
-			reanName(row) {
-				console.log(row)
-				this.rnUserId = row.id
-				this.idCard = '',
-					this.idCardUp = '',
-					this.idCardBack = '',
-					this.idCardBackUp = '',
-					this.rnName = '',
-					this.rnGender = '',
-					this.rnNation = '',
-					this.rnAge = '',
-					this.rnIdnum = "",
-					this.rnNativePlace = '',
-					this.rnHouse = '',
-					this.rnvalidityStartTime = '',
-					this.rnvalidityEndTime = '',
-					this.realNamePop = true
-			},
 			beforeUpload(file) {
 				console.log(file)
 				let data = new FormData()
@@ -435,21 +304,7 @@
 					}
 				})
 			},
-			beforeUpload2(file) {
-				console.log(file)
-				let data = new FormData()
-				data.append('multipartFile', file)
-				data.append('side', 'back')
-				data.append('watermarkSkip',true)
-				uploadIdCardByAli(data).then(res => {
-					console.log(res)
-					this.rnvalidityStartTime = res.data.startDate
-					this.rnvalidityEndTime = res.data.endDate
-					this.idCardBackUp = res.data.idCardUri
-					this.getIdUrl(2, res.data.idCardUri)
-				})
-				return false
-			},
+		
 			upIdCard(res, file) {
 				console.log(res)
 			},
@@ -457,60 +312,10 @@
 				console.log(res)
 				console.log(file)
 			},
-			// 添加实名
-			realNameTrue() {
-				if (this.idCardUp == '') {
-					this.$message({
-						type: 'warning',
-						message: '请上传身份证!'
-					})
-				} else if (this.rnName == '') {
-					this.$message({
-						type: 'warning',
-						message: '请输入姓名!'
-					})
-				} else if (IsCard(this.rnIdnum) == false) {
-					this.$message({
-						type: 'warning',
-						message: '请输入正确身份证号!'
-					})
-				} else {
-					var gender = 0;
-					if (this.rnGender == '男') {
-						gender = 0
-					} else {
-						gender = 1
-					}
-					var params = {
-						age: this.rnAge,
-						gender: gender,
-						householdRegister: this.rnHouse,
-						idCardReverseUri: this.idCardBackUp,
-						idCardUri: this.idCardUp,
-						idNo: this.rnIdnum,
-						nation: this.rnNation,
-						nativePlace: this.rnNativePlace,
-						realName: this.rnName,
-						userId: this.rnUserId,
-						validityEndTime: this.rnvalidityEndTime,
-						validityStartTime: this.rnvalidityStartTime
-					}
-					gongRenRealNameAuth(params).then(res => {
-						console.log(res)
-						if (res.code == 200) {
-							this.$message({
-								type: 'success',
-								message: '提交成功!'
-							})
-							this.realNamePop = false
-							this.getList()
-						}
-					})
-				}
-
-
+            //时间处理
+			formatDate(value) {
+				return moment(value).format('YYYY-MM-DD')
 			},
-
 
 		}
 	}
@@ -538,7 +343,7 @@
 			}
 		}
 	}
-
+   
 	.el-upload--picture-card {
 		width: 120px;
 		height: 120px;
@@ -589,4 +394,11 @@
 		font-size: 16px;
 		margin-right: 4px;
 	}
+     .imgList{
+        display: flex;
+        justify-content: start;
+        .imgList-img{
+            margin: 0 10px;
+        }
+    }
 </style>
