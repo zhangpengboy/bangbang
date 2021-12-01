@@ -56,7 +56,7 @@
 								:value="item.value" />
 			</el-select>
 
-			<el-button @click="addWorker" type="primary" style="margin: 0 20px;">新增工人</el-button>
+			<el-button  type="primary" style="margin: 0 20px;">新增工人</el-button>
 
 			<el-button @click="exportTable">导出</el-button>
 
@@ -99,8 +99,8 @@
 				<el-table-column prop="homeShow " label="首页推荐">
 					<template slot-scope="scope">
 						<!-- {{scope.row.workerStatus == 1 ?'冻结':'正常'}} -->
-						<el-switch v-model="scope.row.homeShow" :active-value="0" :inactive-value="1"
-							@change="workerStatusChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
+						<el-switch v-model="scope.row.homeShow" :active-value="1" :inactive-value="0"
+							@change="workerHomeshowChange(scope.row)" active-color="#0079fe" inactive-color="#e5dbe5">
 						</el-switch>
 					</template>
 				</el-table-column>
@@ -214,7 +214,8 @@
 		exportCsvGongren,
 		uploadIdCardByAli,
 		getPreSignFile,
-		uploadpublic
+		uploadpublic,
+		postUserhomeShowUpdate
 	} from '../../../api/user.js'
 
 	export default {
@@ -425,7 +426,6 @@
 					userStatus: userStatus
 				}
 				gongrenupdateUserStatus(params).then(res => {
-					console.log(res)
 					if (res.code == 200) {
 						that.$message({
 							type: 'success',
@@ -436,6 +436,32 @@
 				})
 			},
 
+			// 修改用户首页推荐状态
+			workerHomeshowChange(row) {
+				if (row.homeShow) {
+					this.changeUserHomeshow(row.id, 1)
+				} else {
+					this.changeUserHomeshow(row.id, 0)
+				}
+			},
+			//修改用户首页推荐状态
+			changeUserHomeshow(userId,homeShow){
+					var that = this;
+				var params = {
+					userId: userId,
+					homeShow: homeShow
+				}
+				postUserhomeShowUpdate(params).then(res => {
+					if (res.code == 200) {
+						that.$message({
+							type: 'success',
+							message: '操作成功!'
+						})
+						that.getList()
+					}
+				})
+				
+			},
 			/** 实名 */
 			reanName(row) {
 				console.log(row)

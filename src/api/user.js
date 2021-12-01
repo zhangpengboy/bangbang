@@ -1872,6 +1872,19 @@ export function getDeteleBanner(params) {
 	})
 }
 
+/**
+ * 工人列表 修改首页推荐状态
+ * 
+ *  */
+ export function postUserhomeShowUpdate(data) {
+	return request({
+		url: `/api/user/admin/worker/v1.1/homeShow/update`,
+		method: 'post',
+		data
+	})
+}
+
+
 
 
 
